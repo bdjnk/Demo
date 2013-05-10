@@ -6,10 +6,13 @@ public class MenuManager : MonoBehaviour
     public Vector2 scrollPosition = Vector2.zero;
 	
 	public GUISkin skin;
+	public GUIStyle serverButtonStyle;
 	
 	public int serverCount = 40;
 	public int serverHeight = 25;
 	private float edge = 0.01f;
+	
+	private string name;
 	
 	private int innerWidth;
 	private int scrollBarWidth = 17;
@@ -17,6 +20,12 @@ public class MenuManager : MonoBehaviour
 	void Awake()
 	{
 		edge *= Screen.width;
+		
+		if (!PlayerPrefs.HasKey("name"))
+		{
+			PlayerPrefs.SetString("name", "Default");
+		}
+		name = PlayerPrefs.GetString("name");
 	}
 	
 	void OnGUI()
@@ -33,11 +42,14 @@ public class MenuManager : MonoBehaviour
 		
 		GUI.EndGroup();
 		
-		GUI.Button(new Rect((Screen.width-edge)-70, 5, 70, 25), "Settings");
+		//GUI.Button(new Rect((Screen.width-edge)-70, 5, 70, 25), "Settings");
+		GUI.Label(new Rect((Screen.width-edge)-190, 5, 40, 25), "Name:");
+		name = GUI.TextField(new Rect((Screen.width-edge)-150, 5, 150, 25), name, 16);
+		PlayerPrefs.SetString("name", name); // may be inefficient...
 		
 		GUI.BeginGroup(new Rect(edge, 35, innerWidth, 25));
 			
-		GUI.Label(new Rect(0, 0, innerWidth-300, 25), "Name");
+		GUI.Label(new Rect(edge, 0, innerWidth-300, 25), "Name");
 		GUI.Label(new Rect(innerWidth-300, 0, 100, 25), "Size");
 		GUI.Label(new Rect(innerWidth-200, 0, 100, 25), "Players");
 		GUI.Label(new Rect(innerWidth-100, 0, 100, 25), "Ping");
@@ -61,7 +73,9 @@ public class MenuManager : MonoBehaviour
 				//TODO this group should be clickable because it has a GUIContent, so figure that out
 				GUI.BeginGroup(new Rect(0, serverHeight*i, innerWidth*0.98f, serverHeight), new GUIContent());
 				
-				GUI.Label(new Rect(    0, 0, innerWidth-300, serverHeight), "Test Server Name #"+i);
+				GUI.Button(new Rect(0, 0, innerWidth-edge*2, serverHeight), "");//, serverButtonStyle);
+				
+				GUI.Label(new Rect(edge, 0, innerWidth-300, serverHeight), "Test Server Name #"+i);
 				GUI.Label(new Rect(innerWidth-300, 0, 100, serverHeight), "Size");
 				GUI.Label(new Rect(innerWidth-200, 0, 100, serverHeight), "Players");
 				GUI.Label(new Rect(innerWidth-100, 0, 100, serverHeight), "Ping");

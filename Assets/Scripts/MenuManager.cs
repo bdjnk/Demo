@@ -9,16 +9,23 @@ public class MenuManager : MonoBehaviour
 	
 	public int serverCount = 40;
 	public int serverHeight = 25;
-	private int w, h;
+	private float edge = 0.01f;
+	
+	private int innerWidth;
 	private int scrollBarWidth = 17;
+	
+	void Awake()
+	{
+		edge *= Screen.width;
+	}
 	
 	void OnGUI()
 	{
 		GUI.skin = skin;
 		
-		w = Screen.width-scrollBarWidth;
+		innerWidth = Screen.width-scrollBarWidth;
 		
-		GUI.BeginGroup(new Rect(w*0.01f, 5, w, 25));
+		GUI.BeginGroup(new Rect(edge, 5, 400, 25));
 		
 		GUI.Button(new Rect(0, 0, 65, 25), "Refresh");
 		GUI.Label(new Rect(70, 0, 200, 25), "the server list to join a game, or");
@@ -26,34 +33,43 @@ public class MenuManager : MonoBehaviour
 		
 		GUI.EndGroup();
 		
-		GUI.Button(new Rect(Screen.width*0.99f-70, 5, 70, 25), "Settings");
+		GUI.Button(new Rect((Screen.width-edge)-70, 5, 70, 25), "Settings");
 		
-		GUI.BeginGroup(new Rect(w*0.01f, 35, w, 25));
+		GUI.BeginGroup(new Rect(edge, 35, innerWidth, 25));
 			
-		GUI.Label(new Rect(0, 0, w-300, 25), "Name");
-		GUI.Label(new Rect(w-300, 0, 100, 25), "Size");
-		GUI.Label(new Rect(w-200, 0, 100, 25), "Players");
-		GUI.Label(new Rect(w-100, 0, 100, 25), "Ping");
+		GUI.Label(new Rect(0, 0, innerWidth-300, 25), "Name");
+		GUI.Label(new Rect(innerWidth-300, 0, 100, 25), "Size");
+		GUI.Label(new Rect(innerWidth-200, 0, 100, 25), "Players");
+		GUI.Label(new Rect(innerWidth-100, 0, 100, 25), "Ping");
 		
 		GUI.EndGroup();
 		
-		scrollPosition = GUI.BeginScrollView(
-			new Rect(w*0.01f, 60, Screen.width*0.98f, Mathf.Min(serverHeight*serverCount, Mathf.Round((Screen.height-60)/serverHeight)*serverHeight)),
-			scrollPosition, new Rect(0, 0, w*0.98f, serverHeight*serverCount), false, true);
-		
-		for (int i = 0; i < serverCount; i++)
+		if (serverCount == 0)
 		{
-			//GUI.BeginGroup(new Rect(0, serverHeight*i, w*0.98f, serverHeight*(i+1)), new GUIContent());
-			GUI.BeginGroup(new Rect(0, serverHeight*i, w*0.98f, serverHeight), new GUIContent());
-			
-			GUI.Label(new Rect(    0, 0, w-300, serverHeight), "Test Server Name #"+i);
-			GUI.Label(new Rect(w-300, 0, 100, serverHeight), "Size");
-			GUI.Label(new Rect(w-200, 0, 100, serverHeight), "Players");
-			GUI.Label(new Rect(w-100, 0, 100, serverHeight), "Ping");
-			
-			GUI.EndGroup();
+			GUI.Label(new Rect(edge, 60, 250, serverHeight), "No servers available, try refreshing.");
 		}
-		
-        GUI.EndScrollView();
+		else
+		{
+			// this scrollbox's outer height is limited by the screen height in increments of serverHeight
+			scrollPosition = GUI.BeginScrollView(
+				new Rect(edge, 60, (Screen.width-edge*2),
+					Mathf.Min(serverHeight*serverCount, Mathf.Round((Screen.height-60)/serverHeight)*serverHeight)),
+				scrollPosition, new Rect(0, 0, innerWidth*0.98f, serverHeight*serverCount), false, true);
+			
+			for (int i = 0; i < serverCount; i++) // for each server we know about
+			{
+				//TODO this group should be clickable because it has a GUIContent, so figure that out
+				GUI.BeginGroup(new Rect(0, serverHeight*i, innerWidth*0.98f, serverHeight), new GUIContent());
+				
+				GUI.Label(new Rect(    0, 0, innerWidth-300, serverHeight), "Test Server Name #"+i);
+				GUI.Label(new Rect(innerWidth-300, 0, 100, serverHeight), "Size");
+				GUI.Label(new Rect(innerWidth-200, 0, 100, serverHeight), "Players");
+				GUI.Label(new Rect(innerWidth-100, 0, 100, serverHeight), "Ping");
+				
+				GUI.EndGroup();
+			}
+			
+	        GUI.EndScrollView();
+		}
 	}
 }

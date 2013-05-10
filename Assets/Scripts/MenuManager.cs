@@ -18,9 +18,9 @@ public class MenuManager : MonoBehaviour
 		
 		w = Screen.width-scrollBarWidth;
 		
-		GUI.Button(new Rect(w*0.01f, 0, 100, 25), "Refresh");
-		GUI.Label(new Rect(w*0.01f+100, 0, 300, 25), "the server list to join a game, or");
-		GUI.Button(new Rect(w*0.01f+400, 0, 100, 25), "create one");
+		GUI.Button(new Rect(w*0.01f, 0, 65, 25), "Refresh");
+		GUI.Label(new Rect(w*0.01f+70, 0, 200, 25), "the server list to join a game, or");
+		GUI.Button(new Rect(w*0.01f+260, 0, 80, 25), "create one");
 		
 		GUI.BeginGroup(new Rect(w*0.01f, 25, w, 50));
 			

@@ -38,7 +38,7 @@ public class MenuManager : MonoBehaviour
 		GUI.EndGroup();
 		
 		scrollPosition = GUI.BeginScrollView(
-			new Rect(w*0.01f, 60, Screen.width*0.98f, Mathf.Min(serverHeight*serverCount, Mathf.Round((Screen.height-60)/30)*30)),
+			new Rect(w*0.01f, 60, Screen.width*0.98f, Mathf.Min(serverHeight*serverCount, Mathf.Round((Screen.height-60)/serverHeight)*serverHeight)),
 			scrollPosition, new Rect(0, 0, w*0.98f, serverHeight*serverCount), false, true);
 		
 		for (int i = 0; i < serverCount; i++)

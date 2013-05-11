@@ -18,6 +18,8 @@ public class MenuManager : MonoBehaviour
 	private int scrollBarWidth = 17;
 	private bool creating = false;
 	
+	private GUIStyle style;
+	
 	void Awake()
 	{
 		if (!PlayerPrefs.HasKey("name"))
@@ -26,6 +28,9 @@ public class MenuManager : MonoBehaviour
 		}
 		playerName = PlayerPrefs.GetString("name");
 		creating = false;
+		
+		style = new GUIStyle();
+		style.normal.textColor = Color.white;
 	}
 	
 	void OnGUI()
@@ -46,30 +51,34 @@ public class MenuManager : MonoBehaviour
 	public int[] citySize = {3, 3, 3};
     public int[] minBuildingSize = {1, 1, 1};
     public int[] maxBuildingSize = {3, 3, 3};
-	public int sliderHeight = 20;
+	public int sliderHeight = 25;
+	
+	int IntSlider(Rect rect, int val, int min, int max, string label)
+	{
+		Vector2 size = skin.GetStyle("Label").CalcSize(new GUIContent(max.ToString()));
+		style.alignment = TextAnchor.MiddleRight;
+		GUI.Label(new Rect(rect.x, rect.y, size.x, rect.height), val.ToString(), style);
+		val = (int)GUI.HorizontalSlider(new Rect(rect.x+(size.x+5), rect.y+(rect.height-12)/2, (max-min+1)*10, 12), val, min, max);
+		GUI.Label(new Rect(rect.x+((max-min+1)*10)+(size.x+5)+5, rect.y, rect.width-90-(size.x+5)-5, rect.height), label);
+		return val;
+	}
 	
 	void CreateServer()
 	{
-		citySize[0] = (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*0+4, 100, 12), citySize[0], 1, 9);
-		GUI.Label(new Rect(110, sliderHeight*0, 50, sliderHeight), citySize[0].ToString());
-		citySize[1] = (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*1+4, 100, 12), citySize[1], 1, 9);
-		GUI.Label(new Rect(110, sliderHeight*1, 50, sliderHeight), citySize[1].ToString());
-		citySize[2] = (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*2+4, 100, 12), citySize[2], 1, 9);
-		GUI.Label(new Rect(110, sliderHeight*2, 50, sliderHeight), citySize[2].ToString());
+		GUI.Label(new Rect(0, sliderHeight*0, 300, sliderHeight), "City Dimensions");
+		citySize[0] = IntSlider(new Rect(0, sliderHeight*1, 300, sliderHeight), citySize[0], 1, 9, "Width");
+		citySize[1] = IntSlider(new Rect(0, sliderHeight*2, 300, sliderHeight), citySize[1], 1, 9, "Height");
+		citySize[2] = IntSlider(new Rect(0, sliderHeight*3, 300, sliderHeight), citySize[2], 1, 9, "Depth");
 		
-		minBuildingSize[0] = (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*4+4, 100, 12), minBuildingSize[0], 1, 9);
-		GUI.Label(new Rect(110, sliderHeight*4, 50, sliderHeight), minBuildingSize[0].ToString());
-		minBuildingSize[1] = (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*5+4, 100, 12), minBuildingSize[1], 1, 9);
-		GUI.Label(new Rect(110, sliderHeight*5, 50, sliderHeight), minBuildingSize[1].ToString());
-		minBuildingSize[2] = (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*6+4, 100, 12), minBuildingSize[2], 1, 9);
-		GUI.Label(new Rect(110, sliderHeight*6, 50, sliderHeight), minBuildingSize[2].ToString());
+		GUI.Label(new Rect(0, sliderHeight*5, 300, sliderHeight), "Minimum Building Dimensions");
+		minBuildingSize[0] = IntSlider(new Rect(0, sliderHeight*6, 300, sliderHeight), minBuildingSize[0], 1, 9, "Width");
+		minBuildingSize[1] = IntSlider(new Rect(0, sliderHeight*7, 300, sliderHeight), minBuildingSize[1], 1, 9, "Height");
+		minBuildingSize[2] = IntSlider(new Rect(0, sliderHeight*8, 300, sliderHeight), minBuildingSize[2], 1, 9, "Depth");
 		
-		maxBuildingSize[0]= (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*8+4, 100, 12), maxBuildingSize[0], 1, 9);
-		GUI.Label(new Rect(110, sliderHeight*8, 50, sliderHeight), maxBuildingSize[0].ToString());
-		maxBuildingSize[1]= (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*9+4, 100, 12), maxBuildingSize[1], 1, 9);
-		GUI.Label(new Rect(110, sliderHeight*9, 50, sliderHeight), maxBuildingSize[1].ToString());
-		maxBuildingSize[2]= (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*10+4, 100, 12), maxBuildingSize[2], 1, 9);
-		GUI.Label(new Rect(110, sliderHeight*10, 50, sliderHeight), maxBuildingSize[2].ToString());
+		GUI.Label(new Rect(0, sliderHeight*10, 300, sliderHeight), "Maximum Building Dimensions");
+		maxBuildingSize[0] = IntSlider(new Rect(0, sliderHeight*11, 300, sliderHeight), maxBuildingSize[0], 1, 9, "Width");
+		maxBuildingSize[1] = IntSlider(new Rect(0, sliderHeight*12, 300, sliderHeight), maxBuildingSize[1], 1, 9, "Height");
+		maxBuildingSize[2] = IntSlider(new Rect(0, sliderHeight*13, 300, sliderHeight), maxBuildingSize[2], 1, 9, "Depth");
 	}
 	
 	void ListServers()

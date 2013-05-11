@@ -6,46 +6,87 @@ public class MenuManager : MonoBehaviour
     public Vector2 scrollPosition = Vector2.zero;
 	
 	public GUISkin skin;
-	public GUIStyle serverButtonStyle;
 	
 	public int serverCount = 40;
 	public int serverHeight = 25;
-	private float edge = 0.01f;
+	private float edging = 0.01f;
+	private float edge;
 	
-	private string name;
+	private string playerName;
 	
 	private int innerWidth;
 	private int scrollBarWidth = 17;
+	private bool creating = false;
 	
 	void Awake()
 	{
-		edge *= Screen.width;
-		
 		if (!PlayerPrefs.HasKey("name"))
 		{
 			PlayerPrefs.SetString("name", "Default");
 		}
-		name = PlayerPrefs.GetString("name");
+		playerName = PlayerPrefs.GetString("name");
+		creating = false;
 	}
 	
 	void OnGUI()
 	{
 		GUI.skin = skin;
+		edge = edging * Screen.width;
 		
+		if (creating)
+		{
+			CreateServer();
+		}
+		else
+		{
+			ListServers();
+		}
+	}
+
+	public int[] citySize = {3, 3, 3};
+    public int[] minBuildingSize = {1, 1, 1};
+    public int[] maxBuildingSize = {3, 3, 3};
+	public int sliderHeight = 20;
+	
+	void CreateServer()
+	{
+		citySize[0] = (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*0+4, 100, 12), citySize[0], 1, 9);
+		GUI.Label(new Rect(110, sliderHeight*0, 50, sliderHeight), citySize[0].ToString());
+		citySize[1] = (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*1+4, 100, 12), citySize[1], 1, 9);
+		GUI.Label(new Rect(110, sliderHeight*1, 50, sliderHeight), citySize[1].ToString());
+		citySize[2] = (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*2+4, 100, 12), citySize[2], 1, 9);
+		GUI.Label(new Rect(110, sliderHeight*2, 50, sliderHeight), citySize[2].ToString());
+		
+		minBuildingSize[0] = (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*4+4, 100, 12), minBuildingSize[0], 1, 9);
+		GUI.Label(new Rect(110, sliderHeight*4, 50, sliderHeight), minBuildingSize[0].ToString());
+		minBuildingSize[1] = (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*5+4, 100, 12), minBuildingSize[1], 1, 9);
+		GUI.Label(new Rect(110, sliderHeight*5, 50, sliderHeight), minBuildingSize[1].ToString());
+		minBuildingSize[2] = (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*6+4, 100, 12), minBuildingSize[2], 1, 9);
+		GUI.Label(new Rect(110, sliderHeight*6, 50, sliderHeight), minBuildingSize[2].ToString());
+		
+		maxBuildingSize[0]= (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*8+4, 100, 12), maxBuildingSize[0], 1, 9);
+		GUI.Label(new Rect(110, sliderHeight*8, 50, sliderHeight), maxBuildingSize[0].ToString());
+		maxBuildingSize[1]= (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*9+4, 100, 12), maxBuildingSize[1], 1, 9);
+		GUI.Label(new Rect(110, sliderHeight*9, 50, sliderHeight), maxBuildingSize[1].ToString());
+		maxBuildingSize[2]= (int)GUI.HorizontalSlider(new Rect(0, sliderHeight*10+4, 100, 12), maxBuildingSize[2], 1, 9);
+		GUI.Label(new Rect(110, sliderHeight*10, 50, sliderHeight), maxBuildingSize[2].ToString());
+	}
+	
+	void ListServers()
+	{
 		innerWidth = Screen.width-scrollBarWidth;
 		
 		GUI.BeginGroup(new Rect(edge, 5, 400, 25));
 		
 		GUI.Button(new Rect(0, 0, 65, 25), "Refresh");
 		GUI.Label(new Rect(70, 0, 200, 25), "the server list to join a game, or");
-		GUI.Button(new Rect(260, 0, 80, 25), "create one.");
+		creating = GUI.Button(new Rect(260, 0, 80, 25), "create one.");
 		
 		GUI.EndGroup();
 		
-		//GUI.Button(new Rect((Screen.width-edge)-70, 5, 70, 25), "Settings");
 		GUI.Label(new Rect((Screen.width-edge)-190, 5, 40, 25), "Name:");
-		name = GUI.TextField(new Rect((Screen.width-edge)-150, 5, 150, 25), name, 16);
-		PlayerPrefs.SetString("name", name); // may be inefficient...
+		playerName = GUI.TextField(new Rect((Screen.width-edge)-150, 5, 150, 25), playerName, 16);
+		PlayerPrefs.SetString("name", playerName); // may be inefficient...
 		
 		GUI.BeginGroup(new Rect(edge, 35, innerWidth, 25));
 			
@@ -70,10 +111,9 @@ public class MenuManager : MonoBehaviour
 			
 			for (int i = 0; i < serverCount; i++) // for each server we know about
 			{
-				//TODO this group should be clickable because it has a GUIContent, so figure that out
 				GUI.BeginGroup(new Rect(0, serverHeight*i, innerWidth*0.98f, serverHeight), new GUIContent());
 				
-				GUI.Button(new Rect(0, 0, innerWidth-edge*2, serverHeight), "");//, serverButtonStyle);
+				GUI.Button(new Rect(0, 0, innerWidth-edge*2, serverHeight), "");
 				
 				GUI.Label(new Rect(edge, 0, innerWidth-300, serverHeight), "Test Server Name #"+i);
 				GUI.Label(new Rect(innerWidth-300, 0, 100, serverHeight), "Size");

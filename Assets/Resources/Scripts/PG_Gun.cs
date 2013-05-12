@@ -50,7 +50,7 @@ public class PG_Gun : MonoBehaviour {
 			if (Input.GetKeyUp(KeyCode.Escape))
 			{
 				Network.Disconnect();
-				Application.LoadLevel("PrototypeMenu");
+			//	Application.LoadLevel("PrototypeMenu");
 			}
 		}
 	}

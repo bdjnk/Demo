@@ -30,17 +30,17 @@ public class GameManagerScript : MonoBehaviour
 	private int maxPlayers = 8;
 	
 	//data stores for player info
-	private PlayerDataScript[] playerData;
+	private GameObject[] playerData;
 	private GameObject mainGame;
 	private Object playerPrefab;
-	private PlayerDataScript mainPlayer;
+	private PlayerDataScript mainPlayerScript;
 	//private GameObject myPlayerData;
 	
 	void Start()
 	{
-		playerData = null;
+		//playerData = null;
 		mainGame = GameObject.Find("GameManager");
-		mainPlayer = null;
+		mainPlayerScript = null;
 		playerPrefab = Resources.Load("Prefabs/First Person Controller");
 		Debug.Log ("prefab loaded: " + playerPrefab.ToString());
 		//myPlayerData = null;
@@ -59,8 +59,8 @@ public class GameManagerScript : MonoBehaviour
 		redTeamTotalScore = 0;
 		blueTeamTotalScore = 0;
 		numberOfCurrentPlayers = 0;
-		playerData = null;
-		mainPlayer = null;
+		playerData = new GameObject[maxPlayers];//initialize on all gamemanagers
+		mainPlayerScript = null;
 	}
 	
 	public void InitializeWorld(int[] citySize,int[] minBldgSize,int[] maxBldgSize)
@@ -100,26 +100,30 @@ public class GameManagerScript : MonoBehaviour
 		//lock any other client changes while creating a player
 		if (locked)
 		{
-			if (playerData == null)
+			/*if (playerData == null)
 			{
-				playerData = new PlayerDataScript[maxPlayers];
+				playerData = new GameObject[maxPlayers];
 				//myPlayerData = new GameObject();
 			}
 			//array starts at 0
 			if (playerData[numberOfCurrentPlayers] == null)
-			{
-				playerData[numberOfCurrentPlayers] = ((GameObject)Network.Instantiate(playerPrefab, new Vector3(spawnX,spawnY,spawnZ),Quaternion.identity, 0)).GetComponent<PlayerDataScript>();
-			}
-			mainPlayer = playerData[numberOfCurrentPlayers];
-			mainPlayer.updateInitialSettings(true);
-			mainPlayer.updateMouseLook(true);
+			{*/
+			GameObject mainPlayer = (GameObject) Network.Instantiate(playerPrefab, new Vector3(spawnX,spawnY,spawnZ),Quaternion.identity, 0);
+				//playerData[numberOfCurrentPlayers] = (GameObject) Network.Instantiate(playerPrefab, new Vector3(spawnX,spawnY,spawnZ),Quaternion.identity, 0);
+				//playerData[numberOfCurrentPlayers] = ((GameObject)Network.Instantiate(playerPrefab, new Vector3(spawnX,spawnY,spawnZ),Quaternion.identity, 0)).GetComponent<PlayerDataScript>();
+			//}
+			//mainPlayerScript = playerData[numberOfCurrentPlayers].GetComponentInChildren<PlayerDataScript>();
+			mainPlayerScript = mainPlayer.GetComponentInChildren<PlayerDataScript>();
+			
+			mainPlayerScript.updateInitialSettings(true);
+			mainPlayerScript.updateMouseLook(true);
 			//playerData[numberOfCurrentPlayers].updateMouseLook(true);
-			//Debug.Log ("main:" + mainPlayer.ToString());
+			//Debug.Log ("main:" + mainPlayerScript.ToString());
 						
-			this.networkView.RPC("updateTeamData",RPCMode.AllBuffered,teamColor,playerName,playerID);
-			mainPlayer.networkView.RPC("setNewPlayerData",RPCMode.AllBuffered,teamColor,playerName,playerID);
+			this.networkView.RPC("updateTeamData",RPCMode.AllBuffered,teamColor,playerName,playerID,numberOfCurrentPlayers,mainPlayerScript.name);
+			mainPlayerScript.networkView.RPC("setNewPlayerData",RPCMode.AllBuffered,teamColor,playerName,playerID);
 			//Debug.Log ("array:" + playerData[numberOfCurrentPlayers].ToString());
-			numberOfCurrentPlayers++;
+			//numberOfCurrentPlayers++;
 			locked = false;
 		}
 	}
@@ -138,15 +142,17 @@ public class GameManagerScript : MonoBehaviour
 		string teamColor=null;
 		for (int i = 0; i < playerData.Length; i++)
 		{
+		
 			//Debug.Log ("Looking for: " + playerID);
 			//Debug.Log ("position i: " + i + " =" + allPlayers[i].playerGuid);
 			if (playerData != null && playerData[i] != null)
 			{
-				if (playerData[i].networkID == playerID)
+				mainPlayerScript = playerData[i].GetComponentInChildren<PlayerDataScript>();
+				if (mainPlayerScript.networkID == playerID)
 				{
 					//Debug.Log ("found at: " + i);
-					myName = playerData[i].nameOfPlayer;
-					teamColor = playerData[i].color;
+					myName = mainPlayerScript.nameOfPlayer;
+					teamColor = mainPlayerScript.color;
 				}
 			}
 		}
@@ -177,9 +183,13 @@ public class GameManagerScript : MonoBehaviour
 			int indexLocation = 0;
 			for (int i = 0; i < playerData.Length; i++)
 			{
-				if(playerData[i].nameOfPlayer == myName && playerData[i].color == teamColor)
+				if (playerData != null && playerData[i] != null)
 				{
-					indexLocation = i;
+					mainPlayerScript = playerData[i].GetComponentInChildren<PlayerDataScript>();
+					if(mainPlayerScript.nameOfPlayer == myName && mainPlayerScript.color == teamColor)
+					{
+						indexLocation = i;
+					}
 				}
 			}
 			playerData[indexLocation] = playerData[numberOfCurrentPlayers-1];
@@ -192,7 +202,7 @@ public class GameManagerScript : MonoBehaviour
 	
 	//team data
 	[RPC]
-	public void updateTeamData(string teamColor, string name, string playerID)
+	public void updateTeamData(string teamColor, string name, string playerID,int playerNumber,string fullName)
 	{
 		if (teamColor == "blue")
 		{
@@ -204,6 +214,9 @@ public class GameManagerScript : MonoBehaviour
 			redTeamPlayers[redTeamTotalPlayers] = name;
 			redTeamTotalPlayers++;
 		}
+		playerData[playerNumber] = GameObject.Find (fullName);
+		
+		numberOfCurrentPlayers++;
 	}
 	
 	public string getRedTeamString()
@@ -234,10 +247,15 @@ public class GameManagerScript : MonoBehaviour
 	public int getMyTotalClaims(string myID)
 	{
 		for (int i = 0; i < maxPlayers; i++)
+			
 		{
-			if (playerData[i].networkID == myID)
+			if (playerData != null && playerData[i] != null)
 			{
-				return playerData[i].totalClaims;
+				mainPlayerScript = playerData[i].GetComponentInChildren<PlayerDataScript>();
+				if (mainPlayerScript.networkID == myID)
+				{
+					return mainPlayerScript.totalClaims;
+				}
 			}
 		}
 		return 0;
@@ -247,9 +265,13 @@ public class GameManagerScript : MonoBehaviour
 	{
 		for (int i=0;i<maxPlayers;i++)
 		{
-			if(playerData[i].networkID == myID)
+			if (playerData != null && playerData[i] != null)
 			{
-				return playerData[i].totalOwned;
+				mainPlayerScript = playerData[i].GetComponentInChildren<PlayerDataScript>();
+				if(mainPlayerScript.networkID == myID)
+				{
+					return mainPlayerScript.totalOwned;
+				}
 			}
 		}
 		return 0;
@@ -259,9 +281,13 @@ public class GameManagerScript : MonoBehaviour
 	{
 		for (int i=0;i<maxPlayers;i++)
 		{
-			if (playerData[i].networkID == myID)
+			if (playerData != null && playerData[i] != null)
 			{
-				return playerData[i].myPercent;
+				mainPlayerScript = playerData[i].GetComponentInChildren<PlayerDataScript>();
+				if (mainPlayerScript.networkID == myID)
+				{
+					return mainPlayerScript.myPercent;
+				}
 			}
 		}
 		return 0;
@@ -297,25 +323,29 @@ public class GameManagerScript : MonoBehaviour
 			//search list and update scores
 			for (int i=0;i<maxPlayers;i++)
 			{
-				if (playerData != null && playerData[i] != null && playerData[i].networkID == newOwnerID)
-				{
-					playerData[i].totalClaims++;
-					playerData[i].totalOwned++;
-				}
-				if (prevOwnerID != "")
-				{
-					if (playerData != null && playerData[i] != null && playerData[i].networkID == prevOwnerID)
+				if (playerData != null && playerData[i] != null){
+					mainPlayerScript = playerData[i].GetComponentInChildren<PlayerDataScript>();
+					
+					if (mainPlayerScript.networkID == newOwnerID)
 					{
-						playerData[i].totalOwned--;
+						mainPlayerScript.totalClaims++;
+						mainPlayerScript.totalOwned++;
 					}
-				}
-				if (playerData != null && playerData[i] != null && playerData[i].color == "red" && getRedTeamScore()!=0)
-				{
-					playerData[i].myPercent = (int) 100.0f * playerData[i].totalOwned / getRedTeamScore();
-				}
-				else if (playerData != null && playerData[i]!=null && playerData[i].color =="blue" && getBlueTeamScore()!=0)
-				{
-					playerData[i].myPercent = (int) 100.0f * playerData[i].totalOwned / getBlueTeamScore();
+					if (prevOwnerID != "")
+					{
+						if (mainPlayerScript.networkID == prevOwnerID)
+						{
+							mainPlayerScript.totalOwned--;
+						}
+					}
+					if (mainPlayerScript.color == "red" && getRedTeamScore()!=0)
+					{
+						mainPlayerScript.myPercent = (int) 100.0f * mainPlayerScript.totalOwned / getRedTeamScore();
+					}
+					else if (mainPlayerScript.color =="blue" && getBlueTeamScore()!=0)
+					{
+						mainPlayerScript.myPercent = (int) 100.0f * mainPlayerScript.totalOwned / getBlueTeamScore();
+					}
 				}
 			}
 		}

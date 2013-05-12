@@ -117,6 +117,8 @@ public class MenuManager : MonoBehaviour
 			StartServer();
 			creating = false;
 			refreshing = true;
+			notPlaying = false;
+			enabled = false;
 		}
 		if(GUI.Button(new Rect(200, sliderHeight*10+edge, 100, sliderHeight), "Cancel")){
 			creating = false;
@@ -176,6 +178,8 @@ public class MenuManager : MonoBehaviour
 				
 				if(GUI.Button(new Rect(0, 0, innerWidth-edge*2, serverHeight), "")){
 					Network.Connect (hostData[i]);
+					notPlaying = false;
+					enabled = false;
 				}
 				
 				GUI.Label(new Rect(edge, 0, innerWidth-300, serverHeight), hostData[i].gameName);
@@ -242,11 +246,12 @@ public class MenuManager : MonoBehaviour
 		GameManagerScript mainGameScript = GameObject.Find("GameManager").GetComponent<GameManagerScript>();
 		//GameManagerScript mainGameScript = GetComponent<GameManagerScript>();
 		mainGameScript.resetAllData();
-		mainGameScript.InitializeWorld(citySize,minBuildingSize,maxBuildingSize);
+		//mainGameScript.InitializeWorld(citySize,minBuildingSize,maxBuildingSize);
 		while (mainGameScript.requestingUpdatePermission())
 		{}
 		mainGameScript.createPlayer(playerName,playerColor,Network.player.guid);
 		notPlaying = false;
+		enabled = false;
 	}
 	
 	void OnDisconnectedFromServer()
@@ -257,11 +262,19 @@ public class MenuManager : MonoBehaviour
 	void OnConnectedToServer()
 	{
 		Debug.Log ("Connected to Server");
-		GameManagerScript mainGame = GameObject.Find ("GameManager").GetComponent<GameManagerScript>();
+		GameManagerScript mainGameScript = GameObject.Find ("GameManager").GetComponent<GameManagerScript>();
 		//GameManagerScript mainGameScript = GetComponent<GameManagerScript>();
-		//if(Network.isClient){
-		//mainGame.InitializeWorld(citySize,minBuildingSize,maxBuildingSize);
-		notPlaying = false;
+		if(Network.isClient)
+		{
+			playerName += "_C";//temporary for testing
+			Debug.Log ("create player for client");
+			while(mainGameScript.requestingUpdatePermission())
+			{}
+			mainGameScript.createPlayer(playerName,playerColor,Network.player.guid);
+			
+			notPlaying = false;
+			enabled = false;
+		}
 	}
 	
 	void OnPlayerConnected(NetworkPlayer player)

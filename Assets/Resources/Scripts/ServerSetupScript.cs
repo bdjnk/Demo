@@ -3,15 +3,15 @@ using System.Collections;
 
 
 //[RequireComponent(typeof (NetworkView))]
-public class ServerSetupScript : MonoBehaviour {
-	
+public class ServerSetupScript : MonoBehaviour
+{
 	private GameObject mainGame = null;
 	private GameManagerScript mainGameScript = null;
 	//private GameObject myGame = null;
 	
 	//public GameObject playerPrefab = null;  
-	private GameObject mainPlayer = null;  
-	private PlayerDataScript mainPlayerScript = null; 
+	private GameObject mainPlayer = null;
+	private PlayerDataScript mainPlayerScript = null;
 	public float mSpeed = 5.0f;
 	public int playerNumber = 0;
 	
@@ -43,16 +43,19 @@ public class ServerSetupScript : MonoBehaviour {
 	private bool invalidInput = false;
 	
 	// Use this for initialization
-	void Start () {
-		mainGame = GameObject.Find ("GameManager");
+	void Start()
+	{
+		mainGame = GameObject.Find("GameManager");
 		mainGameScript = mainGame.GetComponent<GameManagerScript>();
 	}
 	
 	// Update is called once per frame
-	void Update () {
-	
-		if(refreshing){
-			if(MasterServer.PollHostList().Length > 0){
+	void Update ()
+	{
+		if (refreshing)
+		{
+			if (MasterServer.PollHostList().Length > 0)
+			{
 				refreshing = false;
 				//Debug.Log (MasterServer.PollHostList().Length);
 				hostData = MasterServer.PollHostList();
@@ -60,31 +63,39 @@ public class ServerSetupScript : MonoBehaviour {
 		}
 	}
 	
-	void refreshHostList(){
+	void refreshHostList()
+	{
 		MasterServer.RequestHostList(gameName);
 		refreshing = true;
 	}
 	
-	void OnGUI() {
+	void OnGUI()
+	{
 		//no server connection at start
-		if(!Network.isClient && !Network.isServer && !GUIgettingServerName){
-			if(mainPlayerScript!=null){
+		if (!Network.isClient && !Network.isServer && !GUIgettingServerName)
+		{
+			if(mainPlayerScript != null)
+			{
 				mainPlayerScript.updateMouseLook(false);
 			}
 						
-			if(GUI.Button(new Rect(buttonX,buttonY,buttonW,buttonH),"Start Server")){
+			if(GUI.Button(new Rect(buttonX,buttonY,buttonW,buttonH),"Start Server"))
+			{
 				//Debug.Log ("Starting Server");
 				GUIgettingServerName = true;
 			}
 			
-			if(GUI.Button(new Rect(buttonX,buttonY + 1.2f * buttonW,buttonW,buttonH),"Refresh Hosts")){
+			if (GUI.Button(new Rect(buttonX,buttonY + 1.2f * buttonW,buttonW,buttonH),"Refresh Hosts"))
+			{
 				//Debug.Log ("Refreshing");
 				refreshHostList();
 			}
-			if(hostData!=null){
+			if (hostData != null)
+			{
 				for (int i=0;i<hostData.Length;i++)
 				{
-					if(GUI.Button(new Rect(buttonX*1.5f + buttonW,buttonY*1.2f+(buttonH*i),buttonW*3f,buttonH*0.5f),hostData[i].gameName)){
+					if (GUI.Button(new Rect(buttonX*1.5f + buttonW,buttonY*1.2f+(buttonH*i),buttonW*3f,buttonH*0.5f),hostData[i].gameName))
+					{
 						Network.Connect(hostData[i]);
 						//this wont really work to track largest value of # of players
 						//(could get duplicates)
@@ -96,36 +107,47 @@ public class ServerSetupScript : MonoBehaviour {
 		}
 		
 		//get server name section
-		if(GUIgettingServerName){
+		if (GUIgettingServerName)
+		{
 			Screen.lockCursor = false;
 			Screen.showCursor = true;
-			if(!invalidInput){
+			if (!invalidInput)
+			{
 				GUI.Box(new Rect (buttonX*1.5f + buttonW,buttonY*1.2f+(buttonH),buttonW*3f,buttonH*0.5f),"Enter Your Unique Server Name");
-			} else {
+			}
+			else
+			{
 				GUI.Box(new Rect (buttonX*1.5f + buttonW,buttonY*1.2f+(buttonH),buttonW*3f,buttonH*0.5f),"Server Name is not Unique, try again");
 			}
 	        serverInstanceName = GUI.TextField(new Rect(buttonX*1.5f + buttonW,buttonY*1.2f+(buttonH*2f),buttonW*3f,buttonH*0.5f), serverInstanceName, 20);
-			if(GUI.Button(new Rect(buttonX*1.5f + buttonW,buttonY*1.2f+(buttonH*3f),buttonW*3f,buttonH*0.5f),"Submit")){
+			if (GUI.Button(new Rect(buttonX*1.5f + buttonW,buttonY*1.2f+(buttonH*3f),buttonW*3f,buttonH*0.5f),"Submit"))
+			{
 				bool clearedAllNames = true;
-				if(hostData!=null){
-					for (int i=0;i<hostData.Length;i++){//check for uniqueness here
-						if(serverInstanceName==hostData[i].ToString()){
+				if (hostData != null)
+				{
+					for (int i = 0; i < hostData.Length; i++){//check for uniqueness here
+						if (serverInstanceName == hostData[i].ToString())
+						{
 							clearedAllNames = false;
 						}
 					}
 				}
-				if(serverInstanceName!="" && clearedAllNames){
+				if(serverInstanceName!="" && clearedAllNames)
+				{
 					GUIgettingServerName = false;
 					invalidInput = false;
 					StartServer();
-				} else {
+				}
+				else
+				{
 					invalidInput = true;
 				}
 			}
 		}
 			
 		//get player team section
-		if(GUIgettingPlayerData){
+		if (GUIgettingPlayerData)
+		{
 			Screen.lockCursor = false;
 			Screen.showCursor = true;
 			
@@ -139,7 +161,8 @@ public class ServerSetupScript : MonoBehaviour {
 			//Debug.Log ("blue:" + blueTeamTotalPlayers);
 			
 			
-			if(GUI.Button(new Rect(buttonX,buttonY,buttonW*1.5f,buttonH*1.5f),"Red Team (" + redTeamTotalPlayers + ")")){
+			if (GUI.Button(new Rect(buttonX,buttonY,buttonW*1.5f,buttonH*1.5f),"Red Team (" + redTeamTotalPlayers + ")"))
+			{
 				Debug.Log ("Red Team Selected");
 				myTeamInputColor = "red";
 				GUIgettingPlayerData = false;
@@ -148,7 +171,8 @@ public class ServerSetupScript : MonoBehaviour {
 				
 			GUI.Box(new Rect(buttonX+buttonW*2,buttonY,buttonW*1.5f,buttonH*1.5f),"Red Team Members: \n" + redTeamPlayers);
 			
-			if(GUI.Button(new Rect(buttonX,buttonY + 1.2f * buttonW,buttonW*1.5f,buttonH*1.5f),"Blue Team (" + blueTeamTotalPlayers + ")")){
+			if (GUI.Button(new Rect(buttonX,buttonY + 1.2f * buttonW,buttonW*1.5f,buttonH*1.5f),"Blue Team (" + blueTeamTotalPlayers + ")"))
+			{
 				Debug.Log ("Blue Team Selected");
 				myTeamInputColor = "blue";
 				GUIgettingPlayerData = false;
@@ -160,33 +184,44 @@ public class ServerSetupScript : MonoBehaviour {
 		}
 			
 		//get player name section
-		if (GUIgettingPlayerName){
+		if (GUIgettingPlayerName)
+		{
 			//may want to clean this up by moving scope outward
 			string redTeamPlayers = mainGameScript.getRedTeamString();
 			string blueTeamPlayers = mainGameScript.getBlueTeamString();
 			
 			Screen.lockCursor = false;
 			Screen.showCursor = true;
-			if(!invalidInput){
+			if (!invalidInput)
+			{
 				GUI.Box(new Rect (buttonX*1.5f + buttonW,buttonY*1.2f+(buttonH),buttonW*3f,buttonH*0.5f),"Enter Your Name Below");
-			} else { 
+			}
+			else
+			{ 
 				GUI.Box(new Rect (buttonX*1.5f + buttonW,buttonY*1.2f+(buttonH),buttonW*3f,buttonH*0.5f),"Name must be unique, try again:");
 			}
 	        myInputName = GUI.TextField(new Rect(buttonX*1.5f + buttonW,buttonY*1.2f+(buttonH*2f),buttonW*3f,buttonH*0.5f), myInputName, 15);
-			if(GUI.Button(new Rect(buttonX*1.5f + buttonW,buttonY*1.2f+(buttonH*3f),buttonW*3f,buttonH*0.5f),"Submit")){
-				if(myInputName!=""){//check for uniqueness here
+			if (GUI.Button(new Rect(buttonX*1.5f + buttonW,buttonY*1.2f+(buttonH*3f),buttonW*3f,buttonH*0.5f),"Submit"))
+			{
+				if (myInputName!="") //check for uniqueness here
+				{
 					if (myTeamInputColor == "blue" && !blueTeamPlayers.Contains(myInputName)){
 						invalidInput = false;
 						SpawnPlayer();
 						GUIgettingPlayerName = false;
-					} else {
+					}
+					else
+					{
 						invalidInput = true;
 					}
-					if (myTeamInputColor == "red" && !redTeamPlayers.Contains(myInputName)){
+					if (myTeamInputColor == "red" && !redTeamPlayers.Contains(myInputName))
+					{
 						invalidInput = false;
 						SpawnPlayer();
 						GUIgettingPlayerName = false;
-					} else {
+					}
+					else
+					{
 						invalidInput = true;
 					}
 				}
@@ -194,7 +229,8 @@ public class ServerSetupScript : MonoBehaviour {
 		}
 	}
 
-	void StartServer(){
+	void StartServer()
+	{
 		//if we want password
 		//Network.incomingPassword("test123");
 				
@@ -210,9 +246,12 @@ public class ServerSetupScript : MonoBehaviour {
 		//MasterServer.dedicatedServer = true;
 		
 		//Register our game with Unitys Master Server
-		if(serverInstanceName != ""){
+		if(serverInstanceName != "")
+		{
 			defaultServerInstanceName = serverInstanceName;
-		} else {
+		}
+		else
+		{
 			//Random.Range (1f,1000f).ToString();
 			string randomGameNum = " " + Random.Range (1,1000).ToString();
 			defaultServerInstanceName += randomGameNum;
@@ -223,7 +262,8 @@ public class ServerSetupScript : MonoBehaviour {
 		//Debug.Log("Master Server Info:" + MasterServer.ipAddress +":"+ MasterServer.port);
 	}
 	
-	void OnServerInitialized(){
+	void OnServerInitialized()
+	{
 		//reset all Data
 		//mainGame = GameObject.Find ("GameServer").GetComponent<GameServerScript>();
 		//mainGame.enabled = true;
@@ -232,23 +272,27 @@ public class ServerSetupScript : MonoBehaviour {
 		GUIgettingPlayerData = true;		
 	}
 	
-	void OnDisconnectedFromServer(){
+	void OnDisconnectedFromServer()
+	{
 		resetAllData();
 	}
 	
-	void OnConnectedToServer(){
+	void OnConnectedToServer()
+	{
 		//myGame = GameObject.Find ("GameManager").GetComponent<GameClientScript>();
 		//Debug.Log ("Connected to Server");
 		//mainGame = GameObject.Find ("GameManagerScript");
 		GUIgettingPlayerData = true;
 	}
 	
-	void OnPlayerConnected(NetworkPlayer player){
+	void OnPlayerConnected(NetworkPlayer player)
+	{
 		Debug.Log("Setup for player " + player + " " + player.guid + " " + playerNumber);
 		
 	}
 	
-	IEnumerator OnPlayerDisconnected(NetworkPlayer player) {        
+	IEnumerator OnPlayerDisconnected(NetworkPlayer player)
+	{        
 		Debug.Log("Clean up after player " + player + " " + player.guid + " " + playerNumber);        	
 		mainGame.networkView.RPC ("removePlayer",RPCMode.AllBuffered,player.guid);
 		
@@ -263,9 +307,10 @@ public class ServerSetupScript : MonoBehaviour {
 	
 	
 	
-	void SpawnPlayer(){
+	void SpawnPlayer()
+	{
 		Debug.Log ("Spawn" + myInputName + "," + myTeamInputColor + "," + Network.player.guid);
-		while(mainGameScript.requestingUpdatePermission()){}
+		while(mainGameScript.requestingUpdatePermission()) {}
 		mainGameScript.createPlayer(myInputName,myTeamInputColor,Network.player.guid);
 		
 		//TODO: make a unique name - check if it already exists before saving it
@@ -285,7 +330,8 @@ public class ServerSetupScript : MonoBehaviour {
 	*/
 	}
 	
-	void resetAllData(){
+	void resetAllData()
+	{
 		mainGame = null;
 		//playerPrefab = null;  
 		mainPlayer = null;  
@@ -310,12 +356,12 @@ public class ServerSetupScript : MonoBehaviour {
 		invalidInput = false;
 		
 		Application.LoadLevel("Networking");
-		
-		
 	}
 	
-	void OnMasterServerEvent(MasterServerEvent mse){
-		if(mse == MasterServerEvent.RegistrationSucceeded){
+	void OnMasterServerEvent(MasterServerEvent mse)
+	{
+		if(mse == MasterServerEvent.RegistrationSucceeded)
+		{
 			Debug.Log ("Registered Server");
 		}
 

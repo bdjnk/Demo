@@ -2,7 +2,7 @@ using UnityEngine;
 //using UnityEditor;
 using System.Collections;
 
-public class PG_Map : MonoBehaviour
+public class PG_Map 
 {
 	public bool floor = true;
 	public float spacing = 1.5f;
@@ -17,14 +17,9 @@ public class PG_Map : MonoBehaviour
 	
 	public int cubeCount = 0;
 	
-	void Start()
-	{
-		cubePrefab = Resources.Load ("Prefabs/Cube");
-		groundPrefab = Resources.Load ("Prefabs/Ground");
-		//Debug.Log ("prefab loaded: " + cubePrefab.ToString());
-		//Debug.Log ("prefab loaded: " + groundPrefab.ToString());
-	}
+	
 	// Builds a Map	
+	
 	public void createMap(){
 		Vector3 offset = Vector3.zero;
 		Vector3 temp = Vector3.zero; //TODO give a meaningful name
@@ -56,9 +51,13 @@ public class PG_Map : MonoBehaviour
 	
 	Vector3 MakeBuilding(Vector3 offset)
 	{
-		GameObject building = new GameObject("Building");
-		building.AddComponent("PG_Building"); // add the building script
-		//building.AddComponent("NetworkView"); // add the network view
+		//GameObject building = new GameObject("Building");
+		//GameObject build = new GameObject("Building");
+		GameObject buildingPrefab = Resources.Load ("Prefabs/Building") as GameObject;
+		GameObject building = (GameObject) Network.Instantiate (buildingPrefab,
+												Vector3.zero,Quaternion.identity,2);
+		//building.AddComponent("PG_Building"); // add the building script
+		building.AddComponent("NetworkView"); // add the network view
 		
 		Vector3 center = Vector3.zero;
 		
@@ -91,7 +90,10 @@ public class PG_Map : MonoBehaviour
 		int count = width * height * depth;
 		center /= count;
 		
-		GameObject light = new GameObject("Light");
+		//GameObject light = new GameObject("Light");
+		GameObject lightingPrefab = Resources.Load ("Prefabs/Lighting") as GameObject;
+		GameObject light = (GameObject) Network.Instantiate (lightingPrefab,
+										Vector3.zero,Quaternion.identity,2);
 		light.AddComponent(typeof(Light));
 		light.transform.parent = building.transform;
 		light.transform.localPosition = center;

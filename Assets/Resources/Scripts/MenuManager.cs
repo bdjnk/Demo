@@ -21,12 +21,15 @@ public class MenuManager : MonoBehaviour
 	private GUIStyle style;
 	
 	private bool notPlaying = true;
+	
 	//server and host list variables
+	private string gameName = "123Paint the Town123";
+	
 	private bool refreshing = false;
 	private HostData[] hostData = null;
-	private string gameName = "123Paint the Town123"; 
-	public string defaultServerInstanceName = "Paint The Town";
-	public string serverInstanceName = "";
+	
+	public string defaultServerName = "Paint The Town";
+	public string serverName = "Paint The Town";
 	
 	//player data
 	private string playerColor = "red";
@@ -87,38 +90,43 @@ public class MenuManager : MonoBehaviour
 	
 	void CreateServer() // CREATE A NEW SERVER
 	{
-		GUI.BeginGroup(new Rect(Screen.width/2-200, edge, 400, sliderHeight*11+edge*3), skin.box);
+		GUI.BeginGroup(new Rect(Screen.width/2-200, edge, 400, sliderHeight*13+edge*3), skin.box);
 		
-		GUI.Label(new Rect(edge, sliderHeight*0+edge, 200, sliderHeight), "City Dimensions");
-		citySize[0] = IntSlider(new Rect(edge, sliderHeight*1+edge, 200, sliderHeight), citySize[0], 1, 9, "Width", 1, true);
-		citySize[1] = IntSlider(new Rect(edge, sliderHeight*2+edge, 200, sliderHeight), citySize[1], 1, 9, "Height", 1, true);
-		citySize[2] = IntSlider(new Rect(edge, sliderHeight*3+edge, 200, sliderHeight), citySize[2], 1, 9, "Depth", 1, true);
+		GUI.Label(new Rect(edge, sliderHeight*0+edge, 100, sliderHeight), "Server Name: ");
+		serverName = GUI.TextField(new Rect(edge+100, sliderHeight*0+edge, 300-edge*2, sliderHeight), serverName);
 		
-		maxPlayers = IntSlider(new Rect(edge+200, sliderHeight*0+edge, 200, sliderHeight), maxPlayers, 2, 14, "Max Players", 2, true);
+		GUI.Label(new Rect(edge, sliderHeight*2+edge, 200, sliderHeight), "City Dimensions");
+		citySize[0] = IntSlider(new Rect(edge, sliderHeight*3+edge, 200, sliderHeight), citySize[0], 1, 9, "Width", 1, true);
+		citySize[1] = IntSlider(new Rect(edge, sliderHeight*4+edge, 200, sliderHeight), citySize[1], 1, 9, "Height", 1, true);
+		citySize[2] = IntSlider(new Rect(edge, sliderHeight*5+edge, 200, sliderHeight), citySize[2], 1, 9, "Depth", 1, true);
 		
-		bots = GUI.Toggle(new Rect(edge+200, sliderHeight*1+edge, 200, sliderHeight), bots, " Bots");
-		upgrades = GUI.Toggle(new Rect(edge+200, sliderHeight*2+edge, 200, sliderHeight), upgrades, " Upgrades");
-		list = GUI.Toggle(new Rect(edge+200, sliderHeight*3+edge, 200, sliderHeight), list, " Make Public");
+		maxPlayers = IntSlider(new Rect(edge+200, sliderHeight*2+edge, 200, sliderHeight), maxPlayers, 2, 14, "Max Players", 2, true);
 		
-		GUI.Label(new Rect(edge, sliderHeight*5+edge, 300, sliderHeight), "Minimum Building Dimensions");
-		minBuildingSize[0] = IntSlider(new Rect(edge, sliderHeight*6+edge, 200, sliderHeight), minBuildingSize[0], 1, 9, "Width", 1, true);
-		minBuildingSize[1] = IntSlider(new Rect(edge, sliderHeight*7+edge, 200, sliderHeight), minBuildingSize[1], 1, 9, "Height", 1, true);
-		minBuildingSize[2] = IntSlider(new Rect(edge, sliderHeight*8+edge, 200, sliderHeight), minBuildingSize[2], 1, 9, "Depth", 1, true);
+		bots = GUI.Toggle(new Rect(edge+200, sliderHeight*3+edge, 200, sliderHeight), bots, " Bots");
+		upgrades = GUI.Toggle(new Rect(edge+200, sliderHeight*4+edge, 200, sliderHeight), upgrades, " Upgrades");
+		list = GUI.Toggle(new Rect(edge+200, sliderHeight*5+edge, 200, sliderHeight), list, " Make Public");
 		
-		GUI.Label(new Rect(edge+200, sliderHeight*5+edge, 200, sliderHeight), "Maximum Building Dimensions");
+		GUI.Label(new Rect(edge, sliderHeight*7+edge, 300, sliderHeight), "Minimum Building Dimensions");
+		minBuildingSize[0] = IntSlider(new Rect(edge, sliderHeight*8+edge, 200, sliderHeight), minBuildingSize[0], 1, 9, "Width", 1, true);
+		minBuildingSize[1] = IntSlider(new Rect(edge, sliderHeight*9+edge, 200, sliderHeight), minBuildingSize[1], 1, 9, "Height", 1, true);
+		minBuildingSize[2] = IntSlider(new Rect(edge, sliderHeight*10+edge, 200, sliderHeight), minBuildingSize[2], 1, 9, "Depth", 1, true);
+		
+		GUI.Label(new Rect(edge+200, sliderHeight*7+edge, 200, sliderHeight), "Maximum Building Dimensions");
 		maxBuildingSize[0] = Mathf.Max(minBuildingSize[0],
-			IntSlider(new Rect(edge+200, sliderHeight*6+edge, 200, sliderHeight), maxBuildingSize[0], 1, 9, "Width", 1, true));
+			IntSlider(new Rect(edge+200, sliderHeight*8+edge, 200, sliderHeight), maxBuildingSize[0], 1, 9, "Width", 1, true));
 		maxBuildingSize[1] = Mathf.Max(minBuildingSize[1],
-			IntSlider(new Rect(edge+200, sliderHeight*7+edge, 200, sliderHeight), maxBuildingSize[1], 1, 9, "Height", 1, true));
+			IntSlider(new Rect(edge+200, sliderHeight*9+edge, 200, sliderHeight), maxBuildingSize[1], 1, 9, "Height", 1, true));
 		maxBuildingSize[2] = Mathf.Max(minBuildingSize[2],
-			IntSlider(new Rect(edge+200, sliderHeight*8+edge, 200, sliderHeight), maxBuildingSize[2], 1, 9, "Depth", 1, true));
+			IntSlider(new Rect(edge+200, sliderHeight*10+edge, 200, sliderHeight), maxBuildingSize[2], 1, 9, "Depth", 1, true));
 		
-		if(GUI.Button(new Rect(100, sliderHeight*10+edge, 100, sliderHeight), "Create")){
+		if (GUI.Button(new Rect(100, sliderHeight*12+edge, 100, sliderHeight), "Create"))
+		{
 			StartServer();
 			creating = false;
 			refreshing = true;
 		}
-		if(GUI.Button(new Rect(200, sliderHeight*10+edge, 100, sliderHeight), "Cancel")){
+		if (GUI.Button(new Rect(200, sliderHeight*12+edge, 100, sliderHeight), "Cancel"))
+		{
 			creating = false;
 		}
 		
@@ -131,7 +139,8 @@ public class MenuManager : MonoBehaviour
 		
 		GUI.BeginGroup(new Rect(edge, 5, 400, 25));
 		
-		if(GUI.Button(new Rect(0, 0, 65, 25), "Refresh")){
+		if (GUI.Button(new Rect(0, 0, 65, 25), "Refresh"))
+		{
 			MasterServer.RequestHostList(gameName);
 			refreshing = true;
 		}
@@ -152,9 +161,13 @@ public class MenuManager : MonoBehaviour
 		GUI.Label(new Rect(innerWidth-100, 0, 100, 25), "Ping");
 		
 		GUI.EndGroup();
-		if (hostData != null && hostData.Length!=null){
+		
+		if (hostData != null && hostData.Length!=null)
+		{
 			serverCount = hostData.Length;
-		} else {
+		}
+		else
+		{
 			serverCount = 0;
 		}
 		
@@ -191,8 +204,8 @@ public class MenuManager : MonoBehaviour
 		}
 	}
 	
-	void Update () {
-	
+	void Update ()
+	{
 		if (refreshing)
 		{
 			if (MasterServer.PollHostList().Length > 0)
@@ -221,16 +234,16 @@ public class MenuManager : MonoBehaviour
 		//MasterServer.dedicatedServer = true;
 		
 		//Register our game with Unitys Master Server
-		if (serverInstanceName != "")
+		if (serverName != "")
 		{
-			defaultServerInstanceName = serverInstanceName;
+			defaultServerName = serverName;
 		}
 		else
 		{
 			string randomGameNum = " " + Random.Range (1,1000).ToString();
-			defaultServerInstanceName += randomGameNum;
+			defaultServerName += randomGameNum;
 		}
-		MasterServer.RegisterHost(gameName, defaultServerInstanceName, "CSS385 Game");
+		MasterServer.RegisterHost(gameName, defaultServerName, "CSS385 Game");
 		
 		//Lists the IP address for MasterServer
 		//Debug.Log("Master Server Info:" + MasterServer.ipAddress +":"+ MasterServer.port);

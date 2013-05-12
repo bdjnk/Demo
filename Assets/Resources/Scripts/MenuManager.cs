@@ -20,6 +20,17 @@ public class MenuManager : MonoBehaviour
 	
 	private GUIStyle style;
 	
+	private bool notPlaying = true;
+	//server and host list variables
+	private bool refreshing = false;
+	private HostData[] hostData = null;
+	private string gameName = "123Paint the Town123"; 
+	public string defaultServerInstanceName = "Paint The Town";
+	public string serverInstanceName = "";
+	
+	//player data
+	private string playerColor = "red";
+	
 	Hashtable hash = new Hashtable();
 	
 	void Awake()
@@ -44,12 +55,22 @@ public class MenuManager : MonoBehaviour
 		{
 			CreateServer();
 		}
-		else
+		else if (notPlaying)
 		{
 			ListServers();
 		}
 	}
-
+	void Update () {
+	
+		if(refreshing){
+			if(MasterServer.PollHostList().Length > 0){
+				refreshing = false;
+				//Debug.Log (MasterServer.PollHostList().Length);
+				hostData = MasterServer.PollHostList();
+			}
+		}
+	}
+	
 	public int[] citySize = {3, 3, 3};
     public int[] minBuildingSize = {1, 1, 1};
     public int[] maxBuildingSize = {3, 3, 3};
@@ -102,8 +123,14 @@ public class MenuManager : MonoBehaviour
 		maxBuildingSize[2] = Mathf.Max(minBuildingSize[2],
 			IntSlider(new Rect(edge+200, sliderHeight*8+edge, 200, sliderHeight), maxBuildingSize[2], 1, 9, "Depth", 1, true));
 		
-		GUI.Button(new Rect(100, sliderHeight*10+edge, 100, sliderHeight), "Create");
-		creating = !GUI.Button(new Rect(200, sliderHeight*10+edge, 100, sliderHeight), "Cancel");
+		if(GUI.Button(new Rect(100, sliderHeight*10+edge, 100, sliderHeight), "Create")){
+			StartServer();
+			creating = false;
+			refreshing = true;
+		}
+		if(GUI.Button(new Rect(200, sliderHeight*10+edge, 100, sliderHeight), "Cancel")){
+			creating = false;
+		}
 		
 		GUI.EndGroup();
 	}
@@ -114,7 +141,10 @@ public class MenuManager : MonoBehaviour
 		
 		GUI.BeginGroup(new Rect(edge, 5, 400, 25));
 		
-		GUI.Button(new Rect(0, 0, 65, 25), "Refresh");
+		if(GUI.Button(new Rect(0, 0, 65, 25), "Refresh")){
+			MasterServer.RequestHostList(gameName);
+			refreshing = true;
+		}
 		GUI.Label(new Rect(70, 0, 200, 25), "the server list to join a game, or");
 		creating = GUI.Button(new Rect(260, 0, 80, 25), "create one.");
 		
@@ -132,6 +162,11 @@ public class MenuManager : MonoBehaviour
 		GUI.Label(new Rect(innerWidth-100, 0, 100, 25), "Ping");
 		
 		GUI.EndGroup();
+		if (hostData != null && hostData.Length!=null){
+			serverCount = hostData.Length;
+		} else {
+			serverCount = 0;
+		}
 		
 		if (serverCount == 0)
 		{
@@ -149,11 +184,14 @@ public class MenuManager : MonoBehaviour
 			{
 				GUI.BeginGroup(new Rect(0, serverHeight*i, innerWidth*0.98f, serverHeight), new GUIContent());
 				
-				GUI.Button(new Rect(0, 0, innerWidth-edge*2, serverHeight), "");
+				if(GUI.Button(new Rect(0, 0, innerWidth-edge*2, serverHeight), "")){
+					Network.Connect (hostData[i]);
+				}
 				
-				GUI.Label(new Rect(edge, 0, innerWidth-300, serverHeight), "Test Server Name #"+i);
-				GUI.Label(new Rect(innerWidth-300, 0, 100, serverHeight), "Size");
-				GUI.Label(new Rect(innerWidth-200, 0, 100, serverHeight), "Players");
+				GUI.Label(new Rect(edge, 0, innerWidth-300, serverHeight), hostData[i].gameName);
+				
+				GUI.Label(new Rect(innerWidth-300, 0, 100, serverHeight), "size");
+				GUI.Label(new Rect(innerWidth-200, 0, 100, serverHeight), hostData[i].connectedPlayers.ToString());
 				GUI.Label(new Rect(innerWidth-100, 0, 100, serverHeight), "Ping");
 				
 				GUI.EndGroup();
@@ -162,4 +200,59 @@ public class MenuManager : MonoBehaviour
 	        GUI.EndScrollView();
 		}
 	}
+	void StartServer(){
+		//if we want password
+		//Network.incomingPassword("test123");
+				
+		// Use NAT punchthrough if no public IP present 
+		//Initialize this server (local)
+		int portNum = Random.Range(25001,26100);//some random numbers for testing only
+		Network.InitializeServer(8, portNum, !Network.HavePublicAddress());
+		//Network.InitializeServer (32,23466, !Network.HavePublicAddress());
+		
+		//Use this if using our own local masterserver instead of Unity's
+		//MasterServer.ipAddress = "127.0.0.1";
+		//MasterServer.port = 23466;
+		//MasterServer.dedicatedServer = true;
+		
+		//Register our game with Unitys Master Server
+		if(serverInstanceName != ""){
+			defaultServerInstanceName = serverInstanceName;
+		} else {
+			string randomGameNum = " " + Random.Range (1,1000).ToString();
+			defaultServerInstanceName += randomGameNum;
+		}
+		MasterServer.RegisterHost(gameName, defaultServerInstanceName, "CSS385 Game");
+		
+		//Lists the IP address for MasterServer
+		//Debug.Log("Master Server Info:" + MasterServer.ipAddress +":"+ MasterServer.port);
+	}
+	
+	void OnServerInitialized(){
+		Debug.Log ("Server Initialized");
+		GameManagerScript mainGameScript = GameObject.Find("GameManager").GetComponent<GameManagerScript>();
+		mainGameScript.resetAllData();
+		mainGameScript.InitializeWorld(citySize,minBuildingSize,maxBuildingSize);
+		while(mainGameScript.requestingUpdatePermission()){}
+		mainGameScript.createPlayer(playerName,playerColor,Network.player.guid);
+		notPlaying = false;
+	}
+	
+	void OnDisconnectedFromServer(){
+		//TODO: reset local menu data
+	}
+	
+	void OnConnectedToServer(){
+		Debug.Log ("Connected to Server");
+		GameManagerScript mainGame = GameObject.Find ("GameManager").GetComponent<GameManagerScript>();
+		//if(Network.isClient){
+		//mainGame.InitializeWorld(citySize,minBuildingSize,maxBuildingSize);
+		notPlaying = false;
+	}
+	
+	void OnPlayerConnected(NetworkPlayer player){
+		//Debug.Log("Setup for player " + player + " " + player.guid + " " + playerNumber);
+		
+	}
+	
 }

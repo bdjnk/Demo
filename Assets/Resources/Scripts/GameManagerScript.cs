@@ -68,7 +68,7 @@ public class GameManagerScript : MonoBehaviour
 		mainMap.citySize = citySize;
 		mainMap.minBuildingSize = minBldgSize;
 		mainMap.maxBuildingSize = maxBldgSize;
-		mainMap.createMap();
+		//mainMap.createMap();
 	}
 	
 	void Update(){

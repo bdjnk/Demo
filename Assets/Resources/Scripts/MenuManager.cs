@@ -311,10 +311,17 @@ public class MenuManager : MonoBehaviour
 	{
 		Debug.Log ("Connected to Server");
 		GameManagerScript mainGame = GameObject.Find ("GameManager").GetComponent<GameManagerScript>();
-		//GameManagerScript mainGameScript = GetComponent<GameManagerScript>();
-		//if(Network.isClient){
+		if(Network.isClient){
+			playerName += "_C";
+			//mainGame.resetAllData();
+			Debug.Log ("create player for client");
+			while(mainGame.requestingUpdatePermission()){}
+			mainGame.createPlayer(playerName,playerColor,Network.player.guid);
+		
 		//mainGame.InitializeWorld(citySize,minBuildingSize,maxBuildingSize);
-		notPlaying = false;
+			notPlaying = false;
+			enabled = false;
+		}
 	}
 	
 	void OnPlayerConnected(NetworkPlayer player)

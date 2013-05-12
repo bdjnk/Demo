@@ -3,22 +3,32 @@ using System.Collections;
 
 public class MenuManager : MonoBehaviour
 {
+	// Menu GUI Variables
+	public GUISkin skin; // general style for all elements
+	private GUIStyle style; // style for small corrections as needed
+	
     public Vector2 scrollPosition = Vector2.zero;
 	
-	public GUISkin skin;
-	
-	public int serverCount = 40;
 	public int serverHeight = 25;
 	private float edging = 0.01f;
 	private float edge;
-	
-	private string playerName;
 	
 	private int innerWidth;
 	private int scrollBarWidth = 17;
 	private bool creating = false;
 	
-	private GUIStyle style;
+	// ------------------
+	private string playerName;
+	public int serverCount = 40;
+	
+	// Server Info Variables
+	public int[] citySize = {3, 3, 3};
+    public int[] minBuildingSize = {1, 1, 1};
+    public int[] maxBuildingSize = {3, 3, 3};
+	public int maxPlayers = 10;
+	public bool bots = true;
+	public bool upgrades = true;
+	public bool listed = true;
 	
 	private bool notPlaying = true;
 	
@@ -34,15 +44,35 @@ public class MenuManager : MonoBehaviour
 	//player data
 	private string playerColor = "red";
 	
-	Hashtable hash = new Hashtable();
+	private int firstRun = 0;
 	
 	void Awake()
 	{
-		if (!PlayerPrefs.HasKey("name"))
+		firstRun = PlayerPrefs.GetInt("firstRun");
+		if (firstRun == 0)
 		{
-			PlayerPrefs.SetString("name", "Default");
+			PlayerPrefs.SetInt("firstRun", 1);
 		}
-		playerName = PlayerPrefs.GetString("name");
+		else
+		{
+			// do stuff maybe...
+		}
+		playerName = PlayerPrefs.GetString("playerName", "Default");
+		
+		maxPlayers = PlayerPrefs.GetInt("maxPlayers", 10);
+		bots = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasBots", 1));
+		upgrades = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasUpgrades", 1));
+		listed = System.Convert.ToBoolean(PlayerPrefs.GetInt("isListed", 1));
+		citySize[0] = PlayerPrefs.GetInt("citySizeX", 3);
+		citySize[1] = PlayerPrefs.GetInt("citySizeY", 3);
+		citySize[2] = PlayerPrefs.GetInt("citySizeZ", 3);
+		minBuildingSize[0] = PlayerPrefs.GetInt("minBuildingSizeX", 3);
+		minBuildingSize[1] = PlayerPrefs.GetInt("minBuildingSizeY", 3);
+		minBuildingSize[2] = PlayerPrefs.GetInt("minBuildingSizeZ", 3);
+		maxBuildingSize[0] = PlayerPrefs.GetInt("maxBuildingSizeX", 3);
+		maxBuildingSize[1] = PlayerPrefs.GetInt("maxBuildingSizeY", 3);
+		maxBuildingSize[2] = PlayerPrefs.GetInt("maxBuildingSizeZ", 3);
+		
 		creating = false;
 		
 		style = new GUIStyle();
@@ -63,14 +93,6 @@ public class MenuManager : MonoBehaviour
 			ListServers();
 		}
 	}
-	
-	public int[] citySize = {3, 3, 3};
-    public int[] minBuildingSize = {1, 1, 1};
-    public int[] maxBuildingSize = {3, 3, 3};
-	public int maxPlayers = 10;
-	public bool bots = true;
-	public bool upgrades = true;
-	public bool list = true;
 	
 	public int sliderHeight = 22;
 	
@@ -104,7 +126,7 @@ public class MenuManager : MonoBehaviour
 		
 		bots = GUI.Toggle(new Rect(edge+200, sliderHeight*3+edge, 200, sliderHeight), bots, " Bots");
 		upgrades = GUI.Toggle(new Rect(edge+200, sliderHeight*4+edge, 200, sliderHeight), upgrades, " Upgrades");
-		list = GUI.Toggle(new Rect(edge+200, sliderHeight*5+edge, 200, sliderHeight), list, " Make Public");
+		listed = GUI.Toggle(new Rect(edge+200, sliderHeight*5+edge, 200, sliderHeight), listed, " Make Public");
 		
 		GUI.Label(new Rect(edge, sliderHeight*7+edge, 300, sliderHeight), "Minimum Building Dimensions");
 		minBuildingSize[0] = IntSlider(new Rect(edge, sliderHeight*8+edge, 200, sliderHeight), minBuildingSize[0], 1, 9, "Width", 1, true);
@@ -124,6 +146,24 @@ public class MenuManager : MonoBehaviour
 			StartServer();
 			creating = false;
 			refreshing = true;
+		
+			PlayerPrefs.SetInt("maxPlayers", maxPlayers);
+			
+			PlayerPrefs.SetInt("hasBots", bots ? 1 : 0);
+			PlayerPrefs.SetInt("hasUpgrades", upgrades ? 1 : 0);
+			PlayerPrefs.SetInt("isListed", listed ? 1 : 0);
+			
+			PlayerPrefs.SetInt("citySizeX", citySize[0]);
+			PlayerPrefs.SetInt("citySizeY", citySize[1]);
+			PlayerPrefs.SetInt("citySizeZ", citySize[2]);
+			
+			PlayerPrefs.SetInt("minBuildingSizeX", minBuildingSize[0]);
+			PlayerPrefs.SetInt("minBuildingSizeY", minBuildingSize[1]);
+			PlayerPrefs.SetInt("minBuildingSizeZ", minBuildingSize[2]);
+			
+			PlayerPrefs.SetInt("maxBuildingSizeX", maxBuildingSize[0]);
+			PlayerPrefs.SetInt("maxBuildingSizeY", maxBuildingSize[1]);
+			PlayerPrefs.SetInt("maxBuildingSizeZ", maxBuildingSize[2]);
 		}
 		if (GUI.Button(new Rect(200, sliderHeight*12+edge, 100, sliderHeight), "Cancel"))
 		{
@@ -151,7 +191,7 @@ public class MenuManager : MonoBehaviour
 		
 		GUI.Label(new Rect((Screen.width-edge)-190, 5, 40, 25), "Name:");
 		playerName = GUI.TextField(new Rect((Screen.width-edge)-150, 5, 150, 25), playerName, 16);
-		PlayerPrefs.SetString("name", playerName); // may be inefficient...
+		PlayerPrefs.SetString("playerName", playerName); // may be inefficient...
 		
 		GUI.BeginGroup(new Rect(edge, 35, innerWidth, 25));
 			
@@ -162,7 +202,7 @@ public class MenuManager : MonoBehaviour
 		
 		GUI.EndGroup();
 		
-		if (hostData != null && hostData.Length!=null)
+		if (hostData != null && hostData.Length > 0)
 		{
 			serverCount = hostData.Length;
 		}
@@ -255,7 +295,7 @@ public class MenuManager : MonoBehaviour
 		GameManagerScript mainGameScript = GameObject.Find("GameManager").GetComponent<GameManagerScript>();
 		//GameManagerScript mainGameScript = GetComponent<GameManagerScript>();
 		mainGameScript.resetAllData();
-		mainGameScript.InitializeWorld(citySize,minBuildingSize,maxBuildingSize);
+		mainGameScript.InitializeWorld(citySize, minBuildingSize, maxBuildingSize);
 		while (mainGameScript.requestingUpdatePermission())
 		{}
 		mainGameScript.createPlayer(playerName,playerColor,Network.player.guid);

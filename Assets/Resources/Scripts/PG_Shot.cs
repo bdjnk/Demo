@@ -44,9 +44,9 @@ public class PG_Shot : MonoBehaviour
 			Debug.Log ("Collision!" + other.gameObject.ToString());
 			PG_Cube cubeScript =  other.GetComponent<PG_Cube>();
 			
-			Debug.Log (cubeScript.ToString());
 			if (cubeScript != null)
 			{
+				Debug.Log(cubeScript.ToString());
 				cubeScript.Struck(this);
 			}
 		

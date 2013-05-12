@@ -107,7 +107,7 @@ public class PG_Cube : MonoBehaviour
 	public void Effects(PG_Shot shot, float distance)
 	{
 		//Debug.Log ("start effects: " + shot.gun.ToString());
-		if (shot != null && shot.gun != null && distance != null)
+		if (shot != null && shot.gun != null)
 		{
 			//Debug.Log ("next effects: ");
 			float effect = shot.gun.power - distance;

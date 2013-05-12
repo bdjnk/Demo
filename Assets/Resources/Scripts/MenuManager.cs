@@ -3,43 +3,76 @@ using System.Collections;
 
 public class MenuManager : MonoBehaviour
 {
+	// Menu GUI Variables
+	public GUISkin skin; // general style for all elements
+	private GUIStyle style; // style for small corrections as needed
+	
     public Vector2 scrollPosition = Vector2.zero;
 	
-	public GUISkin skin;
-	
-	public int serverCount = 40;
 	public int serverHeight = 25;
 	private float edging = 0.01f;
 	private float edge;
-	
-	private string playerName;
 	
 	private int innerWidth;
 	private int scrollBarWidth = 17;
 	private bool creating = false;
 	
-	private GUIStyle style;
+	// ------------------
+	private string playerName;
+	public int serverCount = 40;
+	
+	// Server Info Variables
+	public int[] citySize = {3, 3, 3};
+    public int[] minBuildingSize = {1, 1, 1};
+    public int[] maxBuildingSize = {3, 3, 3};
+	public int maxPlayers = 10;
+	public bool bots = true;
+	public bool upgrades = true;
+	public bool listed = true;
 	
 	private bool notPlaying = true;
+	
 	//server and host list variables
+	private string gameName = "123Paint the Town123";
+	
 	private bool refreshing = false;
 	private HostData[] hostData = null;
-	private string gameName = "123Paint the Town123"; 
-	public string defaultServerInstanceName = "Paint The Town";
-	public string serverInstanceName = "";
+	
+	public string defaultServerName = "Paint The Town";
+	public string serverName = "Paint The Town";
 	
 	//player data
 	private string playerColor = "red";
 	
-	Hashtable hash = new Hashtable();
+	private int firstRun = 0;
 	
 	void Awake()
 	{
-		if (!PlayerPrefs.HasKey("name"))
+		firstRun = PlayerPrefs.GetInt("firstRun");
+		if (firstRun == 0)
 		{
-			PlayerPrefs.SetString("name", "Default");
+			PlayerPrefs.SetInt("firstRun", 1);
 		}
-		playerName = PlayerPrefs.GetString("name");
+		else
+		{
+			// do stuff maybe...
+		}
+		playerName = PlayerPrefs.GetString("playerName", "Default");
+		
+		maxPlayers = PlayerPrefs.GetInt("maxPlayers", 10);
+		bots = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasBots", 1));
+		upgrades = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasUpgrades", 1));
+		listed = System.Convert.ToBoolean(PlayerPrefs.GetInt("isListed", 1));
+		citySize[0] = PlayerPrefs.GetInt("citySizeX", 3);
+		citySize[1] = PlayerPrefs.GetInt("citySizeY", 3);
+		citySize[2] = PlayerPrefs.GetInt("citySizeZ", 3);
+		minBuildingSize[0] = PlayerPrefs.GetInt("minBuildingSizeX", 3);
+		minBuildingSize[1] = PlayerPrefs.GetInt("minBuildingSizeY", 3);
+		minBuildingSize[2] = PlayerPrefs.GetInt("minBuildingSizeZ", 3);
+		maxBuildingSize[0] = PlayerPrefs.GetInt("maxBuildingSizeX", 3);
+		maxBuildingSize[1] = PlayerPrefs.GetInt("maxBuildingSizeY", 3);
+		maxBuildingSize[2] = PlayerPrefs.GetInt("maxBuildingSizeZ", 3);
+		
 		creating = false;
 		
 		style = new GUIStyle();
@@ -61,14 +94,6 @@ public class MenuManager : MonoBehaviour
 		}
 	}
 	
-	public int[] citySize = {3, 3, 3};
-    public int[] minBuildingSize = {1, 1, 1};
-    public int[] maxBuildingSize = {3, 3, 3};
-	public int maxPlayers = 10;
-	public bool bots = true;
-	public bool upgrades = true;
-	public bool list = true;
-	
 	public int sliderHeight = 22;
 	
 	int IntSlider(Rect rect, int val, int min, int max, string label, int step, bool dynamic)
@@ -87,40 +112,61 @@ public class MenuManager : MonoBehaviour
 	
 	void CreateServer() // CREATE A NEW SERVER
 	{
-		GUI.BeginGroup(new Rect(Screen.width/2-200, edge, 400, sliderHeight*11+edge*3), skin.box);
+		GUI.BeginGroup(new Rect(Screen.width/2-200, edge, 400, sliderHeight*13+edge*3), skin.box);
 		
-		GUI.Label(new Rect(edge, sliderHeight*0+edge, 200, sliderHeight), "City Dimensions");
-		citySize[0] = IntSlider(new Rect(edge, sliderHeight*1+edge, 200, sliderHeight), citySize[0], 1, 9, "Width", 1, true);
-		citySize[1] = IntSlider(new Rect(edge, sliderHeight*2+edge, 200, sliderHeight), citySize[1], 1, 9, "Height", 1, true);
-		citySize[2] = IntSlider(new Rect(edge, sliderHeight*3+edge, 200, sliderHeight), citySize[2], 1, 9, "Depth", 1, true);
+		GUI.Label(new Rect(edge, sliderHeight*0+edge, 100, sliderHeight), "Server Name: ");
+		serverName = GUI.TextField(new Rect(edge+100, sliderHeight*0+edge, 300-edge*2, sliderHeight), serverName);
 		
-		maxPlayers = IntSlider(new Rect(edge+200, sliderHeight*0+edge, 200, sliderHeight), maxPlayers, 2, 14, "Max Players", 2, true);
+		GUI.Label(new Rect(edge, sliderHeight*2+edge, 200, sliderHeight), "City Dimensions");
+		citySize[0] = IntSlider(new Rect(edge, sliderHeight*3+edge, 200, sliderHeight), citySize[0], 1, 9, "Width", 1, true);
+		citySize[1] = IntSlider(new Rect(edge, sliderHeight*4+edge, 200, sliderHeight), citySize[1], 1, 9, "Height", 1, true);
+		citySize[2] = IntSlider(new Rect(edge, sliderHeight*5+edge, 200, sliderHeight), citySize[2], 1, 9, "Depth", 1, true);
 		
-		bots = GUI.Toggle(new Rect(edge+200, sliderHeight*1+edge, 200, sliderHeight), bots, " Bots");
-		upgrades = GUI.Toggle(new Rect(edge+200, sliderHeight*2+edge, 200, sliderHeight), upgrades, " Upgrades");
-		list = GUI.Toggle(new Rect(edge+200, sliderHeight*3+edge, 200, sliderHeight), list, " Make Public");
+		maxPlayers = IntSlider(new Rect(edge+200, sliderHeight*2+edge, 200, sliderHeight), maxPlayers, 2, 14, "Max Players", 2, true);
 		
-		GUI.Label(new Rect(edge, sliderHeight*5+edge, 300, sliderHeight), "Minimum Building Dimensions");
-		minBuildingSize[0] = IntSlider(new Rect(edge, sliderHeight*6+edge, 200, sliderHeight), minBuildingSize[0], 1, 9, "Width", 1, true);
-		minBuildingSize[1] = IntSlider(new Rect(edge, sliderHeight*7+edge, 200, sliderHeight), minBuildingSize[1], 1, 9, "Height", 1, true);
-		minBuildingSize[2] = IntSlider(new Rect(edge, sliderHeight*8+edge, 200, sliderHeight), minBuildingSize[2], 1, 9, "Depth", 1, true);
+		bots = GUI.Toggle(new Rect(edge+200, sliderHeight*3+edge, 200, sliderHeight), bots, " Bots");
+		upgrades = GUI.Toggle(new Rect(edge+200, sliderHeight*4+edge, 200, sliderHeight), upgrades, " Upgrades");
+		listed = GUI.Toggle(new Rect(edge+200, sliderHeight*5+edge, 200, sliderHeight), listed, " Make Public");
 		
-		GUI.Label(new Rect(edge+200, sliderHeight*5+edge, 200, sliderHeight), "Maximum Building Dimensions");
+		GUI.Label(new Rect(edge, sliderHeight*7+edge, 300, sliderHeight), "Minimum Building Dimensions");
+		minBuildingSize[0] = IntSlider(new Rect(edge, sliderHeight*8+edge, 200, sliderHeight), minBuildingSize[0], 1, 9, "Width", 1, true);
+		minBuildingSize[1] = IntSlider(new Rect(edge, sliderHeight*9+edge, 200, sliderHeight), minBuildingSize[1], 1, 9, "Height", 1, true);
+		minBuildingSize[2] = IntSlider(new Rect(edge, sliderHeight*10+edge, 200, sliderHeight), minBuildingSize[2], 1, 9, "Depth", 1, true);
+		
+		GUI.Label(new Rect(edge+200, sliderHeight*7+edge, 200, sliderHeight), "Maximum Building Dimensions");
 		maxBuildingSize[0] = Mathf.Max(minBuildingSize[0],
-			IntSlider(new Rect(edge+200, sliderHeight*6+edge, 200, sliderHeight), maxBuildingSize[0], 1, 9, "Width", 1, true));
+			IntSlider(new Rect(edge+200, sliderHeight*8+edge, 200, sliderHeight), maxBuildingSize[0], 1, 9, "Width", 1, true));
 		maxBuildingSize[1] = Mathf.Max(minBuildingSize[1],
-			IntSlider(new Rect(edge+200, sliderHeight*7+edge, 200, sliderHeight), maxBuildingSize[1], 1, 9, "Height", 1, true));
+			IntSlider(new Rect(edge+200, sliderHeight*9+edge, 200, sliderHeight), maxBuildingSize[1], 1, 9, "Height", 1, true));
 		maxBuildingSize[2] = Mathf.Max(minBuildingSize[2],
-			IntSlider(new Rect(edge+200, sliderHeight*8+edge, 200, sliderHeight), maxBuildingSize[2], 1, 9, "Depth", 1, true));
+			IntSlider(new Rect(edge+200, sliderHeight*10+edge, 200, sliderHeight), maxBuildingSize[2], 1, 9, "Depth", 1, true));
 		
-		if(GUI.Button(new Rect(100, sliderHeight*10+edge, 100, sliderHeight), "Create")){
+		if (GUI.Button(new Rect(100, sliderHeight*12+edge, 100, sliderHeight), "Create"))
+		{
 			StartServer();
 			creating = false;
 			refreshing = true;
-			notPlaying = false;
-			enabled = false;
+		
+			PlayerPrefs.SetInt("maxPlayers", maxPlayers);
+			
+			PlayerPrefs.SetInt("hasBots", bots ? 1 : 0);
+			PlayerPrefs.SetInt("hasUpgrades", upgrades ? 1 : 0);
+			PlayerPrefs.SetInt("isListed", listed ? 1 : 0);
+			
+			PlayerPrefs.SetInt("citySizeX", citySize[0]);
+			PlayerPrefs.SetInt("citySizeY", citySize[1]);
+			PlayerPrefs.SetInt("citySizeZ", citySize[2]);
+			
+			PlayerPrefs.SetInt("minBuildingSizeX", minBuildingSize[0]);
+			PlayerPrefs.SetInt("minBuildingSizeY", minBuildingSize[1]);
+			PlayerPrefs.SetInt("minBuildingSizeZ", minBuildingSize[2]);
+			
+			PlayerPrefs.SetInt("maxBuildingSizeX", maxBuildingSize[0]);
+			PlayerPrefs.SetInt("maxBuildingSizeY", maxBuildingSize[1]);
+			PlayerPrefs.SetInt("maxBuildingSizeZ", maxBuildingSize[2]);
 		}
-		if(GUI.Button(new Rect(200, sliderHeight*10+edge, 100, sliderHeight), "Cancel")){
+		if (GUI.Button(new Rect(200, sliderHeight*12+edge, 100, sliderHeight), "Cancel"))
+		{
 			creating = false;
 		}
 		
@@ -133,7 +179,8 @@ public class MenuManager : MonoBehaviour
 		
 		GUI.BeginGroup(new Rect(edge, 5, 400, 25));
 		
-		if(GUI.Button(new Rect(0, 0, 65, 25), "Refresh")){
+		if (GUI.Button(new Rect(0, 0, 65, 25), "Refresh"))
+		{
 			MasterServer.RequestHostList(gameName);
 			refreshing = true;
 		}
@@ -144,7 +191,7 @@ public class MenuManager : MonoBehaviour
 		
 		GUI.Label(new Rect((Screen.width-edge)-190, 5, 40, 25), "Name:");
 		playerName = GUI.TextField(new Rect((Screen.width-edge)-150, 5, 150, 25), playerName, 16);
-		PlayerPrefs.SetString("name", playerName); // may be inefficient...
+		PlayerPrefs.SetString("playerName", playerName); // may be inefficient...
 		
 		GUI.BeginGroup(new Rect(edge, 35, innerWidth, 25));
 			
@@ -154,9 +201,13 @@ public class MenuManager : MonoBehaviour
 		GUI.Label(new Rect(innerWidth-100, 0, 100, 25), "Ping");
 		
 		GUI.EndGroup();
-		if (hostData != null && hostData.Length!=null){
+		
+		if (hostData != null && hostData.Length > 0)
+		{
 			serverCount = hostData.Length;
-		} else {
+		}
+		else
+		{
 			serverCount = 0;
 		}
 		
@@ -178,8 +229,6 @@ public class MenuManager : MonoBehaviour
 				
 				if(GUI.Button(new Rect(0, 0, innerWidth-edge*2, serverHeight), "")){
 					Network.Connect (hostData[i]);
-					notPlaying = false;
-					enabled = false;
 				}
 				
 				GUI.Label(new Rect(edge, 0, innerWidth-300, serverHeight), hostData[i].gameName);
@@ -195,8 +244,8 @@ public class MenuManager : MonoBehaviour
 		}
 	}
 	
-	void Update () {
-	
+	void Update ()
+	{
 		if (refreshing)
 		{
 			if (MasterServer.PollHostList().Length > 0)
@@ -225,16 +274,16 @@ public class MenuManager : MonoBehaviour
 		//MasterServer.dedicatedServer = true;
 		
 		//Register our game with Unitys Master Server
-		if (serverInstanceName != "")
+		if (serverName != "")
 		{
-			defaultServerInstanceName = serverInstanceName;
+			defaultServerName = serverName;
 		}
 		else
 		{
 			string randomGameNum = " " + Random.Range (1,1000).ToString();
-			defaultServerInstanceName += randomGameNum;
+			defaultServerName += randomGameNum;
 		}
-		MasterServer.RegisterHost(gameName, defaultServerInstanceName, "CSS385 Game");
+		MasterServer.RegisterHost(gameName, defaultServerName, "CSS385 Game");
 		
 		//Lists the IP address for MasterServer
 		//Debug.Log("Master Server Info:" + MasterServer.ipAddress +":"+ MasterServer.port);
@@ -246,12 +295,11 @@ public class MenuManager : MonoBehaviour
 		GameManagerScript mainGameScript = GameObject.Find("GameManager").GetComponent<GameManagerScript>();
 		//GameManagerScript mainGameScript = GetComponent<GameManagerScript>();
 		mainGameScript.resetAllData();
-		//mainGameScript.InitializeWorld(citySize,minBuildingSize,maxBuildingSize);
+		mainGameScript.InitializeWorld(citySize, minBuildingSize, maxBuildingSize);
 		while (mainGameScript.requestingUpdatePermission())
 		{}
 		mainGameScript.createPlayer(playerName,playerColor,Network.player.guid);
 		notPlaying = false;
-		enabled = false;
 	}
 	
 	void OnDisconnectedFromServer()
@@ -262,19 +310,11 @@ public class MenuManager : MonoBehaviour
 	void OnConnectedToServer()
 	{
 		Debug.Log ("Connected to Server");
-		GameManagerScript mainGameScript = GameObject.Find ("GameManager").GetComponent<GameManagerScript>();
+		GameManagerScript mainGame = GameObject.Find ("GameManager").GetComponent<GameManagerScript>();
 		//GameManagerScript mainGameScript = GetComponent<GameManagerScript>();
-		if(Network.isClient)
-		{
-			playerName += "_C";//temporary for testing
-			Debug.Log ("create player for client");
-			while(mainGameScript.requestingUpdatePermission())
-			{}
-			mainGameScript.createPlayer(playerName,playerColor,Network.player.guid);
-			
-			notPlaying = false;
-			enabled = false;
-		}
+		//if(Network.isClient){
+		//mainGame.InitializeWorld(citySize,minBuildingSize,maxBuildingSize);
+		notPlaying = false;
 	}
 	
 	void OnPlayerConnected(NetworkPlayer player)

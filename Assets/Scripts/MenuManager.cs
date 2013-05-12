@@ -53,38 +53,59 @@ public class MenuManager : MonoBehaviour
 	public int[] citySize = {3, 3, 3};
     public int[] minBuildingSize = {1, 1, 1};
     public int[] maxBuildingSize = {3, 3, 3};
-	int maxPlayers = 6;
-	public int sliderHeight = 25;
+	public int maxPlayers = 10;
+	public bool bots = true;
+	public bool upgrades = true;
+	public bool list = true;
 	
-	int IntSlider(Rect rect, int val, int min, int max, string label, int step)
+	public int sliderHeight = 22;
+	
+	int IntSlider(Rect rect, int val, int min, int max, string label, int step, bool dynamic)
 	{
 		Vector2 size = skin.GetStyle("Label").CalcSize(new GUIContent(max.ToString()));
 		style.alignment = TextAnchor.MiddleRight;
 		GUI.Label(new Rect(rect.x, rect.y, size.x, rect.height), val.ToString(), style);
-		float f = GUI.HorizontalSlider(new Rect(rect.x+(size.x+5), rect.y+(rect.height-12)/2, (max-min+1)*10, 12), val, min, max);
+		
+		float width = dynamic ? (max-min+step)*10/step : rect.width;
+		GUI.Label(new Rect(rect.x+(width)+(size.x+5)+5, rect.y, rect.width-90-(size.x+5)-5, rect.height), label);
+		
+		float f = GUI.HorizontalSlider(new Rect(rect.x+(size.x+5), rect.y+(rect.height-12)/2, width, 12), val, min, max);
 		val = Mathf.RoundToInt(f / (float)step) * step;
-		GUI.Label(new Rect(rect.x+((max-min+1)*10)+(size.x+5)+5, rect.y, rect.width-90-(size.x+5)-5, rect.height), label);
 		return val;
 	}
 	
 	void CreateServer() // CREATE A NEW SERVER
 	{
-		GUI.Label(new Rect(0, sliderHeight*0, 300, sliderHeight), "City Dimensions");
-		citySize[0] = IntSlider(new Rect(0, sliderHeight*1, 300, sliderHeight), citySize[0], 1, 9, "Width", 1);
-		citySize[1] = IntSlider(new Rect(0, sliderHeight*2, 300, sliderHeight), citySize[1], 1, 9, "Height", 1);
-		citySize[2] = IntSlider(new Rect(0, sliderHeight*3, 300, sliderHeight), citySize[2], 1, 9, "Depth", 1);
+		GUI.BeginGroup(new Rect(Screen.width/2-200, edge, 400, sliderHeight*11+edge*3), skin.box);
 		
-		GUI.Label(new Rect(0, sliderHeight*5, 300, sliderHeight), "Minimum Building Dimensions");
-		minBuildingSize[0] = IntSlider(new Rect(0, sliderHeight*6, 300, sliderHeight), minBuildingSize[0], 1, 9, "Width", 1);
-		minBuildingSize[1] = IntSlider(new Rect(0, sliderHeight*7, 300, sliderHeight), minBuildingSize[1], 1, 9, "Height", 1);
-		minBuildingSize[2] = IntSlider(new Rect(0, sliderHeight*8, 300, sliderHeight), minBuildingSize[2], 1, 9, "Depth", 1);
+		GUI.Label(new Rect(edge, sliderHeight*0+edge, 200, sliderHeight), "City Dimensions");
+		citySize[0] = IntSlider(new Rect(edge, sliderHeight*1+edge, 200, sliderHeight), citySize[0], 1, 9, "Width", 1, true);
+		citySize[1] = IntSlider(new Rect(edge, sliderHeight*2+edge, 200, sliderHeight), citySize[1], 1, 9, "Height", 1, true);
+		citySize[2] = IntSlider(new Rect(edge, sliderHeight*3+edge, 200, sliderHeight), citySize[2], 1, 9, "Depth", 1, true);
 		
-		GUI.Label(new Rect(0, sliderHeight*10, 300, sliderHeight), "Maximum Building Dimensions");
-		maxBuildingSize[0] = IntSlider(new Rect(0, sliderHeight*11, 300, sliderHeight), maxBuildingSize[0], 1, 9, "Width", 1);
-		maxBuildingSize[1] = IntSlider(new Rect(0, sliderHeight*12, 300, sliderHeight), maxBuildingSize[1], 1, 9, "Height", 1);
-		maxBuildingSize[2] = IntSlider(new Rect(0, sliderHeight*13, 300, sliderHeight), maxBuildingSize[2], 1, 9, "Depth", 1);
+		maxPlayers = IntSlider(new Rect(edge+200, sliderHeight*0+edge, 200, sliderHeight), maxPlayers, 2, 14, "Max Players", 2, true);
 		
-		maxPlayers = IntSlider(new Rect(0, sliderHeight*15, 300, sliderHeight), maxPlayers, 2, 12, "Players", 2);
+		bots = GUI.Toggle(new Rect(edge+200, sliderHeight*1+edge, 200, sliderHeight), bots, " Bots");
+		upgrades = GUI.Toggle(new Rect(edge+200, sliderHeight*2+edge, 200, sliderHeight), upgrades, " Upgrades");
+		list = GUI.Toggle(new Rect(edge+200, sliderHeight*3+edge, 200, sliderHeight), list, " Make Public");
+		
+		GUI.Label(new Rect(edge, sliderHeight*5+edge, 300, sliderHeight), "Minimum Building Dimensions");
+		minBuildingSize[0] = IntSlider(new Rect(edge, sliderHeight*6+edge, 200, sliderHeight), minBuildingSize[0], 1, 9, "Width", 1, true);
+		minBuildingSize[1] = IntSlider(new Rect(edge, sliderHeight*7+edge, 200, sliderHeight), minBuildingSize[1], 1, 9, "Height", 1, true);
+		minBuildingSize[2] = IntSlider(new Rect(edge, sliderHeight*8+edge, 200, sliderHeight), minBuildingSize[2], 1, 9, "Depth", 1, true);
+		
+		GUI.Label(new Rect(edge+200, sliderHeight*5+edge, 200, sliderHeight), "Maximum Building Dimensions");
+		maxBuildingSize[0] = Mathf.Max(minBuildingSize[0],
+			IntSlider(new Rect(edge+200, sliderHeight*6+edge, 200, sliderHeight), maxBuildingSize[0], 1, 9, "Width", 1, true));
+		maxBuildingSize[1] = Mathf.Max(minBuildingSize[1],
+			IntSlider(new Rect(edge+200, sliderHeight*7+edge, 200, sliderHeight), maxBuildingSize[1], 1, 9, "Height", 1, true));
+		maxBuildingSize[2] = Mathf.Max(minBuildingSize[2],
+			IntSlider(new Rect(edge+200, sliderHeight*8+edge, 200, sliderHeight), maxBuildingSize[2], 1, 9, "Depth", 1, true));
+		
+		GUI.Button(new Rect(100, sliderHeight*10+edge, 100, sliderHeight), "Create");
+		creating = !GUI.Button(new Rect(200, sliderHeight*10+edge, 100, sliderHeight), "Cancel");
+		
+		GUI.EndGroup();
 	}
 	
 	void ListServers() // LIST OF SERVERS, THIS IS THE INITIAL MENU PAGE

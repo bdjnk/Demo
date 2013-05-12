@@ -45,6 +45,7 @@ public class GameManagerScript : MonoBehaviour
 		//myPlayerData = null;
 		resetAllData();
 		mainMap = new PG_Map();
+		//mainMap = new PG_Map();
 		//InitializeWorld();
 	}
 	
@@ -100,7 +101,7 @@ public class GameManagerScript : MonoBehaviour
 				playerData[numberOfCurrentPlayers] = 
 				((GameObject) Network.Instantiate(playerPrefab, 
 						new Vector3(spawnX,spawnY,spawnZ),Quaternion.identity, 
-						0)).GetComponent<PlayerDataScript>();
+						5)).GetComponent<PlayerDataScript>();
 			}
 			mainPlayer = playerData[numberOfCurrentPlayers];
 			mainPlayer.updateInitialSettings(true);

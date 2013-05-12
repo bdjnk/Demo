@@ -127,6 +127,7 @@ public class MenuManager : MonoBehaviour
 			StartServer();
 			creating = false;
 			refreshing = true;
+			notPlaying=false;
 		}
 		if(GUI.Button(new Rect(200, sliderHeight*10+edge, 100, sliderHeight), "Cancel")){
 			creating = false;
@@ -186,6 +187,10 @@ public class MenuManager : MonoBehaviour
 				
 				if(GUI.Button(new Rect(0, 0, innerWidth-edge*2, serverHeight), "")){
 					Network.Connect (hostData[i]);
+					Debug.Log ("attempting to connect to:" + hostData[i].gameName);
+					//SetUpClient();
+					notPlaying=false;
+					
 				}
 				
 				GUI.Label(new Rect(edge, 0, innerWidth-300, serverHeight), hostData[i].gameName);
@@ -241,17 +246,41 @@ public class MenuManager : MonoBehaviour
 	void OnDisconnectedFromServer(){
 		//TODO: reset local menu data
 	}
-	
+	/*
 	void OnConnectedToServer(){
 		Debug.Log ("Connected to Server");
 		GameManagerScript mainGame = GameObject.Find ("GameManager").GetComponent<GameManagerScript>();
 		//if(Network.isClient){
+			//GameManagerScript mainGameScript = GameObject.Find("GameManager").GetComponent<GameManagerScript>();
+			//mainGameScript.resetAllData();
+			Debug.Log ("client connected1");
+			//while(mainGame.requestingUpdatePermission()){}
+			mainGame.createPlayer(playerName,playerColor,Network.player.guid);
+		
+		//mainGame.InitializeWorld(citySize,minBuildingSize,maxBuildingSize);
+		notPlaying = false;
+	}*/
+	void SetUpClient(){
+		Debug.Log ("checking");
+			
+			GameManagerScript mainGame = GameObject.Find ("GameManager").GetComponent<GameManagerScript>();
+			while(mainGame.requestingUpdatePermission()){}
+			mainGame.createPlayer(playerName,playerColor,Network.player.guid);
+		
 		//mainGame.InitializeWorld(citySize,minBuildingSize,maxBuildingSize);
 		notPlaying = false;
 	}
 	
 	void OnPlayerConnected(NetworkPlayer player){
-		//Debug.Log("Setup for player " + player + " " + player.guid + " " + playerNumber);
+		Debug.Log ("Setup Player");
+		GameManagerScript mainGame = GameObject.Find ("GameManager").GetComponent<GameManagerScript>();
+		//if(Network.isClient){
+		
+		while(mainGame.requestingUpdatePermission()){}
+		//mainGame.createPlayer(playerName,playerColor,Network.player.guid);
+		//fixed value for testing
+		mainGame.createPlayer("ed","blue",Network.player.guid);
+		Debug.Log("Setup for player " + player + " " + player.guid);
 		
 	}
 	

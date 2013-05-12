@@ -35,16 +35,19 @@ public class PG_Cube : MonoBehaviour
 	
 	public void Struck(PG_Shot shot)
 	{		
-		if(shot!=null){
+		if(shot != null)
+		{
 			foreach (Transform child in transform.parent) // splash effect
 			{
 				float distance = Vector3.Distance(transform.position, child.position);
-				//testing for minimum reaction on adjacent
+				// testing for minimum reaction on adjacent
 				if (distance < 2.9f) // only consider adjacent cubes
 				{
 					PG_Cube cubeScript = child.GetComponent<PG_Cube>();
 					if (cubeScript != null) // this is a cube
-					{	if(shot!=null){
+					{
+						if (shot != null)
+						{
 							cubeScript.Effects(shot, distance);
 						}
 					}
@@ -102,8 +105,10 @@ public class PG_Cube : MonoBehaviour
 	}
 	
 	public void Effects(PG_Shot shot, float distance)
-	{//Debug.Log ("start effects: " + shot.gun.ToString());
-		if(shot!=null && shot.gun != null && distance!=null){
+	{
+		//Debug.Log ("start effects: " + shot.gun.ToString());
+		if (shot != null && shot.gun != null && distance != null)
+		{
 			//Debug.Log ("next effects: ");
 			float effect = shot.gun.power - distance;
 			
@@ -154,50 +159,64 @@ public class PG_Cube : MonoBehaviour
 		GameObject mainGame = GameObject.Find ("GameManager");
 		Debug.Log ("updating cube");
 		if (newMaterial == "blue")
-		{	//update score based on server only
-			if(Network.isServer){
-				if(renderer.material.GetTexture("_MainTex")==red){//change from red
+		{
+			// update score based on server only
+			if (Network.isServer)
+			{
+				if(renderer.material.GetTexture("_MainTex") == red) // change from red
+				{
 					mainGame.networkView.RPC ("blueScore",RPCMode.AllBuffered,1);
 					mainGame.networkView.RPC ("redScore",RPCMode.AllBuffered,-1);
-					//update player total claims and reduce previous owner claim
+					// update player total claims and reduce previous owner claim
 					mainGame.networkView.RPC("updatePlayersScore", RPCMode.AllBuffered,shotOwnerID,cubeOwnerID);
-					//update cube owner
+					// update cube owner
 					cubeOwnerID = shotOwnerID;
-				} else if(renderer.material.GetTexture("_MainTex")==blue){//no change
-				} else {//initial claim
-					mainGame.networkView.RPC ("blueScore",RPCMode.AllBuffered,1);
-					//update player total claims
+				}
+				else if (renderer.material.GetTexture("_MainTex") == blue) // no change
+				{
+					// do nothing
+				}
+				else // initial claim
+				{
+					mainGame.networkView.RPC("blueScore",RPCMode.AllBuffered,1);
+					// update player total claims
 					mainGame.networkView.RPC("updatePlayersScore", RPCMode.AllBuffered,shotOwnerID,cubeOwnerID);
 					cubeOwnerID = shotOwnerID;
-					Debug.Log ("initial change: " );
+					Debug.Log ("initial change: ");
 				}
 			}
-			//renderer.material = blue;
+			// renderer.material = blue;
 			renderer.material.SetTexture("_MainTex", blue);
 		}
 		else if (newMaterial == "red")
-		{	//update score based on server only
-			if(Network.isServer){
-				Debug.Log ("start change: " );
-				if(renderer.material.GetTexture("_MainTex")==blue){//change from blue
+		{
+			// update score based on server only
+			if(Network.isServer)
+			{
+				Debug.Log("start change: ");
+				if(renderer.material.GetTexture("_MainTex") == blue) // change from blue
+				{
 					mainGame.networkView.RPC ("redScore",RPCMode.AllBuffered,1);
 					mainGame.networkView.RPC ("blueScore",RPCMode.AllBuffered,-1);
-					//update player total claims and reduce previous owner claim
+					// update player total claims and reduce previous owner claim
 					mainGame.networkView.RPC("updatePlayersScore", RPCMode.AllBuffered,shotOwnerID,cubeOwnerID);
-					//update cube owner
+					// update cube owner
 					cubeOwnerID = shotOwnerID;
-				} else if(renderer.material.GetTexture("_MainTex")==red){//no change
-				} else {//initial claim
-					mainGame.networkView.RPC ("redScore",RPCMode.AllBuffered,1);
-					//update player total claims
+				} else if(renderer.material.GetTexture("_MainTex") == red) // no change
+				{
+					// do nothing
+				}
+				else // initial claim
+				{
+					mainGame.networkView.RPC("redScore",RPCMode.AllBuffered,1);
+					// update player total claims
 					mainGame.networkView.RPC("updatePlayersScore", RPCMode.AllBuffered,shotOwnerID,cubeOwnerID);
 					cubeOwnerID = shotOwnerID;
-					Debug.Log ("initial change: " );
+					Debug.Log("initial change: ");
 				}
 			}
 			//renderer.material = red;
 			renderer.material.SetTexture("_MainTex", red);
-		}
-			
+		}	
 	}
 }

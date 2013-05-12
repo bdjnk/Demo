@@ -72,7 +72,8 @@ public class PG_Map : MonoBehaviour
 			for (int h = 0; h < height; h++)
 			{
 				for (int d = 0; d < depth; d++)
-				{	cubePrefab = Resources.Load ("Prefabs/Cube");
+				{
+					cubePrefab = Resources.Load ("Prefabs/Cube");
 					//Debug.Log ("cube: " + cubePrefab.ToString());
 					GameObject cube = (GameObject) Network.Instantiate(cubePrefab,new Vector3(1.5f*w,1.5f*h,1.5f*d),Quaternion.identity,1);
 					//GameObject cube = Instantiate(cubePrefab) as GameObject;

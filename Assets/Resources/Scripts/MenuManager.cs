@@ -60,16 +60,6 @@ public class MenuManager : MonoBehaviour
 			ListServers();
 		}
 	}
-	void Update () {
-	
-		if(refreshing){
-			if(MasterServer.PollHostList().Length > 0){
-				refreshing = false;
-				//Debug.Log (MasterServer.PollHostList().Length);
-				hostData = MasterServer.PollHostList();
-			}
-		}
-	}
 	
 	public int[] citySize = {3, 3, 3};
     public int[] minBuildingSize = {1, 1, 1};
@@ -200,7 +190,22 @@ public class MenuManager : MonoBehaviour
 	        GUI.EndScrollView();
 		}
 	}
-	void StartServer(){
+	
+	void Update () {
+	
+		if (refreshing)
+		{
+			if (MasterServer.PollHostList().Length > 0)
+			{
+				refreshing = false;
+				//Debug.Log (MasterServer.PollHostList().Length);
+				hostData = MasterServer.PollHostList();
+			}
+		}
+	}
+	
+	void StartServer()
+	{
 		//if we want password
 		//Network.incomingPassword("test123");
 				
@@ -216,9 +221,12 @@ public class MenuManager : MonoBehaviour
 		//MasterServer.dedicatedServer = true;
 		
 		//Register our game with Unitys Master Server
-		if(serverInstanceName != ""){
+		if (serverInstanceName != "")
+		{
 			defaultServerInstanceName = serverInstanceName;
-		} else {
+		}
+		else
+		{
 			string randomGameNum = " " + Random.Range (1,1000).ToString();
 			defaultServerInstanceName += randomGameNum;
 		}
@@ -228,29 +236,36 @@ public class MenuManager : MonoBehaviour
 		//Debug.Log("Master Server Info:" + MasterServer.ipAddress +":"+ MasterServer.port);
 	}
 	
-	void OnServerInitialized(){
+	void OnServerInitialized()
+	{
 		Debug.Log ("Server Initialized");
 		GameManagerScript mainGameScript = GameObject.Find("GameManager").GetComponent<GameManagerScript>();
+		//GameManagerScript mainGameScript = GetComponent<GameManagerScript>();
 		mainGameScript.resetAllData();
 		mainGameScript.InitializeWorld(citySize,minBuildingSize,maxBuildingSize);
-		while(mainGameScript.requestingUpdatePermission()){}
+		while (mainGameScript.requestingUpdatePermission())
+		{}
 		mainGameScript.createPlayer(playerName,playerColor,Network.player.guid);
 		notPlaying = false;
 	}
 	
-	void OnDisconnectedFromServer(){
+	void OnDisconnectedFromServer()
+	{
 		//TODO: reset local menu data
 	}
 	
-	void OnConnectedToServer(){
+	void OnConnectedToServer()
+	{
 		Debug.Log ("Connected to Server");
 		GameManagerScript mainGame = GameObject.Find ("GameManager").GetComponent<GameManagerScript>();
+		//GameManagerScript mainGameScript = GetComponent<GameManagerScript>();
 		//if(Network.isClient){
 		//mainGame.InitializeWorld(citySize,minBuildingSize,maxBuildingSize);
 		notPlaying = false;
 	}
 	
-	void OnPlayerConnected(NetworkPlayer player){
+	void OnPlayerConnected(NetworkPlayer player)
+	{
 		//Debug.Log("Setup for player " + player + " " + player.guid + " " + playerNumber);
 		
 	}

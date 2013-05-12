@@ -36,11 +36,12 @@ public class GameManagerScript : MonoBehaviour
 	private PlayerDataScript mainPlayer;
 	//private GameObject myPlayerData;
 	
-	void Start(){
+	void Start()
+	{
 		playerData = null;
-		mainGame = GameObject.Find ("GameManager");
+		mainGame = GameObject.Find("GameManager");
 		mainPlayer = null;
-		playerPrefab = Resources.Load ("Prefabs/First Person Controller");
+		playerPrefab = Resources.Load("Prefabs/First Person Controller");
 		Debug.Log ("prefab loaded: " + playerPrefab.ToString());
 		//myPlayerData = null;
 		resetAllData();
@@ -48,7 +49,8 @@ public class GameManagerScript : MonoBehaviour
 		//InitializeWorld();
 	}
 	
-	public void resetAllData(){
+	public void resetAllData()
+	{
 		redTeamTotalPlayers = 0;
 		blueTeamTotalPlayers = 0;
 		blueTeamPlayers = new string[maxPlayers];
@@ -61,7 +63,8 @@ public class GameManagerScript : MonoBehaviour
 		mainPlayer = null;
 	}
 	
-	public void InitializeWorld(int[] citySize,int[] minBldgSize,int[] maxBldgSize){
+	public void InitializeWorld(int[] citySize,int[] minBldgSize,int[] maxBldgSize)
+	{
 		mainMap.citySize = citySize;
 		mainMap.minBuildingSize = minBldgSize;
 		mainMap.maxBuildingSize = maxBldgSize;
@@ -70,7 +73,8 @@ public class GameManagerScript : MonoBehaviour
 	
 	void Update(){
 		//cleanup shots fired (group 10) every 31 seconds or so
-		if((int) Time.realtimeSinceStartup % 31 ==0){
+		if ((int) Time.realtimeSinceStartup % 31 ==0)
+		{
 			Network.RemoveRPCsInGroup(10);
 		}
 	}
@@ -78,11 +82,15 @@ public class GameManagerScript : MonoBehaviour
 	//client should call - while (requestingUpdatePermission())
 	//prior to update
 	[RPC]
-	public bool requestingUpdatePermission(){
-		if(locked!=true){
+	public bool requestingUpdatePermission()
+	{
+		if (locked!=true)
+		{
 			locked=true;
 			return true;
-		} else {
+		}
+		else
+		{
 			return false;
 		}
 	}
@@ -90,17 +98,17 @@ public class GameManagerScript : MonoBehaviour
 	//create player happens on client only but because it is network.instantiate all will update
 	public void createPlayer(string playerName,string teamColor, string playerID){
 		//lock any other client changes while creating a player
-		if(locked){
-			if(playerData == null){
+		if (locked)
+		{
+			if (playerData == null)
+			{
 				playerData = new PlayerDataScript[maxPlayers];
 				//myPlayerData = new GameObject();
 			}
 			//array starts at 0
-			if(playerData[numberOfCurrentPlayers] == null){
-				playerData[numberOfCurrentPlayers] = 
-				((GameObject) Network.Instantiate(playerPrefab, 
-						new Vector3(spawnX,spawnY,spawnZ),Quaternion.identity, 
-						0)).GetComponent<PlayerDataScript>();
+			if (playerData[numberOfCurrentPlayers] == null)
+			{
+				playerData[numberOfCurrentPlayers] = ((GameObject)Network.Instantiate(playerPrefab, new Vector3(spawnX,spawnY,spawnZ),Quaternion.identity, 0)).GetComponent<PlayerDataScript>();
 			}
 			mainPlayer = playerData[numberOfCurrentPlayers];
 			mainPlayer.updateInitialSettings(true);
@@ -108,29 +116,34 @@ public class GameManagerScript : MonoBehaviour
 			//playerData[numberOfCurrentPlayers].updateMouseLook(true);
 			//Debug.Log ("main:" + mainPlayer.ToString());
 						
-			this.networkView.RPC ("updateTeamData",RPCMode.AllBuffered,teamColor,playerName,playerID);
-			mainPlayer.networkView.RPC ("setNewPlayerData",RPCMode.AllBuffered,teamColor,playerName,playerID);
+			this.networkView.RPC("updateTeamData",RPCMode.AllBuffered,teamColor,playerName,playerID);
+			mainPlayer.networkView.RPC("setNewPlayerData",RPCMode.AllBuffered,teamColor,playerName,playerID);
 			//Debug.Log ("array:" + playerData[numberOfCurrentPlayers].ToString());
 			numberOfCurrentPlayers++;
 			locked = false;
 		}
 	}
 	
-	public int getTotalCubes(){
+	public int getTotalCubes()
+	{
 		return totalCubesInThisWorld;
 	}
 	
 	//player destruct from network
 	[RPC]
-	public void removePlayer(string playerID){
+	public void removePlayer(string playerID)
+	{
 		//get name from ID
 		string myName=null;
 		string teamColor=null;
-		for (int i =0;i<playerData.Length;i++){
+		for (int i = 0; i < playerData.Length; i++)
+		{
 			//Debug.Log ("Looking for: " + playerID);
 			//Debug.Log ("position i: " + i + " =" + allPlayers[i].playerGuid);
-			if(playerData!=null && playerData[i]!=null){
-				if(playerData[i].networkID == playerID){
+			if (playerData != null && playerData[i] != null)
+			{
+				if (playerData[i].networkID == playerID)
+				{
 					//Debug.Log ("found at: " + i);
 					myName = playerData[i].nameOfPlayer;
 					teamColor = playerData[i].color;
@@ -140,28 +153,34 @@ public class GameManagerScript : MonoBehaviour
 		
 		Debug.Log ("player to remove: " + myName + ", color: " + teamColor);
 		
-		if (myName !=null){
+		if (myName != null)
+		{
 			//move last item to index of name, remove last item, decrement
-			if(teamColor=="blue"){//blue team
+			if (teamColor == "blue")
+			{
 				int index = System.Array.IndexOf(blueTeamPlayers,myName);
-				blueTeamPlayers[index] = blueTeamPlayers [blueTeamTotalPlayers-1];
+				blueTeamPlayers[index] = blueTeamPlayers[blueTeamTotalPlayers-1];
 				//Debug.Log ("revising index: " + index + " from " + blueTeamPlayers[index] + " to " + blueTeamPlayers[blueTeamTotalPlayers-1]);
-				blueTeamPlayers[blueTeamTotalPlayers-1]=null;
+				blueTeamPlayers[blueTeamTotalPlayers-1] = null;
 				blueTeamTotalPlayers--;
 				//Debug.Log ("revised blue team: " + getBlueTeamString());
 			}
-			else{	//red team 
+			else //red team
+			{
 				int index = System.Array.IndexOf(redTeamPlayers,myName);
-				redTeamPlayers[index] = redTeamPlayers [redTeamTotalPlayers-1];
+				redTeamPlayers[index] = redTeamPlayers[redTeamTotalPlayers-1];
 				//Debug.Log ("revising index: " + index + " from " + redTeamPlayers[index] + " to " + redTeamPlayers[redTeamTotalPlayers-1]);
 				redTeamPlayers[redTeamTotalPlayers-1]=null;
 				redTeamTotalPlayers--;
 				//Debug.Log ("revised red team: " + getRedTeamString());
 			}
 			int indexLocation = 0;
-			for (int i=0;i<playerData.Length;i++){
+			for (int i = 0; i < playerData.Length; i++)
+			{
 				if(playerData[i].nameOfPlayer == myName && playerData[i].color == teamColor)
+				{
 					indexLocation = i;
+				}
 			}
 			playerData[indexLocation] = playerData[numberOfCurrentPlayers-1];
 			//allPlayers[numberOfPlayers-1] = new playerInfo();
@@ -173,68 +192,75 @@ public class GameManagerScript : MonoBehaviour
 	
 	//team data
 	[RPC]
-	public void updateTeamData(string teamColor, string name, string playerID){
-				
-		if(teamColor=="blue"){
+	public void updateTeamData(string teamColor, string name, string playerID)
+	{
+		if (teamColor == "blue")
+		{
 			blueTeamPlayers[blueTeamTotalPlayers] = name;
 			blueTeamTotalPlayers++;
 		}
-		else{
+		else //red team
+		{
 			redTeamPlayers[redTeamTotalPlayers] = name;
 			redTeamTotalPlayers++;
 		}
 	}
 	
-	public string getRedTeamString(){
+	public string getRedTeamString()
+	{
 		string temp = "";
-		for (int i = 0;i<redTeamPlayers.Length;i++){
+		for (int i = 0; i < redTeamPlayers.Length; i++)
+		{
 			temp += redTeamPlayers[i] + "\n";
 		}
 		return temp;
 	}
 	
-	public string getBlueTeamString(){
+	public string getBlueTeamString()
+	{
 		string temp = "";
-		for (int i = 0;i<blueTeamPlayers.Length;i++){
+		for (int i = 0; i < blueTeamPlayers.Length; i++){
 			temp += blueTeamPlayers[i] + "\n";
 		}
 		return temp;
 	}
-	public int getRedTeamCount(){
-		return redTeamTotalPlayers;
-	}
-	public int getBlueTeamCount(){
-		return blueTeamTotalPlayers;
-	}
-	public int getRedTeamScore(){
-		return redTeamTotalScore;
-	}
-	public int getBlueTeamScore(){
-		return blueTeamTotalScore;
-	}
+	
+	public int getRedTeamCount() { return redTeamTotalPlayers; }
+	public int getBlueTeamCount() { return blueTeamTotalPlayers; }
+	public int getRedTeamScore() { return redTeamTotalScore; }
+	public int getBlueTeamScore() { return blueTeamTotalScore; }
 		
 	//scoring updates
-	public int getMyTotalClaims(string myID){
-		for (int i=0;i<maxPlayers;i++){
-			if(playerData[i].networkID == myID){
+	public int getMyTotalClaims(string myID)
+	{
+		for (int i = 0; i < maxPlayers; i++)
+		{
+			if (playerData[i].networkID == myID)
+			{
 				return playerData[i].totalClaims;
 			}
 		}
 		return 0;
 	}
 	
-	public int getMyTotalOwned(string myID){
-		for (int i=0;i<maxPlayers;i++){
-			if(playerData[i].networkID == myID){
+	public int getMyTotalOwned(string myID)
+	{
+		for (int i=0;i<maxPlayers;i++)
+		{
+			if(playerData[i].networkID == myID)
+			{
 				return playerData[i].totalOwned;
 			}
 		}
 		return 0;
 	}
 	
-	public int getMyPercentage(string myID){
-		for (int i=0;i<maxPlayers;i++){
-			if(playerData[i].networkID == myID){
+	public int getMyPercentage(string myID)
+	{
+		for (int i=0;i<maxPlayers;i++)
+		{
+			if (playerData[i].networkID == myID)
+			{
 				return playerData[i].myPercent;
 			}
 		}
@@ -242,39 +268,54 @@ public class GameManagerScript : MonoBehaviour
 	}
 	
 	[RPC]
-	public void blueScore(int hits){
+	public void blueScore(int hits)
+	{
 		blueTeamTotalScore += hits;
-		if (blueTeamTotalScore<0){
+		if (blueTeamTotalScore < 0)
+		{
 			blueTeamTotalScore = 0;
-		}//could also check max?
+		}
+		//could also check max?
 	}
 	
 	[RPC]
-	public void redScore(int hits){
+	public void redScore(int hits)
+	{
 		redTeamTotalScore += hits;
-		if (redTeamTotalScore<0){
+		if (redTeamTotalScore < 0)
+		{
 			redTeamTotalScore = 0;
-		}//could also check max?
+		}
+		//could also check max?
 	}
 	
 	[RPC]
-	public void updatePlayersScore(string newOwnerID,string prevOwnerID){
-		if(newOwnerID != ""){//make sure we have an owner
+	public void updatePlayersScore(string newOwnerID,string prevOwnerID)
+	{
+		if (newOwnerID != "") //make sure we have an owner
+		{
 			//search list and update scores
-			for (int i=0;i<maxPlayers;i++){
-				if(playerData != null && playerData[i]!=null && playerData[i].networkID == newOwnerID){
+			for (int i=0;i<maxPlayers;i++)
+			{
+				if (playerData != null && playerData[i] != null && playerData[i].networkID == newOwnerID)
+				{
 					playerData[i].totalClaims++;
 					playerData[i].totalOwned++;
 				}
-				if(prevOwnerID!=""){
-					if(playerData != null && playerData[i]!=null && playerData[i].networkID == prevOwnerID){
+				if (prevOwnerID != "")
+				{
+					if (playerData != null && playerData[i] != null && playerData[i].networkID == prevOwnerID)
+					{
 						playerData[i].totalOwned--;
 					}
 				}
-				if(playerData != null && playerData[i]!=null && playerData[i].color =="red" && getRedTeamScore()!=0){
-					playerData[i].myPercent = (int) 100.0f * playerData[i].totalOwned/getRedTeamScore();
-				} else if (playerData != null && playerData[i]!=null && playerData[i].color =="blue" && getBlueTeamScore()!=0){
-					playerData[i].myPercent = (int) 100.0f * playerData[i].totalOwned/getBlueTeamScore();
+				if (playerData != null && playerData[i] != null && playerData[i].color == "red" && getRedTeamScore()!=0)
+				{
+					playerData[i].myPercent = (int) 100.0f * playerData[i].totalOwned / getRedTeamScore();
+				}
+				else if (playerData != null && playerData[i]!=null && playerData[i].color =="blue" && getBlueTeamScore()!=0)
+				{
+					playerData[i].myPercent = (int) 100.0f * playerData[i].totalOwned / getBlueTeamScore();
 				}
 			}
 		}

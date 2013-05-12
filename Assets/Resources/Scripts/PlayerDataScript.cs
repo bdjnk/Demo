@@ -2,8 +2,8 @@ using UnityEngine;
 using System.Collections;
 
 //[RequireComponent (typeof (NetworkView))]
-public class PlayerDataScript : MonoBehaviour {
-	
+public class PlayerDataScript : MonoBehaviour
+{
 	private GameObject mainGame = null;
 	private GameManagerScript mainGameScript = null;
 	//private GameObject myPlayer = null;
@@ -46,7 +46,8 @@ public class PlayerDataScript : MonoBehaviour {
 	
 	private Color playerColor = Color.red;
 	
-	public enum playerState {
+	public enum playerState
+	{
 		Normal,
 		GuiOn,
 		InitServer
@@ -55,7 +56,8 @@ public class PlayerDataScript : MonoBehaviour {
 	public playerState mCurrentState;
 	
 	// Use this for initialization
-	void Start () {
+	void Start()
+	{
 		//timeCheck = Time.realtimeSinceStartup;
 		mainGame = GameObject.Find ("GameManager");
 		mainGameScript = mainGame.GetComponent<GameManagerScript>();
@@ -63,7 +65,7 @@ public class PlayerDataScript : MonoBehaviour {
 		//myPlayer = this.parent;
 		playerName = PlayerPrefs.GetString("name");//needs to be set
 		playerNetworkID = Network.player.guid;
-		playerTeamColor = PlayerPrefs.GetString("teamColor");;
+		playerTeamColor = PlayerPrefs.GetString("teamColor");
 		myTotalClaims = 0;
 	  	myTotalOwned = 0;
 	 	myPercentOfTeamTotal = 0;
@@ -71,78 +73,98 @@ public class PlayerDataScript : MonoBehaviour {
 	}
 	
 	[RPC]
-	void SetMyName(string name){
+	void SetMyName(string name)
+	{
 		this.name = name;	
 	}
 	
 	[RPC]
-	void updateTeamCounts(int red,int blue){
+	void updateTeamCounts(int red,int blue)
+	{
 		redTeamTotalPlayers += red;
 		blueTeamTotalPlayers += blue;
 	}
 	
 	[RPC]
-	void setNewPlayerData(string teamColor, string myName, string myID) {
+	void setNewPlayerData(string teamColor, string myName, string myID)
+	{
 		playerName = myName;
 		playerNetworkID = myID;
 		//default color is red
 		GameObject playerShotColor = Resources.Load("Prefabs/RedShot") as GameObject;
 		Material playerMaterialColor = Resources.Load("Materials/Red") as Material;
-		if (teamColor == "blue"){
+		if (teamColor == "blue")
+		{
 			playerShotColor = Resources.Load("Prefabs/BlueShot") as GameObject;
 			playerMaterialColor = Resources.Load ("Materials/Blue") as Material;
 			myTeam = "blue";
 			this.name = "Blue Team Player (" + myName + ")";
-		} else {
+		}
+		else
+		{
 			this.name = "Red Team Player (" + myName + ")";
 		}
 		this.GetComponentInChildren<Camera>().GetComponent<PG_Gun>().shot = playerShotColor;
 		this.GetComponentInChildren<MeshRenderer>().renderer.material = playerMaterialColor;
 	}
 	// Update is called once per frame
-	void Update () {
-		
+	void Update()
+	{
 		//disable if not local player
-		if(playerNetworkID != Network.player.guid){
+		if (playerNetworkID != Network.player.guid)
+		{
 			enabled = false;
 		}
 		
 		//temporary pause updates while p is down
-		if (Input.GetKeyDown("p")){
+		if (Input.GetKeyDown("p"))
+		{
 			updateMouseLook(!mouseLooking);
 			mouseLooking = !mouseLooking;
 		}
 		
 		//set when to update GUI lists
-		if((int) Time.realtimeSinceStartup%guiSecondsToWait == 0){
+		if ((int)Time.realtimeSinceStartup % guiSecondsToWait == 0)
+		{
 			updateGUI = true;
-		} else {
+		}
+		else
+		{
 			updateGUI = false;
 		}
 			
-		if (Input.GetKeyDown("t") && Network.player.guid == playerNetworkID){
+		if (Input.GetKeyDown("t") && Network.player.guid == playerNetworkID)
+		{
 			showGUI = !showGUI;
-			if(myTeam == "blue"){
+			if (myTeam == "blue")
+			{
 				showRed = false;
 				showBlue = true;
-			} else {
+			}
+			else
+			{
 				showRed = true;
 				showBlue = false;
 			}
 		}
 	}
 	
-	private void updateMyScores(){
-		if(Network.player.guid == playerNetworkID){
+	private void updateMyScores()
+	{
+		if (Network.player.guid == playerNetworkID)
+		{
 			myTotalClaims = mainGameScript.getMyTotalClaims(playerNetworkID);
 			myTotalOwned = mainGameScript.getMyTotalOwned(playerNetworkID);
 			myPercentOfTeamTotal = mainGameScript.getMyPercentage(playerNetworkID);
 		}
 	}
 	
-	void OnGUI(){
-		if(showGUI){
-			if(updateGUI){
+	void OnGUI()
+	{
+		if(showGUI)
+		{
+			if(updateGUI)
+			{
 				//get update to current player lists
 				//mainGameScript.g
 				redTeamPlayersString = mainGameScript.getRedTeamString();
@@ -153,24 +175,27 @@ public class PlayerDataScript : MonoBehaviour {
 				updateMyScores();
 			}
 			//display the lists
-			if(showRed){
+			if (showRed)
+			{
 				//Debug.Log ("red team display by" + playerName);
 				GUI.Box(new Rect(buttonX,buttonY,buttonW,buttonH),"Red Team: \n" + redTeamPlayersString);
 				GUI.Box(new Rect(Screen.width - buttonW - buttonX,buttonY,buttonW,buttonH/2),"Red Team: \n" + redTeamTotalScore + "\n " + ((int) (100.0f* redTeamTotalScore/totalCubes))+ "%");
 				GUI.Box(new Rect(Screen.width - buttonW - buttonX,buttonY+buttonH*0.6f,buttonW,buttonH/2),"Blue Team: \n" + blueTeamTotalScore + "\n " + ((int)(100.0f* blueTeamTotalScore/totalCubes))+ "%");
 				GUI.Box(new Rect(Screen.width - buttonW - buttonX,buttonY+buttonH*1.2f,buttonW,buttonH),"My Cubes: \n" + myTotalOwned + "\n" + myPercentOfTeamTotal + "%\nClaims: \n" + myTotalClaims);
 			}
-			if(showBlue){
+			if (showBlue)
+			{
 				//Debug.Log ("blue team display by " + playerName);
 				GUI.Box(new Rect(buttonX,buttonY,buttonW,buttonH),"Blue Team: \n" + blueTeamPlayersString);
-				GUI.Box(new Rect(Screen.width - buttonW - buttonX,buttonY,buttonW,buttonH/2),"Blue Team: \n" + blueTeamTotalScore + "\n " + ((int)(100.0f* blueTeamTotalScore/totalCubes)) + "%");
+				GUI.Box(new Rect(Screen.width - buttonW - buttonX,buttonY,buttonW,buttonH/2), "Blue Team: \n" + blueTeamTotalScore + "\n " + ((int)(100.0f* blueTeamTotalScore/totalCubes)) + "%");
 				GUI.Box(new Rect(Screen.width - buttonW - buttonX,buttonY+buttonH*0.6f,buttonW,buttonH/2),"Red Team: \n" + redTeamTotalScore + "\n " + ((int)(100.0f* redTeamTotalScore/totalCubes)) + "%");
 				GUI.Box(new Rect(Screen.width - buttonW - buttonX,buttonY+buttonH*1.2f,buttonW,buttonH),"My Cubes: \n" + myTotalOwned + "\n" + myPercentOfTeamTotal + "%\nClaims: \n" + myTotalClaims);
 			}
 		}
 	}
 	
-	public void updateMouseLook(bool mouseLookingSet){
+	public void updateMouseLook(bool mouseLookingSet)
+	{
 		//GetComponentInChildren<Camera>().enabled = mouseLookingSet;
 		GetComponentInChildren<Camera>().GetComponent<MouseLook>().enabled = mouseLookingSet;
 		GetComponent<FPSInputController>().enabled = mouseLookingSet;
@@ -181,11 +206,13 @@ public class PlayerDataScript : MonoBehaviour {
 		Screen.showCursor = mouseLookingSet;
 	}
 	
-	public void updateInitialSettings(bool boolSet){
+	public void updateInitialSettings(bool boolSet)
+	{
 		enabled = true;//enable for this player only
 		GetComponentInChildren<Camera>().enabled = boolSet;
 		GetComponentInChildren<Camera>().GetComponent<PG_Gun>().enabled = boolSet;
 	}
+	
 	public string nameOfPlayer
 	{
 	    get { return playerName; }
@@ -216,7 +243,4 @@ public class PlayerDataScript : MonoBehaviour {
 	    get { return myPercentOfTeamTotal; }
 	    set { myPercentOfTeamTotal = value; }
 	}
-
-
-	
 }

@@ -28,7 +28,8 @@ public class PG_Shot : MonoBehaviour
 	void Update()
 	{
 		//persist for network functionality
-		if(Time.time - timeAtStart > persist - 3f){
+		if (Time.time - timeAtStart > persist - 3f)
+		{
 			//Debug.Log ("on delay, network view is: " + networkView.isMine + " id: " + networkView.viewID);
 			if ((Network.isServer || Network.isClient) && networkView.isMine)
 			{
@@ -49,9 +50,9 @@ public class PG_Shot : MonoBehaviour
 				cubeScript.Struck(this);
 			}
 		
-			if ((Network.isServer))//we could let server do all collisions?
-				{	
-					//Network.Destroy(gameObject);
+			if ((Network.isServer)) //we could let server do all collisions?
+			{	
+				//Network.Destroy(gameObject);
 			}
 		//}
 	}

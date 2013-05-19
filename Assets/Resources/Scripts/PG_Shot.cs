@@ -5,55 +5,49 @@ public class PG_Shot : MonoBehaviour
 {
 	public PG_Gun gun;
 	
-	public float persist = 6f;//4f in unity
+	public float persist = 6f;
 	private float timeAtStart;
 	
 	private string shotOwnerID;
 	
-	
-	// Use this for initialization
-	void Start()
-	{	
-		//Destroy(gameObject, persist+3f);//cleanup if network doesn't delete
-		
-		timeAtStart = Time.time;
-		
+	private void Start()
+	{
+		if (gun == null)
+		{
+			Destroy(gameObject);
+		}
+		timeAtStart = (float)Network.time;
 		shotOwnerID = Network.player.guid;
 	}
 	
-	public string getShotOwnerID(){
+	public string getShotOwnerID()
+	{
 		return shotOwnerID;
 	}
 	
-	void Update()
+	private void Update()
 	{
-		//persist for network functionality
-		if (Time.time - timeAtStart > persist - 3f)
+		// persist for network functionality && this shot belongs to me (on the network)
+		if (Network.time  > timeAtStart + persist && gun != null && gun.networkView.isMine)
 		{
-			//Debug.Log ("on delay, network view is: " + networkView.isMine + " id: " + networkView.viewID);
-			if ((Network.isServer || Network.isClient) && networkView.isMine)
-			{
-				//Network.Destroy(gameObject);
-			}
+			Network.RemoveRPCs(networkView.viewID);
+			Network.Destroy(gameObject); // destroy for the server and all clients
 		}
 	}
 	
-	void OnTriggerEnter(Collider other)
+	private void OnTriggerEnter(Collider other)
 	{
-		//if(networkView.isMine){
-			Debug.Log ("Collision!" + other.gameObject.ToString());
-			PG_Cube cubeScript =  other.GetComponent<PG_Cube>();
-			
-			if (cubeScript != null)
-			{
-				Debug.Log(cubeScript.ToString());
-				cubeScript.Struck(this);
-			}
+		PG_Cube cubeScript =  other.GetComponent<PG_Cube>();
 		
-			if ((Network.isServer)) //we could let server do all collisions?
+		if (cubeScript != null) // cube hasn't already been destroyed
+		{
+			cubeScript.Struck(this);
+			
+			if (gun != null && gun.networkView.isMine) // this shot belongs to me (on the network)
 			{	
-				//Network.Destroy(gameObject);
+				Network.RemoveRPCs(networkView.viewID);
+				Network.Destroy(gameObject); // destroy for the server and all clients
 			}
-		//}
+		}
 	}
 }

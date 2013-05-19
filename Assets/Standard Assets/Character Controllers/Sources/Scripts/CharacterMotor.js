@@ -416,7 +416,7 @@ private function ApplyGravityAndJumping (velocity : Vector3) {
 		velocity.y = Mathf.Max (velocity.y, -movement.maxFallSpeed);
 	}
 		
-	if (grounded) {
+	if (Input.GetKey(KeyCode.Space)) {//grounded) {
 		// Jump only if the jump button was pressed down in the last 0.2 seconds.
 		// We use this check instead of checking if it's pressed down right now
 		// because players will often try to jump in the exact moment when hitting the ground after a jump

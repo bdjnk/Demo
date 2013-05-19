@@ -7,11 +7,5 @@ using System.Collections;
  */
 public class PG_Building : MonoBehaviour
 {
-	void Update()
-	{
-	}
-	
-	public void Struck(Vector3 pos)
-	{
-	}
+	// just a placeholder
 }

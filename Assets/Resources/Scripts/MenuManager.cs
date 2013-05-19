@@ -24,6 +24,8 @@ public class MenuManager : MonoBehaviour
 	private bool bots = true;
 	private bool upgrades = true;
 	private bool listed = true;
+	private bool floor = true;
+	private float spacing = 1.5f;
 	
 	// Server / Host Variables
 	private string gameName = "123Paint the Town123";
@@ -61,6 +63,8 @@ public class MenuManager : MonoBehaviour
 		bots = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasBots", 1));
 		upgrades = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasUpgrades", 1));
 		listed = System.Convert.ToBoolean(PlayerPrefs.GetInt("isListed", 1));
+		floor = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasFloor", 1));
+		spacing = PlayerPrefs.GetFloat("buildingSpacing", 1.5f);
 		citySize[0] = PlayerPrefs.GetInt("citySizeX", 3);
 		citySize[1] = PlayerPrefs.GetInt("citySizeY", 3);
 		citySize[2] = PlayerPrefs.GetInt("citySizeZ", 3);
@@ -102,6 +106,20 @@ public class MenuManager : MonoBehaviour
 	
 	public int sliderHeight = 22;
 	
+	float FloatSlider(Rect rect, float val, float min, float max, string label, float step, bool dynamic)
+	{
+		Vector2 size = skin.GetStyle("Label").CalcSize(new GUIContent(max.ToString("#0.0")));
+		style.alignment = TextAnchor.MiddleRight;
+		GUI.Label(new Rect(rect.x, rect.y, size.x, rect.height), val.ToString("#0.0"), style);
+		
+		float width = dynamic ? (max-min+step)*10/step : rect.width;
+		GUI.Label(new Rect(rect.x+(width)+(size.x+5)+5, rect.y, rect.width+90-(size.x+5)-5, rect.height), label);
+		
+		float f = GUI.HorizontalSlider(new Rect(rect.x+(size.x+5), rect.y+(rect.height-12)/2, width, 12), val, min, max);
+		val = Mathf.Round(f / step) * step;
+		return val;
+	}
+	
 	int IntSlider(Rect rect, int val, int min, int max, string label, int step, bool dynamic)
 	{
 		Vector2 size = skin.GetStyle("Label").CalcSize(new GUIContent(max.ToString()));
@@ -130,9 +148,12 @@ public class MenuManager : MonoBehaviour
 		
 		maxPlayers = IntSlider(new Rect(edge+200, sliderHeight*2+edge, 200, sliderHeight), maxPlayers, 2, 14, "Max Players", 2, true);
 		
-		bots = GUI.Toggle(new Rect(edge+200, sliderHeight*3+edge, 200, sliderHeight), bots, " Bots");
-		upgrades = GUI.Toggle(new Rect(edge+200, sliderHeight*4+edge, 200, sliderHeight), upgrades, " Upgrades");
-		listed = GUI.Toggle(new Rect(edge+200, sliderHeight*5+edge, 200, sliderHeight), listed, " Make Public");
+		floor = GUI.Toggle(new Rect(edge+300, sliderHeight*3+edge, 100, sliderHeight), floor, " Floor");
+		upgrades = GUI.Toggle(new Rect(edge+200, sliderHeight*3+edge, 100, sliderHeight), upgrades, " Upgrades");
+		bots = GUI.Toggle(new Rect(edge+300, sliderHeight*4+edge, 100, sliderHeight), bots, " Bots");
+		listed = GUI.Toggle(new Rect(edge+200, sliderHeight*4+edge, 100, sliderHeight), listed, " List");
+		
+		spacing = FloatSlider(new Rect(edge+200, sliderHeight*5+edge, 80, sliderHeight), spacing, 1, 5, "Spacing", 0.1f, false);
 		
 		GUI.Label(new Rect(edge, sliderHeight*7+edge, 300, sliderHeight), "Minimum Building Dimensions");
 		minBuildingSize[0] = IntSlider(new Rect(edge, sliderHeight*8+edge, 200, sliderHeight), minBuildingSize[0], 1, 9, "Width", 1, true);
@@ -156,6 +177,9 @@ public class MenuManager : MonoBehaviour
 			PlayerPrefs.SetInt("hasBots", bots ? 1 : 0);
 			PlayerPrefs.SetInt("hasUpgrades", upgrades ? 1 : 0);
 			PlayerPrefs.SetInt("isListed", listed ? 1 : 0);
+			PlayerPrefs.SetInt("hasFloor", floor ? 1 : 0);
+			
+			PlayerPrefs.SetFloat("buildingSpacing", spacing);
 			
 			PlayerPrefs.SetInt("citySizeX", citySize[0]);
 			PlayerPrefs.SetInt("citySizeY", citySize[1]);

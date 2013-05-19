@@ -3,6 +3,8 @@ using System.Collections;
 
 public class PG_Map : MonoBehaviour
 {
+	public GameObject donePrefab;
+	
 	public bool floor = true;
 	public float spacing = 1.5f;
 	
@@ -38,6 +40,9 @@ public class PG_Map : MonoBehaviour
 		int height = PlayerPrefs.GetInt("citySizeY");//citySize[1];
 		int depth = PlayerPrefs.GetInt("citySizeZ");//citySize[2];
 		
+		spacing = PlayerPrefs.GetFloat("buildingSpacing", 1.5f);
+		floor = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasFloor", 1));
+		
 		for (int w = 0; w < width; w++)
 		{
 			for (int h = 0; h < height; h++)
@@ -54,6 +59,8 @@ public class PG_Map : MonoBehaviour
 			GameObject ground = Network.Instantiate(groundPrefab, new Vector3(0f,-0.5f,0f), Quaternion.identity, 0) as GameObject;
 			ground.isStatic = true;
 		}
+		GameObject done = Network.Instantiate(donePrefab, Vector3.zero, Quaternion.identity, 0) as GameObject;
+		done.isStatic = true;
 	}
 	
 	private Vector3 MakeBuilding(Vector3 offset)

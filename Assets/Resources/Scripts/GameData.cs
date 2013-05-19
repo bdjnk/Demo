@@ -10,20 +10,6 @@ public class GameData : MonoBehaviour
 	
 	public Texture GetTeam()
 	{
-		/*
-		Texture prev = next;
-		if (next.name == "Red")
-		{
-			redCount++;
-			networkView.RPC("SetNext", RPCMode.AllBuffered, "Blue");
-		}
-		else // next.name == "Blue"
-		{
-			blueCount++;
-			networkView.RPC("SetNext", RPCMode.AllBuffered, "Red");
-		}
-		return prev;
-		*/
 		if (redCount < blueCount)
 		{
 			networkView.RPC("redPlus", RPCMode.AllBuffered);

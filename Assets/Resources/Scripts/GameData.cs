@@ -24,10 +24,4 @@ public class GameData : MonoBehaviour
 	
 	[RPC] private void redPlus() { redCount++; }
 	[RPC] private void bluePlus() { blueCount++; }
-	
-	[RPC]
-	private void SetNext(string color)
-	{
-		next = Resources.Load("Textures/"+color) as Texture;
-	}
 }

@@ -9,6 +9,11 @@ public class Ready : MonoBehaviour
 	void Start() // at this point we are ready to go
 	{
 		SpawnPlayer();
+		
+		foreach (GameObject bot in GameObject.FindGameObjectsWithTag("Bot"))
+		{
+			bot.GetComponent<PG_Bot>().Setup("Red"); //TODO get color properly
+		}
 	}
 	
 	private void SpawnPlayer()

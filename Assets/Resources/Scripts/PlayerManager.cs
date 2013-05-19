@@ -4,7 +4,7 @@ using System.Collections;
 public class PlayerManager : MonoBehaviour
 {
 	private GameObject master;
-	private GameData gameData;
+	//private GameData gameData;
 	
 	public bool ready = false;
 		
@@ -14,7 +14,7 @@ public class PlayerManager : MonoBehaviour
 	private void Awake()
 	{
 		master = GameObject.FindGameObjectWithTag("Master");
-		gameData = master.GetComponent<GameData>();
+		//gameData = master.GetComponent<GameData>();
 	}
 	
 	private void Start()
@@ -42,7 +42,7 @@ public class PlayerManager : MonoBehaviour
 	
 	public void JoinTeam()
 	{
-		Texture color = gameData.GetTeam();
+		Texture color = master.GetComponent<GameData>().GetTeam();
 		networkView.RPC("SetColor", RPCMode.AllBuffered, color.name);
 	}
 	
@@ -51,6 +51,7 @@ public class PlayerManager : MonoBehaviour
 	{
 		GetComponentInChildren<MeshRenderer>().material.SetTexture("_MainTex", Resources.Load("Textures/"+color) as Texture);
 		GetComponentInChildren<PG_Gun>().shot = Resources.Load("Prefabs/"+color+"Shot") as GameObject;
+		tag = color;
 	}
 	
 	private void Update(){}

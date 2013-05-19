@@ -3,6 +3,7 @@ using System.Collections;
 
 public class PG_Map : MonoBehaviour
 {
+	public GameObject botPrefab;
 	public GameObject donePrefab;
 	
 	public bool floor = true;
@@ -54,6 +55,13 @@ public class PG_Map : MonoBehaviour
 				}
 			}
 		}
+		
+		//----------------------------------------------- bots
+		GameObject bot;
+		bot = Network.Instantiate(botPrefab, new Vector3(-5, 1, -5), Quaternion.identity, 1) as GameObject;
+		bot = Network.Instantiate(botPrefab, new Vector3(offset.x+2*maxBuildingSize[0]*1.5f-1+spacing+5, offset.y+2*maxBuildingSize[1]*1.5f-1+spacing+5, offset.z+2*maxBuildingSize[2]*1.5f-1+spacing+5), Quaternion.identity, 1) as GameObject;
+		//----------------------------------------------- bots
+		
 		if (floor)
 		{
 			GameObject ground = Network.Instantiate(groundPrefab, new Vector3(0f,-0.5f,0f), Quaternion.identity, 0) as GameObject;

@@ -54,12 +54,15 @@ public class PG_Gun : MonoBehaviour
 	
 	public void Shoot()
 	{
-		if (Network.time > delay)
+		if (Network.time > delay && networkView.isMine)
 		{
 			delay = (float)Network.time + rate;
 			Vector3 pos = transform.position + transform.forward * transform.localScale.z * 1f;
 			GameObject clone  = Network.Instantiate(shot, pos, transform.rotation, 10) as GameObject;
 			networkView.RPC("InitializeShot", RPCMode.All, clone.networkView.viewID); // ???
+			//added these back here
+			//clone.rigidbody.velocity = transform.TransformDirection(new Vector3(0, 0, speed));
+			clone.GetComponent<PG_Shot>().gun = this;
 		}
 	}
 	
@@ -69,10 +72,12 @@ public class PG_Gun : MonoBehaviour
 		NetworkView netView = NetworkView.Find(id);
 		if (netView != null)
 		{
+			
 			GameObject clone = netView.gameObject;
 			if (clone != null) // clone shouldn't be null, but sometimes it is...
 			{
 				clone.rigidbody.velocity = transform.TransformDirection(new Vector3(0, 0, speed));
+				
 				clone.GetComponent<PG_Shot>().gun = this;
 			}
 		}

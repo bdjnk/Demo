@@ -36,7 +36,7 @@ public class PG_Cube : MonoBehaviour
 	
 	public void Struck(PG_Shot shot)
 	{		
-		if(shot != null)
+		if (shot != null && shot.gun.networkView.isMine)
 		{
 			foreach (Transform child in transform.parent) // splash effect
 			{

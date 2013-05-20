@@ -30,4 +30,17 @@ public class GameData : MonoBehaviour
 	
 	public int redScore = 0;
 	public int blueScore = 0;
+	
+	public void ClearData()
+	{
+		redCount = 0;
+		blueCount = 0;
+		redScore = 0;
+		blueScore = 0;
+	}
+	
+	private void Update()
+	{
+		
+	}
 }

@@ -322,6 +322,8 @@ public class MenuManager : MonoBehaviour
 	private void OnDisconnectedFromServer(NetworkDisconnection info)
 	{
 		Screen.showCursor = true;
+		GetComponent<GameData>().ClearData();
+		GetComponent<UpgradeManager>().enabled = false;
 		
 		foreach (GameObject go in FindObjectsOfType(typeof(GameObject)))
 		{

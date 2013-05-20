@@ -3,13 +3,11 @@ using System.Collections;
 
 public class PlayerManager : MonoBehaviour
 {
-	private GameObject master;
 	private GameData gameData;
 	
 	private void Awake()
 	{
-		master = GameObject.FindGameObjectWithTag("Master");
-		gameData = master.GetComponent<GameData>();
+		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
 	}
 	
 	public void Enable(bool state)
@@ -28,12 +26,12 @@ public class PlayerManager : MonoBehaviour
 		
 		enabled = state;
 		
-		master.GetComponent<UpgradeManager>().enabled = true;
+		gameData.GetComponent<UpgradeManager>().enabled = true;
 	}
 	
 	public void JoinTeam()
 	{
-		Texture color = master.GetComponent<GameData>().GetTeam();
+		Texture color = gameData.GetTeam();
 		networkView.RPC("SetColor", RPCMode.AllBuffered, color.name);
 	}
 	
@@ -56,7 +54,7 @@ public class PlayerManager : MonoBehaviour
 	
 	private void Start()
 	{
-		totalCubes = master.GetComponent<PG_Map>().cubeCount;
+		totalCubes = gameData.GetComponent<PG_Map>().cubeCount;
 	}
 	
 	private bool showHUD = false;

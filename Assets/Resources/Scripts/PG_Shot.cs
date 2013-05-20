@@ -42,15 +42,14 @@ public class PG_Shot : MonoBehaviour
 	{
 		PG_Cube cubeScript =  other.GetComponent<PG_Cube>();
 		
-		if (cubeScript != null) // cube hasn't already been destroyed
+		if (cubeScript != null) // this is a cube we're dealing with here
 		{
-			if (gun != null && gun.networkView.isMine) // this shot belongs to me (on the network)
-			{	
-				cubeScript.Struck(this);
-				
-				Network.RemoveRPCs(networkView.viewID);
-				Network.Destroy(gameObject); // destroy for the server and all clients
-			}
+			cubeScript.Struck(this);
+		}
+		if (gun != null && gun.networkView.isMine) // this shot belongs to me (on the network)
+		{
+			Network.RemoveRPCs(networkView.viewID);
+			Network.Destroy(gameObject); // destroy for the server and all clients
 		}
 	}
 }

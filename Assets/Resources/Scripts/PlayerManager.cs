@@ -37,11 +37,10 @@ public class PlayerManager : MonoBehaviour
 		networkView.RPC("SetColor", RPCMode.AllBuffered, color.name);
 	}
 	
-	[RPC]
-	private void SetColor(string color)
+	[RPC] private void SetColor(string color)
 	{
 		GetComponentInChildren<MeshRenderer>().material.SetTexture("_MainTex", Resources.Load("Textures/"+color) as Texture);
-		GetComponentInChildren<PG_Gun>().shot = Resources.Load("Prefabs/"+color+"Shot") as GameObject;
+		GetComponentInChildren<PG_Gun>().shotPrefab = Resources.Load("Prefabs/"+color+"Shot") as GameObject;
 		tag = color;
 	}
 	

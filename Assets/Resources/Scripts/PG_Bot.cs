@@ -15,13 +15,11 @@ public class PG_Bot : MonoBehaviour
 	
 	private void Start()
 	{
-		//enemy = GameObject.Find("First Person Controller").transform;
-		// make an array of transforms, and use GameObject.FindGameObjectsWithTag("Color");
 	}
 	
 	public void Setup(string myColor)
 	{
-		GetComponentInChildren<PG_Gun>().shot = Resources.Load("Prefabs/"+myColor+"Shot") as GameObject;
+		GetComponentInChildren<PG_Gun>().shotPrefab = Resources.Load("Prefabs/"+myColor+"Shot") as GameObject;
 		
 		ParticleSystem ps = GetComponentInChildren<ParticleSystem>();
 		Color color = myColor == "Blue" ? Color.blue : Color.red;
@@ -50,9 +48,15 @@ public class PG_Bot : MonoBehaviour
 				index = i;
 			}
 		}
-		if (distance < 30 && LineOfSight(enemies[index].transform))
+		Transform target = enemies[index].transform;
+		
+		if (Mathf.Approximately(Vector3.Angle(target.position - transform.position, transform.forward), 0))
 		{
-			transform.forward = enemies[index].transform.position - transform.position; // causes sudden jumps
+			gun.Shoot(); // circumnavigates a strange hit comparison delay bug.
+		}
+		else if (LineOfSight(target))
+		{
+			transform.forward = target.position - transform.position; // causes sudden jumps
 			gun.Shoot();
 		}
 	}
@@ -60,8 +64,8 @@ public class PG_Bot : MonoBehaviour
 	private bool LineOfSight(Transform target)
 	{
 		if (Vector3.Angle(target.position - transform.position, transform.forward) <= fov
-			&& Physics.Linecast(transform.position, target.position, out hit)
-			&& hit.collider.transform == target)
+			&& Physics.Raycast(new Ray(transform.position, (target.position - transform.position).normalized), out hit, 25)
+			&& hit.transform == target)
 		{
 			return true;
 		}

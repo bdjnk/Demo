@@ -7,6 +7,7 @@ public class GameData : MonoBehaviour
 	
 	private int redCount;
 	private int blueCount;
+	private bool cubesUpdated = false;
 	
 	public Texture GetTeam()
 	{
@@ -22,6 +23,26 @@ public class GameData : MonoBehaviour
 		}
 	}
 	
+	void Update(){
+		if((redCount > 0 || blueCount > 0) && !cubesUpdated){
+			totalCubes = GetComponent<PG_Map>().cubeCount;
+			cubesUpdated = true;
+		}
+		if(cubesUpdated && totalCubes > 0){
+			redTeamPercent = (int) (100.0f * redScore/totalCubes);
+			blueTeamPercent = (int) (100.0f * blueScore/totalCubes);
+		}
+	}
+	
+	public void ResetData(){
+		redScore = 0;
+	  	blueScore = 0;
+	  	totalCubes = 0;
+	  	redTeamPercent = 0;
+	  	blueTeamPercent = 0;
+		cubesUpdated = false;
+	}
+	
 	[RPC] private void joinRed() { redCount++; }
 	[RPC] private void joinBlue() { blueCount++; }
 	
@@ -30,4 +51,7 @@ public class GameData : MonoBehaviour
 	
 	public int redScore = 0;
 	public int blueScore = 0;
+	public int totalCubes = 0;
+	public int redTeamPercent = 0;
+	public int blueTeamPercent = 0;
 }

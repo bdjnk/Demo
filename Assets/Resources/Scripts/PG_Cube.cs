@@ -7,6 +7,8 @@ using System.Collections;
  */
 public class PG_Cube : MonoBehaviour
 {
+	private GameData gameData;
+	
 	public Material gray;
 	public Texture red;
 	public Texture blue;
@@ -15,14 +17,10 @@ public class PG_Cube : MonoBehaviour
 	public int maxColor = 5;
 	private float amountBlue;
 	private float amountRed;
-	private string cubeOwnerID;
 	
-	//private PG_Building building;
-	
-	private void Start()
+	private void Awake()
 	{
-		//building = transform.parent.GetComponent<PG_Building>();
-		cubeOwnerID="";
+		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
 	}
 	
 	public void SetUpgrade(Texture upgrade) // sets an upgrade on this cube
@@ -43,7 +41,7 @@ public class PG_Cube : MonoBehaviour
 			foreach (Transform child in transform.parent) // splash effect
 			{
 				float distance = Vector3.Distance(transform.position, child.position);
-				// testing for minimum reaction on adjacent
+				
 				if (distance < 2.9f) // only consider adjacent cubes
 				{
 					PG_Cube cubeScript = child.GetComponent<PG_Cube>();
@@ -77,11 +75,11 @@ public class PG_Cube : MonoBehaviour
 				amountRed = Mathf.Max(0, amountRed - effect);
 				amountBlue = Mathf.Min(maxColor, amountBlue + effect);
 				
-				if (amountBlue > resistence)
+				if (amountBlue > resistence && renderer.material.mainTexture != blue)
 				{
 					// do necessary scoring here
-					
-					networkView.RPC("SetBlue", RPCMode.AllBuffered);
+					//if (shot.gun.networkView.isMine)
+						networkView.RPC("SetBlue", RPCMode.AllBuffered);
 				}
 			}
 			else if (texture == red)
@@ -89,25 +87,33 @@ public class PG_Cube : MonoBehaviour
 				amountBlue = Mathf.Max(0, amountBlue - effect);
 				amountRed = Mathf.Min(maxColor, amountRed + effect);
 				
-				if (amountRed > resistence)
+				if (amountRed > resistence && renderer.material.mainTexture != red)
 				{
 					// do necessary scoring here
-					
-					networkView.RPC("SetRed", RPCMode.AllBuffered);
+					//if (shot.gun.networkView.isMine)
+						networkView.RPC("SetRed", RPCMode.AllBuffered);
 				}
 			}
 		}
 	}
 	
-	[RPC]
-	private void SetRed()
+	[RPC] private void SetRed()
 	{
+		if (renderer.material.mainTexture == blue)
+		{
+			gameData.blueScore--;
+		}
 		renderer.material.SetTexture("_MainTex", red);
+		gameData.redScore++;
 	}
 	
-	[RPC]
-	private void SetBlue()
+	[RPC] private void SetBlue()
 	{
+		if (renderer.material.mainTexture == red)
+		{
+			gameData.redScore--;
+		}
 		renderer.material.SetTexture("_MainTex", blue);
+		gameData.blueScore++;
 	}
 }

@@ -54,9 +54,9 @@ public class PG_Gun : MonoBehaviour
 	
 	public void Shoot()
 	{
-		if (Time.time > delay)
+		if (Network.time > delay)
 		{
-			delay = Time.time + rate;
+			delay = (float)Network.time + rate;
 			Vector3 pos = transform.position + transform.forward * transform.localScale.z * 1f;
 			GameObject clone  = Network.Instantiate(shot, pos, transform.rotation, 10) as GameObject;
 			networkView.RPC("InitializeShot", RPCMode.All, clone.networkView.viewID); // ???

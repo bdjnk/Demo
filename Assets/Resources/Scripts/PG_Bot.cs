@@ -55,13 +55,6 @@ public class PG_Bot : MonoBehaviour
 			transform.forward = enemies[index].transform.position - transform.position; // causes sudden jumps
 			gun.Shoot();
 		}
-		/*
-		if (Vector3.Distance(enemy.position, transform.position) < 30 && LineOfSight(enemy))
-		{
-			transform.forward = enemy.position - transform.position; // causes sudden jumps
-			gun.Shoot();
-		}
-		*/
 	}
 	
 	private bool LineOfSight(Transform target)

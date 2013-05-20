@@ -56,8 +56,8 @@ public class MenuManager : MonoBehaviour
 		{
 			// do stuff maybe...
 		}
-		playerName = PlayerPrefs.GetString("playerName", "Default Player Name");
-		serverName = PlayerPrefs.GetString("serverName", "Default Server Name");
+		playerName = PlayerPrefs.GetString("playerName", "Player Name");
+		serverName = PlayerPrefs.GetString("serverName", "Server Name");
 		
 		maxPlayers = PlayerPrefs.GetInt("maxPlayers", 10);
 		bots = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasBots", 1));
@@ -308,6 +308,7 @@ public class MenuManager : MonoBehaviour
 	// Called on the server whenever a new player has successfully connected.
 	private void OnPlayerConnected(NetworkPlayer netPlayer)
 	{
+		GetComponent<GameData>().netPlayer = netPlayer;
 	}
 	
 	// Called on the server whenever a player is disconnected from the server.

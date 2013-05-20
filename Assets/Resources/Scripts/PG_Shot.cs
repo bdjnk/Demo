@@ -41,10 +41,10 @@ public class PG_Shot : MonoBehaviour
 		
 		if (cubeScript != null) // cube hasn't already been destroyed
 		{
-			cubeScript.Struck(this);
-			
 			if (gun != null && gun.networkView.isMine) // this shot belongs to me (on the network)
 			{	
+				cubeScript.Struck(this);
+				
 				Network.RemoveRPCs(networkView.viewID);
 				Network.Destroy(gameObject); // destroy for the server and all clients
 			}

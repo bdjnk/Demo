@@ -9,8 +9,6 @@ public class PG_Map : MonoBehaviour
 	public bool floor = true;
 	public float spacing = 1.5f;
 	
-    private int[] citySize; // {width, height, depth}
-	
     private int[] minBuildingSize;
     private int[] maxBuildingSize;
 	
@@ -37,9 +35,9 @@ public class PG_Map : MonoBehaviour
 		Vector3 offset = Vector3.zero;
 		Vector3 temp = Vector3.zero; //TODO give a meaningful name
 		
-		int width = PlayerPrefs.GetInt("citySizeX");//citySize[0];
-		int height = PlayerPrefs.GetInt("citySizeY");//citySize[1];
-		int depth = PlayerPrefs.GetInt("citySizeZ");//citySize[2];
+		int width = PlayerPrefs.GetInt("citySizeX");
+		int height = PlayerPrefs.GetInt("citySizeY");
+		int depth = PlayerPrefs.GetInt("citySizeZ");
 		
 		spacing = PlayerPrefs.GetFloat("buildingSpacing", 1.5f);
 		floor = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasFloor", 1));
@@ -58,6 +56,7 @@ public class PG_Map : MonoBehaviour
 		
 		//----------------------------------------------- bots
 		GameObject bot;
+		//TODO have the bots start facing... where? and how?
 		bot = Network.Instantiate(botPrefab, new Vector3(-5, 1, -5), Quaternion.identity, 1) as GameObject;
 		bot = Network.Instantiate(botPrefab, new Vector3(offset.x+2*maxBuildingSize[0]*1.5f-1+spacing+5, offset.y+2*maxBuildingSize[1]*1.5f-1+spacing+5, offset.z+2*maxBuildingSize[2]*1.5f-1+spacing+5), Quaternion.identity, 1) as GameObject;
 		//----------------------------------------------- bots
@@ -67,9 +66,13 @@ public class PG_Map : MonoBehaviour
 			GameObject ground = Network.Instantiate(groundPrefab, new Vector3(0f,-0.5f,0f), Quaternion.identity, 0) as GameObject;
 			ground.isStatic = true;
 		}
+		networkView.RPC("SetCubeCount", RPCMode.OthersBuffered, cubeCount);
+		
 		GameObject done = Network.Instantiate(donePrefab, Vector3.zero, Quaternion.identity, 0) as GameObject;
 		done.isStatic = true;
 	}
+	
+	[RPC] private void SetCubeCount(int c) { cubeCount = c; }
 	
 	private Vector3 MakeBuilding(Vector3 offset)
 	{

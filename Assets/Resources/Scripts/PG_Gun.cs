@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PG_Gun : MonoBehaviour
 {
-	public GameObject shot;
+	public GameObject shotPrefab;
 	public float speed = 15f; // speed of shot
 	public float rate = 0.2f; // rate of fire, portion of a second before firing again
 	public float power = 3f;
@@ -54,26 +54,30 @@ public class PG_Gun : MonoBehaviour
 	
 	public void Shoot()
 	{
-		if (Network.time > delay)
+		if (Network.time > delay && networkView.isMine)
 		{
 			delay = (float)Network.time + rate;
 			Vector3 pos = transform.position + transform.forward * transform.localScale.z * 1f;
-			GameObject clone  = Network.Instantiate(shot, pos, transform.rotation, 10) as GameObject;
-			networkView.RPC("InitializeShot", RPCMode.All, clone.networkView.viewID); // ???
+			GameObject shot = Network.Instantiate(shotPrefab, pos, transform.rotation, 10) as GameObject;
+			networkView.RPC("InitializeShot", RPCMode.All, shot.networkView.viewID, networkView.viewID);
 		}
 	}
 	
 	[RPC]
-	private void InitializeShot(NetworkViewID id)
+	private void InitializeShot(NetworkViewID shotID, NetworkViewID gunID)
 	{
-		NetworkView netView = NetworkView.Find(id);
-		if (netView != null)
+		NetworkView shotNetView = NetworkView.Find(shotID);
+		NetworkView gunNetView = NetworkView.Find(gunID);
+		
+		if (shotNetView != null && gunNetView != null) // shouldn't be null, but sometimes it is...
 		{
-			GameObject clone = netView.gameObject;
-			if (clone != null) // clone shouldn't be null, but sometimes it is...
+			GameObject shot = shotNetView.gameObject;
+			GameObject gun = gunNetView.gameObject;
+			
+			if (shot != null && gunNetView != null)
 			{
-				clone.rigidbody.velocity = transform.TransformDirection(new Vector3(0, 0, speed));
-				clone.GetComponent<PG_Shot>().gun = this;
+				shot.rigidbody.velocity = transform.TransformDirection(new Vector3(0, 0, speed));
+				shot.GetComponent<PG_Shot>().gun = gun.GetComponent<PG_Gun>();
 			}
 		}
 	}

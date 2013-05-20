@@ -150,8 +150,8 @@ public class MenuManager : MonoBehaviour
 		
 		floor = GUI.Toggle(new Rect(edge+300, sliderHeight*3+edge, 100, sliderHeight), floor, " Floor");
 		upgrades = GUI.Toggle(new Rect(edge+200, sliderHeight*3+edge, 100, sliderHeight), upgrades, " Upgrades");
-		bots = GUI.Toggle(new Rect(edge+300, sliderHeight*4+edge, 100, sliderHeight), bots, " Bots");
-		listed = GUI.Toggle(new Rect(edge+200, sliderHeight*4+edge, 100, sliderHeight), listed, " List");
+		bots = GUI.Toggle(new Rect(edge+300, sliderHeight*4+edge, 100, sliderHeight), false, " Bots");
+		listed = GUI.Toggle(new Rect(edge+200, sliderHeight*4+edge, 100, sliderHeight), true, " List");
 		
 		spacing = FloatSlider(new Rect(edge+200, sliderHeight*5+edge, 80, sliderHeight), spacing, 1, 5, "Spacing", 0.1f, false);
 		

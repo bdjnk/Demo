@@ -57,10 +57,9 @@ public class PG_Map : MonoBehaviour
 		//----------------------------------------------- bots
 		if (System.Convert.ToBoolean(PlayerPrefs.GetInt("hasBots", 1)))
 		{
-			GameObject bot;
-			//TODO have the bots start facing... where? and how?
+			GameObject bot; //TODO bot positioning and facing are still not working
 			bot = Network.Instantiate(botPrefab, new Vector3(-5, 1, -5), Quaternion.identity, 1) as GameObject;
-			bot = Network.Instantiate(botPrefab, new Vector3(offset.x+2*maxBuildingSize[0]*1.5f-1+spacing+5, offset.y+2*maxBuildingSize[1]*1.5f-1+spacing+5, offset.z+2*maxBuildingSize[2]*1.5f-1+spacing+5), Quaternion.identity, 1) as GameObject;
+			//bot = Network.Instantiate(botPrefab, new Vector3(offset.x+2*maxBuildingSize[0]*1.5f-1+spacing+5, offset.y+2*maxBuildingSize[1]*1.5f-1+spacing+5, offset.z+2*maxBuildingSize[2]*1.5f-1+spacing+5), Quaternion.identity, 1) as GameObject;
 		}
 		//----------------------------------------------- bots
 		

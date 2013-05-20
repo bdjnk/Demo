@@ -78,8 +78,7 @@ public class PG_Cube : MonoBehaviour
 				if (amountBlue > resistence && renderer.material.mainTexture != blue)
 				{
 					// do necessary scoring here
-					//if (shot.gun.networkView.isMine)
-						networkView.RPC("SetBlue", RPCMode.AllBuffered);
+					networkView.RPC("SetBlue", RPCMode.AllBuffered);
 				}
 			}
 			else if (texture == red)
@@ -90,8 +89,7 @@ public class PG_Cube : MonoBehaviour
 				if (amountRed > resistence && renderer.material.mainTexture != red)
 				{
 					// do necessary scoring here
-					//if (shot.gun.networkView.isMine)
-						networkView.RPC("SetRed", RPCMode.AllBuffered);
+					networkView.RPC("SetRed", RPCMode.AllBuffered);
 				}
 			}
 		}

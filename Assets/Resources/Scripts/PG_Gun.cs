@@ -66,11 +66,15 @@ public class PG_Gun : MonoBehaviour
 	[RPC]
 	private void InitializeShot(NetworkViewID id)
 	{
-		GameObject clone = NetworkView.Find(id).gameObject;
-		if (clone != null) // clone shouldn't be null, but sometimes it is...
+		NetworkView netView = NetworkView.Find(id);
+		if (netView != null)
 		{
-			clone.rigidbody.velocity = transform.TransformDirection(new Vector3(0, 0, speed));
-			clone.GetComponent<PG_Shot>().gun = this;
+			GameObject clone = netView.gameObject;
+			if (clone != null) // clone shouldn't be null, but sometimes it is...
+			{
+				clone.rigidbody.velocity = transform.TransformDirection(new Vector3(0, 0, speed));
+				clone.GetComponent<PG_Shot>().gun = this;
+			}
 		}
 	}
 	

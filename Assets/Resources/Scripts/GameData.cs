@@ -45,8 +45,8 @@ public class GameData : MonoBehaviour
 	{
 		Network.RemoveRPCs(player.networkView.viewID);
 		
-		Color color = player.GetComponentInChildren<MeshRenderer>().material.color;
-		if (color == red)
+		string color = player.GetComponentInChildren<MeshRenderer>().material.mainTexture.name;
+		if (color == "Red")
 		{
 			networkView.RPC("leaveRed", RPCMode.AllBuffered);
 		}

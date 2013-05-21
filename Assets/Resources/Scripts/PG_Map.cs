@@ -57,15 +57,21 @@ public class PG_Map : MonoBehaviour
 		//----------------------------------------------- bots
 		if (System.Convert.ToBoolean(PlayerPrefs.GetInt("hasBots", 1)))
 		{
-			GameObject bot; //TODO bot positioning and facing are still not working
+			GameObject bot; //TODO bot facing is still not working
 			bot = Network.Instantiate(botPrefab, new Vector3(-5, 1, -5), Quaternion.identity, 2) as GameObject;
-			//bot = Network.Instantiate(botPrefab, new Vector3(offset.x+2*maxBuildingSize[0]*1.5f-1+spacing+5, offset.y+2*maxBuildingSize[1]*1.5f-1+spacing+5, offset.z+2*maxBuildingSize[2]*1.5f-1+spacing+5), Quaternion.identity, 2) as GameObject;
+			bot = Network.Instantiate(botPrefab, new Vector3(-5, 1, offset.z+maxBuildingSize[0]*1.5f+4.5f), Quaternion.identity, 2) as GameObject;
+			bot = Network.Instantiate(botPrefab, new Vector3(-5, offset.y+maxBuildingSize[0]*1.5f+4.5f, -5), Quaternion.identity, 2) as GameObject;
+			bot = Network.Instantiate(botPrefab, new Vector3(offset.x+maxBuildingSize[0]*1.5f+4.5f, 1, -5), Quaternion.identity, 2) as GameObject;
+			bot = Network.Instantiate(botPrefab, new Vector3(-5, offset.y+maxBuildingSize[0]*1.5f+4.5f, offset.z+maxBuildingSize[0]*1.5f+4.5f), Quaternion.identity, 2) as GameObject;
+			bot = Network.Instantiate(botPrefab, new Vector3(offset.x+maxBuildingSize[0]*1.5f+4.5f, 1, offset.z+maxBuildingSize[0]*1.5f+4.5f), Quaternion.identity, 2) as GameObject;
+			bot = Network.Instantiate(botPrefab, new Vector3(offset.x+maxBuildingSize[0]*1.5f+4.5f, offset.y+maxBuildingSize[0]*1.5f+4.5f, -5), Quaternion.identity, 2) as GameObject;
+			bot = Network.Instantiate(botPrefab, new Vector3(offset.x+maxBuildingSize[0]*1.5f+4.5f, offset.y+maxBuildingSize[0]*1.5f+4.5f, offset.z+maxBuildingSize[0]*1.5f+4.5f), Quaternion.identity, 2) as GameObject;
 		}
 		//----------------------------------------------- bots
 		
 		if (floor)
 		{
-			GameObject ground = Network.Instantiate(groundPrefab, new Vector3(0f,-0.5f,0f), Quaternion.identity, 0) as GameObject;
+			GameObject ground = Network.Instantiate(groundPrefab, new Vector3((maxBuildingSize[0]*1.5f*width-1.5f)/2, -0.5f, (maxBuildingSize[2]*1.5f*depth-1.5f)/2), Quaternion.identity, 0) as GameObject;
 			ground.isStatic = true;
 		}
 		networkView.RPC("SetCubeCount", RPCMode.OthersBuffered, cubeCount);

@@ -150,8 +150,8 @@ public class MenuManager : MonoBehaviour
 		
 		floor = GUI.Toggle(new Rect(edge+300, sliderHeight*3+edge, 100, sliderHeight), floor, " Floor");
 		upgrades = GUI.Toggle(new Rect(edge+200, sliderHeight*3+edge, 100, sliderHeight), upgrades, " Upgrades");
-		bots = GUI.Toggle(new Rect(edge+300, sliderHeight*4+edge, 100, sliderHeight), false, " Bots");
-		listed = GUI.Toggle(new Rect(edge+200, sliderHeight*4+edge, 100, sliderHeight), true, " List");
+		bots = GUI.Toggle(new Rect(edge+300, sliderHeight*4+edge, 100, sliderHeight), false, " Bots"); // bots are disabled for now
+		listed = GUI.Toggle(new Rect(edge+200, sliderHeight*4+edge, 100, sliderHeight), true, " List"); // all games are listed for now
 		
 		spacing = FloatSlider(new Rect(edge+200, sliderHeight*5+edge, 80, sliderHeight), spacing, 1, 5, "Spacing", 0.1f, false);
 		
@@ -171,6 +171,8 @@ public class MenuManager : MonoBehaviour
 		if (GUI.Button(new Rect(100, sliderHeight*12+edge, 100, sliderHeight), "Create"))
 		{
 			state = State.play;
+			
+			PlayerPrefs.SetString("serverName", serverName);
 			
 			PlayerPrefs.SetInt("maxPlayers", maxPlayers);
 			
@@ -197,6 +199,7 @@ public class MenuManager : MonoBehaviour
 		}
 		if (GUI.Button(new Rect(200, sliderHeight*12+edge, 100, sliderHeight), "Cancel"))
 		{
+			PlayerPrefs.SetString("serverName", serverName);
 			state = State.list;
 		}
 		

@@ -57,7 +57,7 @@ public class PG_Map : MonoBehaviour
 		//----------------------------------------------- bots
 		if (System.Convert.ToBoolean(PlayerPrefs.GetInt("hasBots", 1)))
 		{
-			GameObject bot; //TODO bot facing is still not working
+			GameObject bot; //TODO bots should start facing the center of the city
 			bot = Network.Instantiate(botPrefab, new Vector3(-5, 1, -5), Quaternion.identity, 2) as GameObject;
 			bot = Network.Instantiate(botPrefab, new Vector3(-5, 1, offset.z+maxBuildingSize[0]*1.5f+4.5f), Quaternion.identity, 2) as GameObject;
 			bot = Network.Instantiate(botPrefab, new Vector3(-5, offset.y+maxBuildingSize[0]*1.5f+4.5f, -5), Quaternion.identity, 2) as GameObject;
@@ -129,7 +129,7 @@ public class PG_Map : MonoBehaviour
 		light.light.intensity = count / 20f;
 	}
 	
-	// this ought to be moved to a static class
+	//TODO this ought to be moved to a static class
 	[RPC] private void SetParent(NetworkViewID childID, NetworkViewID parentID)
 	{
 		NetworkView.Find(childID).transform.parent = NetworkView.Find(parentID).transform;

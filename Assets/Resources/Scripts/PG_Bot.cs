@@ -9,7 +9,6 @@ public class PG_Bot : MonoBehaviour
 	public PG_Gun gun;
 	
 	private GameObject[] enemies;
-	//private Transform enemy;
 	
 	private bool ready = false;
 	

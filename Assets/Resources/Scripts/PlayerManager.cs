@@ -39,18 +39,19 @@ public class PlayerManager : MonoBehaviour
 	
 	public void JoinTeam()
 	{
-		Texture color = gameData.GetTeam(gameObject);
-		
-		Debug.LogWarning(networkView.viewID);
-		Debug.LogWarning(networkView.isMine);
-		networkView.RPC("SetColor", RPCMode.AllBuffered, color.name);
+		Vector3 color = gameData.GetTeam(gameObject);
+		networkView.RPC("SetColor", RPCMode.AllBuffered, color);
 	}
 	
-	[RPC] private void SetColor(string color)
+	[RPC] private void SetColor(Vector3 color)
 	{
-		GetComponentInChildren<MeshRenderer>().material.SetTexture("_MainTex", Resources.Load("Textures/"+color) as Texture);
-		GetComponentInChildren<PG_Gun>().shotPrefab = Resources.Load("Prefabs/"+color+"Shot") as GameObject;
-		tag = color;
+		//GetComponentInChildren<MeshRenderer>().material.SetTexture("_MainTex", Resources.Load("Textures/"+color) as Texture);
+		GetComponentInChildren<MeshRenderer>().material.color = new Color(color.x, color.y, color.z);
+		
+		string colorName = Mathf.Approximately(color.x, 1) ? "Red" : "Blue";
+		
+		GetComponentInChildren<PG_Gun>().shotPrefab = Resources.Load("Prefabs/"+colorName+"Shot") as GameObject;
+		tag = colorName;
 	}
 	
 	private void Update()

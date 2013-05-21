@@ -286,7 +286,7 @@ public class MenuManager : MonoBehaviour
 		{
 			Screen.lockCursor = false;
 			
-			GetComponent<GameData>().LeaveTeam();
+			GetComponent<GameData>().LeaveTeam(); // this is the wrong place for this! what if the player leaves unexpectedly!
 			
 			Network.Disconnect();
 			return;

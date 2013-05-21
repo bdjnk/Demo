@@ -115,8 +115,7 @@ public class PG_Map : MonoBehaviour
 		return (new Vector3(width*1.5f, height*1.5f, depth*1.5f) * spacing);
 	}
 	
-	[RPC]
-	private void AddLight(NetworkViewID id, Vector3 center, int count)
+	[RPC] private void AddLight(NetworkViewID id, Vector3 center, int count)
 	{
 		GameObject light = NetworkView.Find(id).gameObject;
 		light.AddComponent(typeof(Light));
@@ -124,8 +123,8 @@ public class PG_Map : MonoBehaviour
 		light.light.intensity = count / 20f;
 	}
 	
-	[RPC] // this ought to be moved to a static class
-	private void SetParent(NetworkViewID childID, NetworkViewID parentID)
+	// this ought to be moved to a static class
+	[RPC] private void SetParent(NetworkViewID childID, NetworkViewID parentID)
 	{
 		NetworkView.Find(childID).transform.parent = NetworkView.Find(parentID).transform;
 	}

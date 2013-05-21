@@ -314,6 +314,7 @@ public class MenuManager : MonoBehaviour
 	// Called on the server whenever a player is disconnected from the server.
 	private void OnPlayerDisconnected(NetworkPlayer netPlayer)
 	{
+		netPlayer.
         Network.RemoveRPCs(netPlayer, 10);
         Network.DestroyPlayerObjects(netPlayer);
 	}
@@ -327,9 +328,9 @@ public class MenuManager : MonoBehaviour
 		
 		foreach (GameObject go in FindObjectsOfType(typeof(GameObject)))
 		{
-			if (go.tag != "Master")// && go != player)
+			if (go.tag != "Master")
 			{
-				Destroy(go);
+				Network.Destroy(go); // this works, but it's odd, aren't I already disconnected?
 			}
 		}
 		MasterServer.RequestHostList(gameName);

@@ -27,8 +27,14 @@ public class GameData : MonoBehaviour
 		}
 	}
 	
-	[RPC] private void joinRed() { redCount++; }
-	[RPC] private void joinBlue() { blueCount++; }
+	[RPC] private void joinRed()
+	{
+		redCount++;
+	}
+	[RPC] private void joinBlue()
+	{
+		blueCount++;
+	}
 	
 	public int RedCount { get { return redCount; } }
 	public int BlueCount { get { return blueCount; } }

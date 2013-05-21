@@ -64,8 +64,7 @@ public class PG_Gun : MonoBehaviour
 		}
 	}
 	
-	[RPC]
-	private void InitializeShot(NetworkViewID shotID, NetworkViewID gunID)
+	[RPC] private void InitializeShot(NetworkViewID shotID, NetworkViewID gunID)
 	{
 		NetworkView shotNetView = NetworkView.Find(shotID);
 		NetworkView gunNetView = NetworkView.Find(gunID);

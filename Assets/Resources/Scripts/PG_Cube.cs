@@ -23,13 +23,7 @@ public class PG_Cube : MonoBehaviour
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
 	}
 	
-	public void SetUpgrade(Texture upgrade) // sets an upgrade on this cube
-	{
-		networkView.RPC("SetDecal", RPCMode.AllBuffered, upgrade.name);
-	}
-	
-	[RPC]
-	private void SetDecal(string upgrade)
+	[RPC] private void SetDecal(string upgrade)
 	{
 		renderer.material.SetTexture("_DecalTex", Resources.Load("Textures/"+upgrade) as Texture);
 	}

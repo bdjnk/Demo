@@ -15,10 +15,10 @@ public class UpgradeManager : MonoBehaviour
 	{
 		if (Input.GetKeyUp(KeyCode.E))
 		{
-			Texture upgrade = upgrades[Random.Range(0, upgrades.Length)];
+			Texture upgrade = upgrades[Random.Range(0, upgrades.Length)]; // random upgrade texture
 			GameObject cube = cubes[Random.Range(0, cubes.Length)]; // grab a random cube from the map
-			PG_Cube cubeScript = cube.GetComponent<PG_Cube>();
-			cubeScript.SetUpgrade(upgrade);
+			
+			cube.GetComponent<PG_Cube>().networkView.RPC("SetDecal", RPCMode.AllBuffered, upgrade.name);
 		}
 	}
 }

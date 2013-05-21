@@ -10,6 +10,8 @@ public class Ready : MonoBehaviour
 	{
 		SpawnPlayer();
 		
+		// bot stuff is on hold for now, but in the future bot color should
+		// be recalculated with each join/
 		foreach (GameObject bot in GameObject.FindGameObjectsWithTag("Bot"))
 		{
 			bot.GetComponent<PG_Bot>().Setup("Red"); //TODO get color properly
@@ -18,7 +20,7 @@ public class Ready : MonoBehaviour
 	
 	private void SpawnPlayer()
 	{
-		player = Network.Instantiate(playerPrefab, new Vector3(-10, 2, -10), Quaternion.identity, 0) as GameObject;
+		player = Network.Instantiate(playerPrefab, new Vector3(-10, 2, -10), Quaternion.identity, 4) as GameObject;
 		
 		PlayerManager playerManager = player.GetComponent<PlayerManager>();
 		

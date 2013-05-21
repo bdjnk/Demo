@@ -14,6 +14,8 @@ public class PlayerManager : MonoBehaviour
 	
 	public void Enable(bool state)
 	{
+		enabled = state;
+		
 		GetComponent<CharacterMotor>().enabled = state;
 		GetComponent<FPSInputController>().enabled = state;
 		
@@ -21,14 +23,12 @@ public class PlayerManager : MonoBehaviour
 		GetComponentInChildren<PG_Gun>().enabled = state;
 		
 		MouseEnable(state);
-		enabled = state;
 		
 		gameData.GetComponent<UpgradeManager>().enabled = true;
 	}
 	
 	public void MouseEnable(bool state)
 	{
-		//Screen.showCursor = !state;
 		Screen.lockCursor = state;
 		
 		foreach (MouseLook mouseLook in GetComponentsInChildren<MouseLook>())
@@ -39,7 +39,10 @@ public class PlayerManager : MonoBehaviour
 	
 	public void JoinTeam()
 	{
-		Texture color = gameData.GetTeam();
+		Texture color = gameData.GetTeam(gameObject);
+		
+		Debug.LogWarning(networkView.viewID);
+		Debug.LogWarning(networkView.isMine);
 		networkView.RPC("SetColor", RPCMode.AllBuffered, color.name);
 	}
 	

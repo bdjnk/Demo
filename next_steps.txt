@@ -1,5 +1,12 @@
 CSS 385, Game; Next Steps
 - scoring
 
-IMPORTANT - All RPC calls from a client are lost when that client when that client quits. People who join later will not see them! Fix this by making the calls from the server.
+IMPORTANT - All RPC calls from a client are lost when that client quits. People who join later will not see them! Fix this by making the calls from the server.
 Or possibly, if isServer make a data structure of all the cube's Texture to correspond to the set of cubes held by the UpgradeManager...
+
+Groups:
+lights, cubes & ground = 0
+                  done = 1
+		          bots = 2
+				 shots = 3
+		        player = 4

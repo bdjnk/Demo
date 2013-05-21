@@ -279,9 +279,9 @@ public class MenuManager : MonoBehaviour
 			return; // only proceed in a play state
 		}
 		
-		if (Input.GetKeyUp(KeyCode.Escape))
+		if (Input.GetKeyUp(KeyCode.X))
 		{
-			//Network.Destroy(player);
+			Screen.lockCursor = false;
 			Network.Disconnect();
 			return;
 		}
@@ -314,7 +314,7 @@ public class MenuManager : MonoBehaviour
 	// Called on the server whenever a player is disconnected from the server.
 	private void OnPlayerDisconnected(NetworkPlayer netPlayer)
 	{
-        Network.RemoveRPCs(netPlayer);
+        Network.RemoveRPCs(netPlayer, 10);
         Network.DestroyPlayerObjects(netPlayer);
 	}
 	

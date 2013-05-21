@@ -45,7 +45,8 @@ public class PG_Gun : MonoBehaviour
 		{
 			if (Input.GetButton("Fire1"))
 			{
-				Screen.showCursor = false;
+				transform.parent.GetComponent<PlayerManager>().MouseEnable(true);
+				Screen.lockCursor = true;
 				Shoot();
 			}
 		}

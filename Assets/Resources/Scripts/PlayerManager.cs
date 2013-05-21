@@ -66,7 +66,7 @@ public class PlayerManager : MonoBehaviour
 		
 		if (gameData.redPercent >= percentToWin || gameData.bluePercent >= percentToWin)
 		{
-			// do game over code (see Ben's code)
+			//TODO add game over code (see Ben's code)
 		}
 	}
 	

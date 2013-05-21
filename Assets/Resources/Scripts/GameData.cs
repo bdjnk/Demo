@@ -4,14 +4,25 @@ using System.Collections;
 public class GameData : MonoBehaviour
 {
 	public NetworkPlayer netPlayer;
+	public GameObject player; // this client's "First Person Controller(Clone)"
 	
 	private int redCount;
 	private int blueCount;
 	
 	private bool ready = false;
 	
-	public Texture GetTeam()
+	public Color red;
+	public Color blue;
+	
+	private void Awake()
 	{
+		red = new Color(1, 0.4f, 0.4f);
+		blue = new Color(0.4f, 0.6f, 1);
+	}
+	
+	public Texture GetTeam(GameObject player)
+	{
+		this.player = player;
 		totalCubes = GetComponent<PG_Map>().cubeCount; // stupid place to do it, find better one
 		ready = true;
 		
@@ -29,6 +40,24 @@ public class GameData : MonoBehaviour
 	
 	[RPC] private void joinRed() { redCount++; }
 	[RPC] private void joinBlue() { blueCount++; }
+	
+	public void LeaveTeam()
+	{
+		Network.RemoveRPCs(player.networkView.viewID);
+		
+		Color color = player.GetComponentInChildren<MeshRenderer>().material.color;
+		if (color == red)
+		{
+			networkView.RPC("leaveRed", RPCMode.AllBuffered);
+		}
+		else // color == "Blue"
+		{
+			networkView.RPC("leaveBlue", RPCMode.AllBuffered);
+		}
+	}
+	
+	[RPC] private void leaveRed() { redCount--; }
+	[RPC] private void leaveBlue() { blueCount--; }
 	
 	public int RedCount { get { return redCount; } }
 	public int BlueCount { get { return blueCount; } }

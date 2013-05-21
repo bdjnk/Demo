@@ -23,13 +23,7 @@ public class PG_Cube : MonoBehaviour
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
 	}
 	
-	public void SetUpgrade(Texture upgrade) // sets an upgrade on this cube
-	{
-		networkView.RPC("SetDecal", RPCMode.AllBuffered, upgrade.name);
-	}
-	
-	[RPC]
-	private void SetDecal(string upgrade)
+	[RPC] private void SetDecal(string upgrade)
 	{
 		renderer.material.SetTexture("_DecalTex", Resources.Load("Textures/"+upgrade) as Texture);
 	}
@@ -75,7 +69,7 @@ public class PG_Cube : MonoBehaviour
 				amountRed = Mathf.Max(0, amountRed - effect);
 				amountBlue = Mathf.Min(maxColor, amountBlue + effect);
 				
-				if (amountBlue > resistence && renderer.material.mainTexture != blue)
+				if (amountBlue > resistence && renderer.material.color != gameData.blue)
 				{
 					// do necessary scoring here
 					networkView.RPC("SetBlue", RPCMode.AllBuffered);
@@ -86,7 +80,7 @@ public class PG_Cube : MonoBehaviour
 				amountBlue = Mathf.Max(0, amountBlue - effect);
 				amountRed = Mathf.Min(maxColor, amountRed + effect);
 				
-				if (amountRed > resistence && renderer.material.mainTexture != red)
+				if (amountRed > resistence && renderer.material.color != gameData.red)
 				{
 					// do necessary scoring here
 					networkView.RPC("SetRed", RPCMode.AllBuffered);
@@ -97,21 +91,23 @@ public class PG_Cube : MonoBehaviour
 	
 	[RPC] private void SetRed()
 	{
-		if (renderer.material.mainTexture == blue)
+		if (renderer.material.color == gameData.blue)
 		{
 			gameData.blueScore--;
 		}
-		renderer.material.SetTexture("_MainTex", red);
+		//renderer.material.SetTexture("_MainTex", red);
+		renderer.material.color = new Color(1, 0.4f, 0.4f);
 		gameData.redScore++;
 	}
 	
 	[RPC] private void SetBlue()
 	{
-		if (renderer.material.mainTexture == red)
+		if (renderer.material.color == gameData.red)
 		{
 			gameData.redScore--;
 		}
-		renderer.material.SetTexture("_MainTex", blue);
+		//renderer.material.SetTexture("_MainTex", blue);
+		renderer.material.color = new Color(0.4f, 0.6f, 1);
 		gameData.blueScore++;
 	}
 }

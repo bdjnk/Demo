@@ -58,8 +58,8 @@ public class PG_Map : MonoBehaviour
 		if (System.Convert.ToBoolean(PlayerPrefs.GetInt("hasBots", 1)))
 		{
 			GameObject bot; //TODO bot positioning and facing are still not working
-			bot = Network.Instantiate(botPrefab, new Vector3(-5, 1, -5), Quaternion.identity, 1) as GameObject;
-			//bot = Network.Instantiate(botPrefab, new Vector3(offset.x+2*maxBuildingSize[0]*1.5f-1+spacing+5, offset.y+2*maxBuildingSize[1]*1.5f-1+spacing+5, offset.z+2*maxBuildingSize[2]*1.5f-1+spacing+5), Quaternion.identity, 1) as GameObject;
+			bot = Network.Instantiate(botPrefab, new Vector3(-5, 1, -5), Quaternion.identity, 2) as GameObject;
+			//bot = Network.Instantiate(botPrefab, new Vector3(offset.x+2*maxBuildingSize[0]*1.5f-1+spacing+5, offset.y+2*maxBuildingSize[1]*1.5f-1+spacing+5, offset.z+2*maxBuildingSize[2]*1.5f-1+spacing+5), Quaternion.identity, 2) as GameObject;
 		}
 		//----------------------------------------------- bots
 		
@@ -70,7 +70,7 @@ public class PG_Map : MonoBehaviour
 		}
 		networkView.RPC("SetCubeCount", RPCMode.OthersBuffered, cubeCount);
 		
-		GameObject done = Network.Instantiate(donePrefab, Vector3.zero, Quaternion.identity, 0) as GameObject;
+		GameObject done = Network.Instantiate(donePrefab, Vector3.zero, Quaternion.identity, 1) as GameObject;
 		done.isStatic = true;
 	}
 	
@@ -107,7 +107,7 @@ public class PG_Map : MonoBehaviour
 		int count = width * height * depth;
 		center /= count;
 		
-		GameObject light = Network.Instantiate (lightingPrefab, Vector3.zero, Quaternion.identity, 0) as GameObject;
+		GameObject light = Network.Instantiate(lightingPrefab, Vector3.zero, Quaternion.identity, 0) as GameObject;
 		networkView.RPC("SetParent", RPCMode.AllBuffered, light.networkView.viewID, building.networkView.viewID);
 		networkView.RPC("AddLight", RPCMode.AllBuffered, light.networkView.viewID, center, count);
 		light.isStatic = true;
@@ -115,8 +115,7 @@ public class PG_Map : MonoBehaviour
 		return (new Vector3(width*1.5f, height*1.5f, depth*1.5f) * spacing);
 	}
 	
-	[RPC]
-	private void AddLight(NetworkViewID id, Vector3 center, int count)
+	[RPC] private void AddLight(NetworkViewID id, Vector3 center, int count)
 	{
 		GameObject light = NetworkView.Find(id).gameObject;
 		light.AddComponent(typeof(Light));
@@ -124,8 +123,8 @@ public class PG_Map : MonoBehaviour
 		light.light.intensity = count / 20f;
 	}
 	
-	[RPC] // this ought to be moved to a static class
-	private void SetParent(NetworkViewID childID, NetworkViewID parentID)
+	// this ought to be moved to a static class
+	[RPC] private void SetParent(NetworkViewID childID, NetworkViewID parentID)
 	{
 		NetworkView.Find(childID).transform.parent = NetworkView.Find(parentID).transform;
 	}

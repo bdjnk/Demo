@@ -282,6 +282,9 @@ public class MenuManager : MonoBehaviour
 		if (Input.GetKeyUp(KeyCode.X))
 		{
 			Screen.lockCursor = false;
+			
+			GetComponent<GameData>().LeaveTeam();
+			
 			Network.Disconnect();
 			return;
 		}
@@ -314,7 +317,11 @@ public class MenuManager : MonoBehaviour
 	// Called on the server whenever a player is disconnected from the server.
 	private void OnPlayerDisconnected(NetworkPlayer netPlayer)
 	{
-        Network.RemoveRPCs(netPlayer, 10);
+	
+		// this should really be constants in a seprate static class
+        Network.RemoveRPCs(netPlayer, 3); // shots
+		Network.RemoveRPCs(netPlayer, 4); // player
+		//Network.RemoveRPCs(netPlayer);
         Network.DestroyPlayerObjects(netPlayer);
 	}
 	
@@ -324,14 +331,15 @@ public class MenuManager : MonoBehaviour
 		Screen.showCursor = true;
 		GetComponent<GameData>().ClearData();
 		GetComponent<UpgradeManager>().enabled = false;
-		
+			
 		foreach (GameObject go in FindObjectsOfType(typeof(GameObject)))
 		{
-			if (go.tag != "Master")// && go != player)
+			if (go.tag != "Master")
 			{
 				Destroy(go);
 			}
 		}
+		
 		MasterServer.RequestHostList(gameName);
 		state = State.list;
 	}

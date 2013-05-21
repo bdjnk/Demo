@@ -71,7 +71,6 @@ public class PG_Cube : MonoBehaviour
 				
 				if (amountBlue > resistence && renderer.material.color != gameData.blue)
 				{
-					// do necessary scoring here
 					networkView.RPC("SetBlue", RPCMode.AllBuffered);
 				}
 			}
@@ -82,12 +81,13 @@ public class PG_Cube : MonoBehaviour
 				
 				if (amountRed > resistence && renderer.material.color != gameData.red)
 				{
-					// do necessary scoring here
 					networkView.RPC("SetRed", RPCMode.AllBuffered);
 				}
 			}
 		}
 	}
+	
+	//TODO ensure game score data is persisting properly (currently broken)
 	
 	[RPC] private void SetRed()
 	{
@@ -95,8 +95,7 @@ public class PG_Cube : MonoBehaviour
 		{
 			gameData.blueScore--;
 		}
-		//renderer.material.SetTexture("_MainTex", red);
-		renderer.material.color = new Color(1, 0.4f, 0.4f);
+		renderer.material.color = gameData.red;
 		gameData.redScore++;
 	}
 	
@@ -106,8 +105,7 @@ public class PG_Cube : MonoBehaviour
 		{
 			gameData.redScore--;
 		}
-		//renderer.material.SetTexture("_MainTex", blue);
-		renderer.material.color = new Color(0.4f, 0.6f, 1);
+		renderer.material.color = gameData.blue;
 		gameData.blueScore++;
 	}
 }

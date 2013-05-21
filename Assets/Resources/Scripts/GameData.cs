@@ -23,19 +23,17 @@ public class GameData : MonoBehaviour
 	public Vector3 GetTeam(GameObject player)
 	{
 		this.player = player;
-		totalCubes = GetComponent<PG_Map>().cubeCount; // stupid place to do it, find better one
+		totalCubes = GetComponent<PG_Map>().cubeCount; //TODO find better place to do this
 		ready = true;
 		
 		if (redCount < blueCount)
 		{
 			networkView.RPC("joinRed", RPCMode.AllBuffered);
-			//return Resources.Load("Textures/Red") as Texture;
 			return new Vector3(red.r, red.g, red.b);
 		}
 		else // blueCount <= redCount
 		{
 			networkView.RPC("joinBlue", RPCMode.AllBuffered);
-			//return Resources.Load("Textures/Blue") as Texture;
 			return new Vector3(blue.r, blue.g, blue.b);
 		}
 	}
@@ -47,7 +45,6 @@ public class GameData : MonoBehaviour
 	{
 		Network.RemoveRPCs(player.networkView.viewID);
 		
-		//string color = player.GetComponentInChildren<MeshRenderer>().material.mainTexture.name;
 		Color color = player.GetComponentInChildren<MeshRenderer>().material.color;
 		if (color == red)
 		{

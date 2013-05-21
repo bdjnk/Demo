@@ -10,8 +10,7 @@ public class Ready : MonoBehaviour
 	{
 		SpawnPlayer();
 		
-		// bot stuff is on hold for now, but in the future bot color should
-		// be recalculated with each join/
+		// bot stuff is on hold for now, but in the future bot color should be recalculated with each join
 		foreach (GameObject bot in GameObject.FindGameObjectsWithTag("Bot"))
 		{
 			bot.GetComponent<PG_Bot>().Setup("Red"); //TODO get color properly

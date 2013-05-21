@@ -45,10 +45,9 @@ public class PlayerManager : MonoBehaviour
 	
 	[RPC] private void SetColor(Vector3 color)
 	{
-		//GetComponentInChildren<MeshRenderer>().material.SetTexture("_MainTex", Resources.Load("Textures/"+color) as Texture);
 		GetComponentInChildren<MeshRenderer>().material.color = new Color(color.x, color.y, color.z);
 		
-		string colorName = Mathf.Approximately(color.x, 1) ? "Red" : "Blue";
+		string colorName = Mathf.Approximately(color.x, 1) ? "Red" : "Blue"; // if red ~= 255
 		
 		GetComponentInChildren<PG_Gun>().shotPrefab = Resources.Load("Prefabs/"+colorName+"Shot") as GameObject;
 		tag = colorName;

@@ -19,6 +19,7 @@ public class PlayerManager : MonoBehaviour
 	public void Enable(bool state)
 	{
 		Screen.showCursor = !state;
+		Screen.lockCursor = state;
 		
 		foreach (MouseLook mouseLook in GetComponentsInChildren<MouseLook>())
 		{

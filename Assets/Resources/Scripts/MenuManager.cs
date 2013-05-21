@@ -324,7 +324,7 @@ public class MenuManager : MonoBehaviour
 			return; // only proceed in a play state
 		}
 		
-		if (Input.GetKeyUp(KeyCode.Escape))
+		if (Input.GetKeyUp(KeyCode.X))
 		{	if (Network.isServer){
 				MasterServer.UnregisterHost();
 			}
@@ -369,7 +369,7 @@ public class MenuManager : MonoBehaviour
 	private void OnDisconnectedFromServer(NetworkDisconnection info)
 	{
 		Screen.showCursor = true;
-		GetComponent<GameData>().ClearData();
+		GetComponent<GameData>().ResetData();
 		GetComponent<UpgradeManager>().enabled = false;
 		
 		foreach (GameObject go in FindObjectsOfType(typeof(GameObject)))

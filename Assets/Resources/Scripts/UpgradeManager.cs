@@ -11,10 +11,6 @@ public class UpgradeManager : MonoBehaviour
 		cubes = GameObject.FindGameObjectsWithTag("Cube");
 	}
 	
-	public void ResetData(){
-		//cubes = null;
-		Destroy (this);
-	}
 	private void Update()
 	{
 		if (Input.GetKeyUp(KeyCode.E))
@@ -25,5 +21,4 @@ public class UpgradeManager : MonoBehaviour
 			cubeScript.SetUpgrade(upgrade);
 		}
 	}
-		
 }

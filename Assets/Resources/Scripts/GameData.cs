@@ -7,10 +7,14 @@ public class GameData : MonoBehaviour
 	
 	private int redCount;
 	private int blueCount;
-	private bool cubesUpdated = false;
+	
+	private bool ready = false;
 	
 	public Texture GetTeam()
 	{
+		totalCubes = GetComponent<PG_Map>().cubeCount; // stupid place to do it, find better one
+		ready = true;
+		
 		if (redCount < blueCount)
 		{
 			networkView.RPC("joinRed", RPCMode.AllBuffered);
@@ -23,26 +27,6 @@ public class GameData : MonoBehaviour
 		}
 	}
 	
-	void Update(){
-		if((redCount > 0 || blueCount > 0) && !cubesUpdated){
-			totalCubes = GetComponent<PG_Map>().cubeCount;
-			cubesUpdated = true;
-		}
-		if(cubesUpdated && totalCubes > 0){
-			redTeamPercent = (int) (100.0f * redScore/totalCubes);
-			blueTeamPercent = (int) (100.0f * blueScore/totalCubes);
-		}
-	}
-	
-	public void ResetData(){
-		redScore = 0;
-	  	blueScore = 0;
-	  	totalCubes = 0;
-	  	redTeamPercent = 0;
-	  	blueTeamPercent = 0;
-		cubesUpdated = false;
-	}
-	
 	[RPC] private void joinRed() { redCount++; }
 	[RPC] private void joinBlue() { blueCount++; }
 	
@@ -51,7 +35,28 @@ public class GameData : MonoBehaviour
 	
 	public int redScore = 0;
 	public int blueScore = 0;
+	
 	public int totalCubes = 0;
-	public int redTeamPercent = 0;
-	public int blueTeamPercent = 0;
+	public int redPercent = 0;
+	public int bluePercent = 0;
+	
+	public void ClearData()
+	{
+		redCount = 0;
+		blueCount = 0;
+		redScore = 0;
+		blueScore = 0;
+	  	totalCubes = 0;
+	  	redPercent = 0;
+	  	bluePercent = 0;
+		ready = false;
+	}
+	
+	private void Update()
+	{
+		if (!ready) { return; }
+		
+		redPercent = (int)(100.0f * redScore/totalCubes);
+		bluePercent = (int)(100.0f * blueScore/totalCubes);
+	}
 }

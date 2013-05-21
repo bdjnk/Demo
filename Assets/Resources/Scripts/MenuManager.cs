@@ -42,9 +42,7 @@ public class MenuManager : MonoBehaviour
     {
 		list,
 		create,
-		play,
-		gameOver
-		
+		play
     };
 	
 	private void Awake()
@@ -88,16 +86,6 @@ public class MenuManager : MonoBehaviour
 		MasterServer.RequestHostList(gameName);
 	}
 	
-	public void EndGame()
-	{
-		
-		if (Network.isServer){
-			MasterServer.UnregisterHost();
-		}
-		Network.Disconnect();
-		state = State.gameOver;
-	}
-	
 	private void OnGUI()
 	{
 		GUI.skin = skin;
@@ -112,9 +100,6 @@ public class MenuManager : MonoBehaviour
 			CustomizeServer();
 			break;
 		case State.play:
-			break;
-		case State.gameOver:
-			DisplayEnd();
 			break;
 		}
 	}
@@ -155,7 +140,6 @@ public class MenuManager : MonoBehaviour
 		
 		GUI.Label(new Rect(edge, sliderHeight*0+edge, 100, sliderHeight), "Server Name: ");
 		serverName = GUI.TextField(new Rect(edge+100, sliderHeight*0+edge, 300-edge*2, sliderHeight), serverName);
-		PlayerPrefs.SetString("serverName", serverName); // may be inefficient...
 		
 		GUI.Label(new Rect(edge, sliderHeight*2+edge, 200, sliderHeight), "City Dimensions");
 		citySize[0] = IntSlider(new Rect(edge, sliderHeight*3+edge, 200, sliderHeight), citySize[0], 1, 9, "Width", 1, true);
@@ -287,36 +271,7 @@ public class MenuManager : MonoBehaviour
 	        GUI.EndScrollView();
 		}
 	}
-	private void DisplayEnd(){
-		string winner = "Unknown";
-		GameData gameData = GetComponent<GameData>();
-		if(gameData.redTeamPercent>gameData.blueTeamPercent){
-			winner = "Red Team";
-		} else {
-			winner = "Blue Team";
-		}	
-		GUI.BeginGroup(new Rect(Screen.width/2-200, edge, 400, sliderHeight*13+edge*3), skin.box);
-		
-		GUI.Box(new Rect(10,5,370,50),"Winner: " + winner);
-		//redTeamPlayersString = gmScript.getRedTeamString();
-		//blueTeamPlayersString = gmScript.getBlueTeamString();
-		GUI.Box(new Rect(10,80,180,150),"Red Team: \n Total Cubes: " + gameData.redScore + "\n Percent: " + gameData.redTeamPercent);
-		GUI.Box(new Rect(200,80,180,150),"Blue Team: \n Total Cubes: " + gameData.blueScore + "\n Percent: " + gameData.blueTeamPercent);
-		
-		
-		if (GUI.Button(new Rect(100, sliderHeight*12+edge, 100, sliderHeight), "New Game"))
-		{	//TODO: need to reset here!!!
-			gameData.ResetData();
-			state = State.list;
-		}
-		if (GUI.Button(new Rect(200, sliderHeight*12+edge, 100, sliderHeight), "Quit"))
-		{
-			Application.Quit();
-		}
-		
-		GUI.EndGroup();
-	}
-		
+	
 	public void Update()
 	{
 		if (state != State.play)
@@ -325,10 +280,8 @@ public class MenuManager : MonoBehaviour
 		}
 		
 		if (Input.GetKeyUp(KeyCode.X))
-		{	if (Network.isServer){
-				MasterServer.UnregisterHost();
-			}
-			//Network.Destroy(player);
+		{
+			Screen.lockCursor = false;
 			Network.Disconnect();
 			return;
 		}
@@ -361,7 +314,7 @@ public class MenuManager : MonoBehaviour
 	// Called on the server whenever a player is disconnected from the server.
 	private void OnPlayerDisconnected(NetworkPlayer netPlayer)
 	{
-        Network.RemoveRPCs(netPlayer);
+        Network.RemoveRPCs(netPlayer, 10);
         Network.DestroyPlayerObjects(netPlayer);
 	}
 	
@@ -369,7 +322,7 @@ public class MenuManager : MonoBehaviour
 	private void OnDisconnectedFromServer(NetworkDisconnection info)
 	{
 		Screen.showCursor = true;
-		GetComponent<GameData>().ResetData();
+		GetComponent<GameData>().ClearData();
 		GetComponent<UpgradeManager>().enabled = false;
 		
 		foreach (GameObject go in FindObjectsOfType(typeof(GameObject)))

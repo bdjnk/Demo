@@ -8,10 +8,6 @@ public class PG_Shot : MonoBehaviour
 	public float persist = 6f;
 	private float timeAtStart;
 	
-	private string shotOwnerID;
-	//private NetworkViewID shotOwnerID;
-	
-	
 	private void Start()
 	{
 		if (gun == null)
@@ -19,13 +15,6 @@ public class PG_Shot : MonoBehaviour
 			Destroy(gameObject);
 		}
 		timeAtStart = (float)Network.time;
-		//shotOwnerID = gun.transform.parent.networkView.viewID;
-		shotOwnerID = Network.player.guid;
-	}
-	
-	public string getShotOwnerID()
-	{
-		return shotOwnerID;
 	}
 	
 	private void Update()

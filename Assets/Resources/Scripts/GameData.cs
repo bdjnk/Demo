@@ -11,6 +11,15 @@ public class GameData : MonoBehaviour
 	
 	private bool ready = false;
 	
+	public Color red;
+	public Color blue;
+	
+	private void Awake()
+	{
+		red = new Color(1, 0.4f, 0.4f);
+		blue = new Color(0.4f, 0.6f, 1);
+	}
+	
 	public Texture GetTeam(GameObject player)
 	{
 		this.player = player;
@@ -36,8 +45,8 @@ public class GameData : MonoBehaviour
 	{
 		Network.RemoveRPCs(player.networkView.viewID);
 		
-		string color = player.GetComponentInChildren<MeshRenderer>().material.mainTexture.name;
-		if (color == "Red")
+		Color color = player.GetComponentInChildren<MeshRenderer>().material.color;
+		if (color == red)
 		{
 			networkView.RPC("leaveRed", RPCMode.AllBuffered);
 		}

@@ -77,7 +77,7 @@ public class PlayerManager : MonoBehaviour
 		totalCubes = gameData.GetComponent<PG_Map>().cubeCount;
 	}
 	
-	private bool showHUD = false;
+	private bool showHUD = true;
 	
 	private void OnGUI()
 	{
@@ -90,27 +90,27 @@ public class PlayerManager : MonoBehaviour
 		
 		if (tag == "Red") // display the lists
 		{
-			//GUI.Box(new Rect(buttonX, buttonY, buttonW, buttonH),"Red Team: \n"+gmScript.redTeamString);
-			GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY, buttonW, buttonH/2), "Red Team: \n"+gameData.redScore+"\n "+gameData.redPercent+"%");
-			GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*0.6f, buttonW, buttonH/2), "Blue Team: \n"+gameData.blueScore+"\n "+gameData.bluePercent+"%");
+			//GUI.Box(new Rect(buttonX, buttonY, buttonW, buttonH),"Red Team:\n"+gmScript.redTeamString);
+			GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY, buttonW, buttonH/2), "Red Team:\n"+gameData.redScore+"\n "+gameData.redPercent+"%");
+			GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*0.6f, buttonW, buttonH/2), "Blue Team:\n"+gameData.blueScore+"\n "+gameData.bluePercent+"%");
 		}
 		else if (tag == "Blue")
 		{
-			//GUI.Box(new Rect(buttonX, buttonY, buttonW, buttonH),"Blue Team: \n"+gmScript.blueTeamString);
-			GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY, buttonW, buttonH/2), "Blue Team: \n"+gameData.blueScore+"\n "+gameData.bluePercent+"%");
-			GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*0.6f, buttonW, buttonH/2), "Red Team: \n"+gameData.redScore+"\n "+gameData.redPercent+"%");
+			//GUI.Box(new Rect(buttonX, buttonY, buttonW, buttonH),"Blue Team:\n"+gmScript.blueTeamString);
+			GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY, buttonW, buttonH/2), "Blue Team:\n"+gameData.blueScore+"\n "+gameData.bluePercent+"%");
+			GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*0.6f, buttonW, buttonH/2), "Red Team:\n"+gameData.redScore+"\n "+gameData.redPercent+"%");
 		}
-		//GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*1.2f, buttonW, buttonH), "My Cubes: \n"+myTotalOwned+"\n"+myPercentOfTeamTotal+"%\nClaims: \n"+myTotalClaims);
+		//GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*1.2f, buttonW, buttonH), "My Cubes:\n"+myTotalOwned+"\n"+myPercentOfTeamTotal+"%\nClaims:\n"+myTotalClaims);
 		
 		if (gameData.redPercent > percentToWin-5 || gameData.bluePercent > percentToWin-5)
 		{
 			if (gameData.blueScore > gameData.redScore)
 			{
-				GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*1.2f, buttonW, buttonH/2), "Blue Team \n"+(percentToWin - gameData.bluePercent)+"%\n from Win");
+				GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*1.2f, buttonW, buttonH/2), "Blue Team\n"+(percentToWin - gameData.bluePercent)+"%\nfrom Win");
 			}
 			else
 			{
-				GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*1.2f, buttonW, buttonH/2), "Red Team \n"+(percentToWin - gameData.redPercent)+"%\n from Win");
+				GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*1.2f, buttonW, buttonH/2), "Red Team\n"+(percentToWin - gameData.redPercent)+"%\nfrom Win");
 			}
 		}
 	}

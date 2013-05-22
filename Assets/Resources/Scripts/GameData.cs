@@ -3,7 +3,7 @@ using System.Collections;
 
 public class GameData : MonoBehaviour
 {
-	public NetworkPlayer netPlayer;
+	public NetworkPlayer networkPlayer;
 	public GameObject player; // this client's "First Person Controller(Clone)"
 	
 	private int redCount;
@@ -14,10 +14,23 @@ public class GameData : MonoBehaviour
 	public Color red;
 	public Color blue;
 	
+	//private Hashtable players;
+	
 	private void Awake()
 	{
 		red = new Color(1, 0.4f, 0.4f);
 		blue = new Color(0.4f, 0.6f, 1);
+		/*
+		if (Network.isServer)
+		{
+			players = new Hashtable(PlayerPrefs.GetInt("maxPlayers", 10));
+		}
+	}
+	
+	[RPC] public void AddPlayer(NetworkViewID netID, NetworkPlayer netPlayer)
+	{
+		players.Add(netPlayer.guid, netID);
+		*/
 	}
 	
 	public Vector3 GetTeam(GameObject player)
@@ -41,9 +54,12 @@ public class GameData : MonoBehaviour
 	[RPC] private void joinRed() { redCount++; }
 	[RPC] private void joinBlue() { blueCount++; }
 	
-	public void LeaveTeam()
+	public void LeaveGame()//NetworkPlayer netPlayer) // should only ever happen on the server
 	{
 		Network.RemoveRPCs(player.networkView.viewID);
+		
+		//Network.RemoveRPCs((NetworkViewID)players[netPlayer.guid]);
+		//players.Remove(netPlayer.guid);
 		
 		Color color = player.GetComponentInChildren<MeshRenderer>().material.color;
 		if (color == red)

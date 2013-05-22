@@ -286,8 +286,9 @@ public class MenuManager : MonoBehaviour
 		{
 			Screen.lockCursor = false;
 			
-			// this is the wrong place for this! what if the player leaves unexpectedly!
-			GetComponent<GameData>().LeaveTeam(); //TODO URGENT move to OnPlayerDisconnected()
+			// This is the wrong place for LeaveGame(). What if the player leaves unexpectedly?!
+			GetComponent<GameData>().LeaveGame(); //TODO URGENT move to OnPlayerDisconnected()
+			// I attempted the move and it left me very frustrated. For now it's a "known bug".
 			
 			Network.Disconnect();
 			return;
@@ -315,17 +316,16 @@ public class MenuManager : MonoBehaviour
 	// Called on the server whenever a new player has successfully connected.
 	private void OnPlayerConnected(NetworkPlayer netPlayer)
 	{
-		GetComponent<GameData>().netPlayer = netPlayer;
+		GetComponent<GameData>().networkPlayer = netPlayer;
 	}
 	
 	// Called on the server whenever a player is disconnected from the server.
 	private void OnPlayerDisconnected(NetworkPlayer netPlayer)
 	{
-	
-		// this should really be constants in a seprate static class
-        Network.RemoveRPCs(netPlayer, 3); // shots
+		//TODO these numbers should really be constants in a seprate static class
 		Network.RemoveRPCs(netPlayer, 4); // player
-		//Network.RemoveRPCs(netPlayer);
+        Network.RemoveRPCs(netPlayer, 3); // shots
+		//GetComponent<GameData>().LeaveGame(netPlayer);
         Network.DestroyPlayerObjects(netPlayer);
 	}
 	

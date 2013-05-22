@@ -4,7 +4,7 @@ using System.Collections;
 public class UpgradeManager : MonoBehaviour
 {
 	public Texture[] upgrades;
-	private GameObject[] cubes;
+	public GameObject[] cubes;
 
 	private void Start()
 	{

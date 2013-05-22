@@ -88,6 +88,7 @@ public class PG_Cube : MonoBehaviour
 	}
 	
 	//TODO URGENT ensure game score data is persisting properly (currently broken)
+	// scoring is only broken when the quit bug occurs, otherwise it's fine
 	
 	[RPC] private void SetRed()
 	{
@@ -107,5 +108,10 @@ public class PG_Cube : MonoBehaviour
 		}
 		renderer.material.color = gameData.blue;
 		gameData.blueScore++;
+	}
+	
+	[RPC] public void SetGray()
+	{
+		renderer.material.color = gameData.gray;
 	}
 }

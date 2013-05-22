@@ -17,6 +17,7 @@ public class PG_Cube : MonoBehaviour
 	public int maxColor = 5;
 	private float amountBlue;
 	private float amountRed;
+	private float adjacentCubeDistance = 2.9f;
 	
 	private void Awake()
 	{
@@ -36,7 +37,7 @@ public class PG_Cube : MonoBehaviour
 			{
 				float distance = Vector3.Distance(transform.position, child.position);
 				
-				if (distance < 2.9f) // only consider adjacent cubes
+				if (distance < adjacentCubeDistance) // only consider adjacent cubes
 				{
 					PG_Cube cubeScript = child.GetComponent<PG_Cube>();
 					
@@ -91,27 +92,31 @@ public class PG_Cube : MonoBehaviour
 	// scoring is only broken when the quit bug occurs, otherwise it's fine
 	
 	[RPC] private void SetRed()
-	{
+	{	
 		if (renderer.material.color == gameData.blue)
-		{
-			gameData.blueScore--;
-		}
-		renderer.material.color = gameData.red;
-		gameData.redScore++;
+			{
+				gameData.blueScore--;
+			}
+			renderer.material.color = gameData.red;
+			gameData.redScore++;
 	}
 	
+	
 	[RPC] private void SetBlue()
-	{
+	{	
 		if (renderer.material.color == gameData.red)
-		{
-			gameData.redScore--;
-		}
-		renderer.material.color = gameData.blue;
-		gameData.blueScore++;
+			{
+				gameData.redScore--;
+			}
+			renderer.material.color = gameData.blue;
+			gameData.blueScore++;
 	}
 	
 	[RPC] public void SetGray()
-	{
+	{	
 		renderer.material.color = gameData.gray;
+		
 	}
+	
+	
 }

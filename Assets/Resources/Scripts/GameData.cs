@@ -87,6 +87,7 @@ public class GameData : MonoBehaviour
 	public int redPercent = 0;
 	public int bluePercent = 0;
 	
+	[RPC]
 	public void ClearData(bool exiting)
 	{
 		if (exiting)

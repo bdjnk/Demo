@@ -1,9 +1,8 @@
 fileFormatVersion: 2
-guid: 6da6e2d06f223d644b9e55bb43f43694
+guid: 73a3d999371583a4f8226d05845c8777
 MonoImporter:
   serializedVersion: 2
-  defaultReferences:
-  - winGUI: {instanceID: 0}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

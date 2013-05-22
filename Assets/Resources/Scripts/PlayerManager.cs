@@ -4,8 +4,14 @@ using System.Collections;
 public class PlayerManager : MonoBehaviour
 {
 	private GameData gameData;
+	private GameObject tempWinDisplay;
+	
+	public GameObject winGUI;
 	
 	private int percentToWin = 75;
+	
+	private bool reset = false;
+	private bool displayEnd = false;
 	
 	private void Awake()
 	{
@@ -83,16 +89,50 @@ public class PlayerManager : MonoBehaviour
 			MouseEnable(false);
 		}
 		
-		if (gameData.redPercent >= percentToWin || gameData.bluePercent >= percentToWin)
-		{
-			//TODO add game over code (see Ben's code)
-			gameData.ClearData(false);
+		//only allow server to declare win
+		if (Network.isServer && !reset && (gameData.redPercent >= percentToWin || gameData.bluePercent >= percentToWin))
+		{	
+			networkView.RPC("DeclareWinBeginReset",RPCMode.All);
+		}
+		
+		if(displayEnd){
+		  //only want to do this once!
+			winGUI = Resources.Load ("Prefabs/WinnerGUI") as GameObject;
+			
+			if(Network.isServer){
+				tempWinDisplay = (GameObject) Network.Instantiate(winGUI, Vector3.zero,Quaternion.identity,500);
+			}
+			
+			GetComponentInChildren<PG_Gun>().enabled = false;	
+			
+			displayEnd = false;
+		
+		}
+		
+		if(GameObject.Find ("WinnerGUI(Clone)")!=null){return;}	//wait until gui deletes itself
+		
+		if(reset){
+			GetComponentInChildren<PG_Gun>().enabled = true;
+			
+			gameData.networkView.RPC ("ClearData",RPCMode.AllBuffered,false);
+			
 			foreach (GameObject cube in gameData.GetComponent<UpgradeManager>().cubes)
 			{
 				cube.networkView.RPC("SetGray", RPCMode.AllBuffered);
 			}
+			
+			reset = false;
 		}
 	}
+		
+	
+	
+	[RPC]
+	public void DeclareWinBeginReset(){
+		reset = true;
+		displayEnd = true;
+	}
+		  
 	
 	private int totalCubes;
 	
@@ -106,7 +146,7 @@ public class PlayerManager : MonoBehaviour
 	private void OnGUI()
 	{
 		if (!showHUD) { return; } // else show HUD
-		
+			
 		float buttonX = Screen.width*0.02f;
 		float buttonY = Screen.width*0.02f;
 		float buttonW = Screen.width*0.12f;

@@ -86,6 +86,11 @@ public class PlayerManager : MonoBehaviour
 		if (gameData.redPercent >= percentToWin || gameData.bluePercent >= percentToWin)
 		{
 			//TODO add game over code (see Ben's code)
+			gameData.ClearData(false);
+			foreach (GameObject cube in gameData.GetComponent<UpgradeManager>().cubes)
+			{
+				cube.networkView.RPC("SetGray", RPCMode.AllBuffered);
+			}
 		}
 	}
 	

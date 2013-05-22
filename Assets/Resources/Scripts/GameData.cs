@@ -13,6 +13,7 @@ public class GameData : MonoBehaviour
 	
 	public Color red;
 	public Color blue;
+	public Color gray;
 	
 	//private Hashtable players;
 	
@@ -20,6 +21,7 @@ public class GameData : MonoBehaviour
 	{
 		red = new Color(1, 0.4f, 0.4f);
 		blue = new Color(0.4f, 0.6f, 1);
+		gray = new Color(0.8f, 0.8f, 0.8f);
 		/*
 		if (Network.isServer)
 		{
@@ -85,16 +87,19 @@ public class GameData : MonoBehaviour
 	public int redPercent = 0;
 	public int bluePercent = 0;
 	
-	public void ClearData()
+	public void ClearData(bool exiting)
 	{
-		redCount = 0;
-		blueCount = 0;
+		if (exiting)
+		{
+			redCount = 0;
+			blueCount = 0;
+	  		totalCubes = 0;
+			ready = false;
+		}
 		redScore = 0;
 		blueScore = 0;
-	  	totalCubes = 0;
 	  	redPercent = 0;
 	  	bluePercent = 0;
-		ready = false;
 	}
 	
 	private void Update()

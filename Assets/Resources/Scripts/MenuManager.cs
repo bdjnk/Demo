@@ -208,7 +208,7 @@ public class MenuManager : MonoBehaviour
 	
 	private void ListServers() // LIST OF SERVERS, THIS IS THE INITIAL MENU PAGE
 	{
-		GUI.Box(new Rect(-5, -5, Screen.width+5, Screen.height+5), "");
+		GUI.Box(new Rect(-9, -9, Screen.width+9, Screen.height+9), "");
 		
 		innerWidth = Screen.width-scrollBarWidth;
 		

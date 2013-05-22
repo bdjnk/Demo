@@ -4,14 +4,8 @@ using System.Collections;
 public class PlayerManager : MonoBehaviour
 {
 	private GameData gameData;
-	private GameObject tempWinDisplay;
-	
-	public GameObject winGUI;
 	
 	private int percentToWin = 75;
-	
-	private bool reset = false;
-	private bool displayEnd = false;
 	
 	private void Awake()
 	{
@@ -78,6 +72,9 @@ public class PlayerManager : MonoBehaviour
 		}
 	}
 	
+	private bool won = false;
+	private float winWait = 8;
+	
 	private void Update()
 	{
 		if (Input.GetKeyUp(KeyCode.Q))
@@ -89,29 +86,14 @@ public class PlayerManager : MonoBehaviour
 			MouseEnable(false);
 		}
 		
-		//only allow server to declare win
-		if (Network.isServer && !reset && (gameData.redPercent >= percentToWin || gameData.bluePercent >= percentToWin))
+		if (!won && (gameData.redPercent >= percentToWin || gameData.bluePercent >= percentToWin))
 		{	
-			networkView.RPC("DeclareWinBeginReset",RPCMode.All);
+			won = true;
+			winWait += (float)Network.time;
 		}
 		
-		if(displayEnd){
-		  //only want to do this once!
-			winGUI = Resources.Load ("Prefabs/WinnerGUI") as GameObject;
-			
-			if(Network.isServer){
-				tempWinDisplay = (GameObject) Network.Instantiate(winGUI, Vector3.zero,Quaternion.identity,500);
-			}
-			
-			GetComponentInChildren<PG_Gun>().enabled = false;	
-			
-			displayEnd = false;
-		
-		}
-		
-		if(GameObject.Find ("WinnerGUI(Clone)")!=null){return;}	//wait until gui deletes itself
-		
-		if(reset){
+		if (won && Network.time > winWait)
+		{
 			GetComponentInChildren<PG_Gun>().enabled = true;
 			
 			gameData.networkView.RPC ("ClearData",RPCMode.AllBuffered,false);
@@ -120,19 +102,9 @@ public class PlayerManager : MonoBehaviour
 			{
 				cube.networkView.RPC("SetGray", RPCMode.AllBuffered);
 			}
-			
-			reset = false;
+			won = false;
 		}
 	}
-		
-	
-	
-	[RPC]
-	public void DeclareWinBeginReset(){
-		reset = true;
-		displayEnd = true;
-	}
-		  
 	
 	private int totalCubes;
 	
@@ -166,7 +138,20 @@ public class PlayerManager : MonoBehaviour
 		}
 		//GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*1.2f, buttonW, buttonH), "My Cubes:\n"+myTotalOwned+"\n"+myPercentOfTeamTotal+"%\nClaims:\n"+myTotalClaims);
 		
-		if (gameData.redPercent > percentToWin-5 || gameData.bluePercent > percentToWin-5)
+		if (won)
+		{
+			if (gameData.redScore > gameData.blueScore) // display the appropriate list
+			{
+				GUI.Box(new Rect(-9, -9, Screen.width+9, Screen.height+9), "\nRed Team Wins!\n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%"
+					+"\n\n\nBlue Team \n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%"+"\n\n\nRestart in: \n"+Mathf.CeilToInt(winWait-(float)Network.time));
+			}
+			else 
+			{
+				GUI.Box(new Rect(-9, -9, Screen.width+9, Screen.height+9), "\nBlue Team Wins!\n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%"
+					+"\n\n\nRed Team \n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%"+"\n\n\nRestart in: \n"+Mathf.CeilToInt(winWait-(float)Network.time));
+			}
+		}
+		else if (gameData.redPercent > percentToWin-5 || gameData.bluePercent > percentToWin-5)
 		{
 			if (gameData.blueScore > gameData.redScore)
 			{

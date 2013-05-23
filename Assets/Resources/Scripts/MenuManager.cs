@@ -25,6 +25,8 @@ public class MenuManager : MonoBehaviour
 	private bool upgrades = true;
 	private bool listed = true;
 	private bool floor = true;
+	private bool timed = true;
+	private float timer = 2;
 	private float spacing = 1.5f;
 	
 	// Server / Host Variables
@@ -64,6 +66,8 @@ public class MenuManager : MonoBehaviour
 		upgrades = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasUpgrades", 1));
 		listed = System.Convert.ToBoolean(PlayerPrefs.GetInt("isListed", 1));
 		floor = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasFloor", 1));
+		timed = System.Convert.ToBoolean(PlayerPrefs.GetInt("isTimed", 0));
+		timer = PlayerPrefs.GetFloat("timer", 2);
 		spacing = PlayerPrefs.GetFloat("buildingSpacing", 1.0f);
 		citySize[0] = PlayerPrefs.GetInt("citySizeX", 4);
 		citySize[1] = PlayerPrefs.GetInt("citySizeY", 2);
@@ -136,39 +140,43 @@ public class MenuManager : MonoBehaviour
 	
 	private void CustomizeServer() // CREATE A NEW SERVER
 	{
-		GUI.BeginGroup(new Rect(Screen.width/2-200, edge, 400, sliderHeight*13+edge*3), skin.box);
+		GUI.BeginGroup(new Rect(Screen.width/2-200, edge, 400, sliderHeight*15+edge*3), skin.box);
 		
 		GUI.Label(new Rect(edge, sliderHeight*0+edge, 100, sliderHeight), "Server Name: ");
 		serverName = GUI.TextField(new Rect(edge+100, sliderHeight*0+edge, 300-edge*2, sliderHeight), serverName);
 		
-		GUI.Label(new Rect(edge, sliderHeight*2+edge, 200, sliderHeight), "City Dimensions");
-		citySize[0] = IntSlider(new Rect(edge, sliderHeight*3+edge, 200, sliderHeight), citySize[0], 1, 9, "Width", 1, true);
-		citySize[1] = IntSlider(new Rect(edge, sliderHeight*4+edge, 200, sliderHeight), citySize[1], 1, 9, "Height", 1, true);
-		citySize[2] = IntSlider(new Rect(edge, sliderHeight*5+edge, 200, sliderHeight), citySize[2], 1, 9, "Depth", 1, true);
+		timed = GUI.Toggle(new Rect(edge, sliderHeight*2+edge, 100, sliderHeight), timed, " Timed Game");
+		timer = FloatSlider(new Rect(edge+100, sliderHeight*2+edge, 200, sliderHeight), timer, 0.2f, 4, "Minutes", 0.1f, false);
+		//timer = IntSlider(new Rect(edge+100, sliderHeight*2+edge, 200, sliderHeight), timer, 10, 480, "Seconds", 10, false);
 		
-		maxPlayers = IntSlider(new Rect(edge+200, sliderHeight*2+edge, 200, sliderHeight), maxPlayers, 2, 14, "Max Players", 2, true);
+		GUI.Label(new Rect(edge, sliderHeight*4+edge, 200, sliderHeight), "City Dimensions");
+		citySize[0] = IntSlider(new Rect(edge, sliderHeight*5+edge, 200, sliderHeight), citySize[0], 1, 9, "Width", 1, true);
+		citySize[1] = IntSlider(new Rect(edge, sliderHeight*6+edge, 200, sliderHeight), citySize[1], 1, 9, "Height", 1, true);
+		citySize[2] = IntSlider(new Rect(edge, sliderHeight*7+edge, 200, sliderHeight), citySize[2], 1, 9, "Depth", 1, true);
 		
-		floor = GUI.Toggle(new Rect(edge+300, sliderHeight*3+edge, 100, sliderHeight), floor, " Floor");
-		upgrades = GUI.Toggle(new Rect(edge+200, sliderHeight*3+edge, 100, sliderHeight), upgrades, " Upgrades");
-		bots = GUI.Toggle(new Rect(edge+300, sliderHeight*4+edge, 100, sliderHeight), false, " Bots"); // bots are disabled for now
-		listed = GUI.Toggle(new Rect(edge+200, sliderHeight*4+edge, 100, sliderHeight), true, " List"); // all games are listed for now
+		maxPlayers = IntSlider(new Rect(edge+200, sliderHeight*4+edge, 200, sliderHeight), maxPlayers, 2, 14, "Max Players", 2, true);
 		
-		spacing = FloatSlider(new Rect(edge+200, sliderHeight*5+edge, 80, sliderHeight), spacing, 1, 5, "Spacing", 0.1f, false);
+		floor = GUI.Toggle(new Rect(edge+300, sliderHeight*5+edge, 100, sliderHeight), floor, " Floor");
+		upgrades = GUI.Toggle(new Rect(edge+200, sliderHeight*5+edge, 100, sliderHeight), upgrades, " Upgrades");
+		bots = GUI.Toggle(new Rect(edge+300, sliderHeight*6+edge, 100, sliderHeight), false, " Bots"); // bots are disabled for now
+		listed = GUI.Toggle(new Rect(edge+200, sliderHeight*6+edge, 100, sliderHeight), true, " List"); // all games are listed for now
 		
-		GUI.Label(new Rect(edge, sliderHeight*7+edge, 300, sliderHeight), "Minimum Building Dimensions");
-		minBuildingSize[0] = IntSlider(new Rect(edge, sliderHeight*8+edge, 200, sliderHeight), minBuildingSize[0], 1, 9, "Width", 1, true);
-		minBuildingSize[1] = IntSlider(new Rect(edge, sliderHeight*9+edge, 200, sliderHeight), minBuildingSize[1], 1, 9, "Height", 1, true);
-		minBuildingSize[2] = IntSlider(new Rect(edge, sliderHeight*10+edge, 200, sliderHeight), minBuildingSize[2], 1, 9, "Depth", 1, true);
+		spacing = FloatSlider(new Rect(edge+200, sliderHeight*7+edge, 80, sliderHeight), spacing, 1.0f, 4, "Spacing", 0.1f, false);
 		
-		GUI.Label(new Rect(edge+200, sliderHeight*7+edge, 200, sliderHeight), "Maximum Building Dimensions");
+		GUI.Label(new Rect(edge, sliderHeight*9+edge, 300, sliderHeight), "Minimum Building Dimensions");
+		minBuildingSize[0] = IntSlider(new Rect(edge, sliderHeight*10+edge, 200, sliderHeight), minBuildingSize[0], 1, 9, "Width", 1, true);
+		minBuildingSize[1] = IntSlider(new Rect(edge, sliderHeight*11+edge, 200, sliderHeight), minBuildingSize[1], 1, 9, "Height", 1, true);
+		minBuildingSize[2] = IntSlider(new Rect(edge, sliderHeight*12+edge, 200, sliderHeight), minBuildingSize[2], 1, 9, "Depth", 1, true);
+		
+		GUI.Label(new Rect(edge+200, sliderHeight*9+edge, 200, sliderHeight), "Maximum Building Dimensions");
 		maxBuildingSize[0] = Mathf.Max(minBuildingSize[0],
-			IntSlider(new Rect(edge+200, sliderHeight*8+edge, 200, sliderHeight), maxBuildingSize[0], 1, 9, "Width", 1, true));
+			IntSlider(new Rect(edge+200, sliderHeight*10+edge, 200, sliderHeight), maxBuildingSize[0], 1, 9, "Width", 1, true));
 		maxBuildingSize[1] = Mathf.Max(minBuildingSize[1],
-			IntSlider(new Rect(edge+200, sliderHeight*9+edge, 200, sliderHeight), maxBuildingSize[1], 1, 9, "Height", 1, true));
+			IntSlider(new Rect(edge+200, sliderHeight*11+edge, 200, sliderHeight), maxBuildingSize[1], 1, 9, "Height", 1, true));
 		maxBuildingSize[2] = Mathf.Max(minBuildingSize[2],
-			IntSlider(new Rect(edge+200, sliderHeight*10+edge, 200, sliderHeight), maxBuildingSize[2], 1, 9, "Depth", 1, true));
+			IntSlider(new Rect(edge+200, sliderHeight*12+edge, 200, sliderHeight), maxBuildingSize[2], 1, 9, "Depth", 1, true));
 		
-		if (GUI.Button(new Rect(100, sliderHeight*12+edge, 100, sliderHeight), "Create"))
+		if (GUI.Button(new Rect(100, sliderHeight*14+edge, 100, sliderHeight), "Create"))
 		{
 			state = State.play;
 			
@@ -180,6 +188,9 @@ public class MenuManager : MonoBehaviour
 			PlayerPrefs.SetInt("hasUpgrades", upgrades ? 1 : 0);
 			PlayerPrefs.SetInt("isListed", listed ? 1 : 0);
 			PlayerPrefs.SetInt("hasFloor", floor ? 1 : 0);
+			
+			PlayerPrefs.SetInt("isTimed", timed ? 1 : 0);
+			PlayerPrefs.SetFloat("timer", timer);
 			
 			PlayerPrefs.SetFloat("buildingSpacing", spacing);
 			
@@ -197,7 +208,7 @@ public class MenuManager : MonoBehaviour
 			
 			CreateServer();
 		}
-		if (GUI.Button(new Rect(200, sliderHeight*12+edge, 100, sliderHeight), "Cancel"))
+		if (GUI.Button(new Rect(200, sliderHeight*14+edge, 100, sliderHeight), "Cancel"))
 		{
 			PlayerPrefs.SetString("serverName", serverName);
 			state = State.list;
@@ -287,8 +298,8 @@ public class MenuManager : MonoBehaviour
 			Screen.lockCursor = false;
 			
 			// This is the wrong place for LeaveGame(). What if the player leaves unexpectedly?!
+			// I attempted to move it and ended up very frustrated. For now it's a "known bug".
 			GetComponent<GameData>().LeaveGame(); //TODO URGENT move to OnPlayerDisconnected()
-			// I attempted the move and it left me very frustrated. For now it's a "known bug".
 			
 			Network.Disconnect();
 			return;

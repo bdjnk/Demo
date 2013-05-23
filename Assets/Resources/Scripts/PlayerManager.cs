@@ -19,12 +19,19 @@ public class PlayerManager : MonoBehaviour
 		totalCubes = gameData.GetComponent<PG_Map>().cubeCount;
 	}
 	
-	public float gameLength;
 	private float gameEndTime;
 	
 	//TODO the first end game is not occuring for newly joined players
 	// perhaps make those player wait until the current game finishes...
 	[RPC] private void SetTimer(float endTime) { gameEndTime = endTime; }
+	
+	public bool ready = false;
+	[RPC] public void Ready() { ready = true; }
+	
+	private void OnNetworkInstantiate (NetworkMessageInfo info)
+	{
+		networkView.RPC("Ready", RPCMode.All);
+	}
 	
 	public void Enable(bool state)
 	{
@@ -40,13 +47,11 @@ public class PlayerManager : MonoBehaviour
 		
 		gameData.GetComponent<UpgradeManager>().enabled = true;
 		
-		gameLength = 0.2f*60;
-		
 		if (Network.isServer)
 		{
 			foreach (GameObject player in gameData.players)
 			{
-				player.networkView.RPC("SetTimer", RPCMode.AllBuffered, (float)Network.time + gameLength);
+				player.networkView.RPC("SetTimer", RPCMode.AllBuffered, (float)Network.time + gameData.gameLength);
 			}
 		}
 		
@@ -107,6 +112,8 @@ public class PlayerManager : MonoBehaviour
 			MouseEnable(false);
 		}
 		
+		if (gameData.gameLength == 0) { gameEndTime = (float)Network.time + 1; }
+		
 		if (!won)
 		{
 			if ((gameData.redPercent >= percentToWin || gameData.bluePercent >= percentToWin) || (gameEndTime > 0 && Network.time > gameEndTime))
@@ -137,10 +144,10 @@ public class PlayerManager : MonoBehaviour
 			{
 				foreach (GameObject player in gameData.players)
 				{
-					player.networkView.RPC("SetTimer", RPCMode.AllBuffered, (float)Network.time + gameLength);
+					player.networkView.RPC("SetTimer", RPCMode.AllBuffered, (float)Network.time + gameData.gameLength);
 				}
 			}
-			gameEndTime = (float)Network.time + gameLength;
+			gameEndTime = (float)Network.time + gameData.gameLength;
 		}
 	}
 	

@@ -7,17 +7,28 @@ public class GameData : MonoBehaviour
 	public NetworkPlayer networkPlayer;
 	public GameObject player; // this client's "First Person Controller(Clone)"
 	
-	private int redCount;
-	private int blueCount;
-	
 	private bool ready = false;
 	
 	public Color red;
 	public Color blue;
 	public Color gray;
 	
-	public Vector3 mapCenter;
+	private int redCount;
+	private int blueCount;
 	
+	public int redScore = 0;
+	public int blueScore = 0;
+	
+	public int redPercent = 0;
+	public int bluePercent = 0;
+	
+	public int totalCubes = 0;
+	[RPC] public void SetCubeCount(int cubeCount) { totalCubes = cubeCount; }
+	
+	public float gameLength;
+	[RPC] public void SetTimer(float timer) { gameLength = timer; }
+	
+	public Vector3 mapCenter;
 	[RPC] public void SetMapCenter(Vector3 center) { mapCenter = center; }
 	
 	public List<GameObject> players;
@@ -34,7 +45,6 @@ public class GameData : MonoBehaviour
 	public Vector3 GetTeam(GameObject player)
 	{
 		this.player = player;
-		totalCubes = GetComponent<PG_Map>().cubeCount; //TODO find better place to do this
 		ready = true;
 		
 		if (redCount < blueCount)
@@ -54,6 +64,7 @@ public class GameData : MonoBehaviour
 	
 	public void LeaveGame() // should only ever happen on the server
 	{
+		players.Remove(player);
 		Network.RemoveRPCs(player.networkView.viewID);
 		
 		Color color = player.GetComponentInChildren<MeshRenderer>().material.color;
@@ -72,13 +83,6 @@ public class GameData : MonoBehaviour
 	
 	public int RedCount { get { return redCount; } }
 	public int BlueCount { get { return blueCount; } }
-	
-	public int redScore = 0;
-	public int blueScore = 0;
-	
-	public int totalCubes = 0;
-	public int redPercent = 0;
-	public int bluePercent = 0;
 	
 	[RPC] public void ClearData(bool exiting)
 	{

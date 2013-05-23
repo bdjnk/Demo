@@ -15,8 +15,8 @@ public class PG_Cube : MonoBehaviour
 	
 	public int resistence = 4;
 	public int maxColor = 5;
-	private float amountBlue;
-	private float amountRed;
+	public float amountBlue;
+	public float amountRed;
 	private float adjacentCubeDistance = 2.9f;
 	
 	private void Awake()
@@ -70,25 +70,52 @@ public class PG_Cube : MonoBehaviour
 				amountRed = Mathf.Max(0, amountRed - effect);
 				amountBlue = Mathf.Min(maxColor, amountBlue + effect);
 				
+				/*
 				if (amountBlue > resistence && renderer.material.color != gameData.blue)
 				{
 					SetBlue();
+					/*
+					if (networkView.isMine)
+					{
+						networkView.RPC("SetBlue", RPCMode.AllBuffered);
+					}
 				}
+				*/
 			}
 			else if (texture == red)
 			{
 				amountBlue = Mathf.Max(0, amountBlue - effect);
 				amountRed = Mathf.Min(maxColor, amountRed + effect);
 				
+				/*
 				if (amountRed > resistence && renderer.material.color != gameData.red)
 				{
 					SetRed();
+					/*
+					if (networkView.isMine)
+					{
+						networkView.RPC("SetRed", RPCMode.AllBuffered);
+					}
 				}
+				*/
 			}
+			SetColor();
 		}
 	}
 	
-	//TODO URGENT ensure game score data is persisting properly (currently broken)
+	public void SetColor()
+	{
+		if (amountBlue > resistence && renderer.material.color != gameData.blue)
+		{
+			SetBlue();
+		}
+		else if (amountRed > resistence && renderer.material.color != gameData.red)
+		{
+			SetRed();
+		}
+	}
+	
+	//TODO URGENT ensure game score data is persisting properly
 	// scoring is only broken when the quit bug occurs, otherwise it's fine
 	
 	[RPC] private void SetRed()

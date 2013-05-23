@@ -115,6 +115,7 @@ public class PG_Cube : MonoBehaviour
 	[RPC] public void SetGray()
 	{	
 		renderer.material.color = gameData.gray;
+		SetDecal("");
 		amountRed = amountBlue = 0;
 	}
 }

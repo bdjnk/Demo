@@ -22,9 +22,8 @@ public class PlayerManager : MonoBehaviour
 	public float gameLength;
 	private float gameEndTime;
 	
-	//TODO CRITICAL SetTimer is only being called on the local PlayerManager of the
-	// PlayerManager that invoked it remotely. In fact, if you only add a PlayerManager
-	// to the active local player, it throws an error about being unable to call SetTimer!
+	//TODO the first end game is not occuring for newly joined players
+	// perhaps make those player wait until the current game finishes...
 	[RPC] private void SetTimer(float endTime) { gameEndTime = endTime; }
 	
 	public void Enable(bool state)

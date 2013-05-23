@@ -1,16 +1,31 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerManager : MonoBehaviour
 {
 	private GameData gameData;
 	
 	private int percentToWin = 75;
+	private int totalCubes;
 	
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
 	}
+	
+	private void Start()
+	{
+		totalCubes = gameData.GetComponent<PG_Map>().cubeCount;
+	}
+	
+	public float gameLength;
+	private float gameEndTime;
+	
+	//TODO CRITICAL SetTimer is only being called on the local PlayerManager of the
+	// PlayerManager that invoked it remotely. In fact, if you only add a PlayerManager
+	// to the active local player, it throws an error about being unable to call SetTimer!
+	[RPC] private void SetTimer(float endTime) { gameEndTime = endTime; }
 	
 	public void Enable(bool state)
 	{
@@ -26,6 +41,16 @@ public class PlayerManager : MonoBehaviour
 		
 		gameData.GetComponent<UpgradeManager>().enabled = true;
 		
+		gameLength = 0.2f*60;
+		
+		if (Network.isServer)
+		{
+			foreach (GameObject player in gameData.players)
+			{
+				player.networkView.RPC("SetTimer", RPCMode.AllBuffered, (float)Network.time + gameLength);
+			}
+		}
+		
 		//gameData.networkView.RPC("AddPlayer", RPCMode.Server, networkView.viewID, gameData.networkPlayer);
 	}
 	
@@ -40,10 +65,7 @@ public class PlayerManager : MonoBehaviour
 	}
 	
 	public void JoinTeam() // called from Ready.SpawnPlayer()
-	{
-		Debug.LogWarning(networkView.viewID);
-		Debug.LogWarning(networkView.isMine);
-		
+	{		
 		Vector3 color = gameData.GetTeam(gameObject);
 		networkView.RPC("SetColor", RPCMode.AllBuffered, color, networkView.viewID);
 		
@@ -86,31 +108,49 @@ public class PlayerManager : MonoBehaviour
 			MouseEnable(false);
 		}
 		
-		if (!won && (gameData.redPercent >= percentToWin || gameData.bluePercent >= percentToWin))
-		{	
-			won = true;
-			winWait += (float)Network.time;
+		if (!won)
+		{
+			if ((gameData.redPercent >= percentToWin || gameData.bluePercent >= percentToWin) || (gameEndTime > 0 && Network.time > gameEndTime))
+			{
+				won = true;
+				winWait += Time.time;
+				
+				GetComponentInChildren<PG_Gun>().enabled = false;
+			}
 		}
 		
-		if (won && Network.time > winWait)
+		if (won && Time.time > winWait)
 		{
-			GetComponentInChildren<PG_Gun>().enabled = true;
+			won = false;
+			winWait = 8;
 			
-			gameData.networkView.RPC ("ClearData",RPCMode.AllBuffered,false);
+			gameData.ClearData(false);
 			
 			foreach (GameObject cube in gameData.GetComponent<UpgradeManager>().cubes)
 			{
-				cube.networkView.RPC("SetGray", RPCMode.AllBuffered);
+				if (cube != null)
+					cube.GetComponent<PG_Cube>().SetGray();
 			}
-			won = false;
+			
+			GetComponentInChildren<PG_Gun>().enabled = true;
+			
+			if (Network.isServer)
+			{
+				foreach (GameObject player in gameData.players)
+				{
+					player.networkView.RPC("SetTimer", RPCMode.AllBuffered, (float)Network.time + gameLength);
+				}
+			}
+			gameEndTime = (float)Network.time + gameLength;
 		}
 	}
 	
-	private int totalCubes;
-	
-	private void Start()
+	[RPC] private void EndGame()
 	{
-		totalCubes = gameData.GetComponent<PG_Map>().cubeCount;
+		won = true;
+		winWait += Time.time;
+		
+		GetComponentInChildren<PG_Gun>().enabled = false;
 	}
 	
 	private bool showHUD = true;
@@ -124,31 +164,34 @@ public class PlayerManager : MonoBehaviour
 		float buttonW = Screen.width*0.12f;
 		float buttonH = Screen.width*0.20f;
 		
-		if (tag == "Red") // display the lists
+		if (!won)
 		{
-			//GUI.Box(new Rect(buttonX, buttonY, buttonW, buttonH),"Red Team:\n"+gmScript.redTeamString);
-			GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY, buttonW, buttonH/2), "Red Team:\n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%");
-			GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*0.6f, buttonW, buttonH/2), "Blue Team:\n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%");
+			if (tag == "Red") // display the lists
+			{
+				//GUI.Box(new Rect(buttonX, buttonY, buttonW, buttonH),"Red Team:\n"+gmScript.redTeamString);
+				GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY, buttonW, buttonH/2), "Red Team:\n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%\nCountdown\n"+Mathf.CeilToInt(gameEndTime-(float)Network.time));
+				GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*0.6f, buttonW, buttonH/2), "Blue Team:\n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%");
+			}
+			else if (tag == "Blue")
+			{
+				//GUI.Box(new Rect(buttonX, buttonY, buttonW, buttonH),"Blue Team:\n"+gmScript.blueTeamString);
+				GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY, buttonW, buttonH/2), "Blue Team:\n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%\nCountdown\n"+Mathf.CeilToInt(gameEndTime-(float)Network.time));
+				GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*0.6f, buttonW, buttonH/2), "Red Team:\n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%");
+			}
+			//GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*1.2f, buttonW, buttonH), "My Cubes:\n"+myTotalOwned+"\n"+myPercentOfTeamTotal+"%\nClaims:\n"+myTotalClaims);
 		}
-		else if (tag == "Blue")
-		{
-			//GUI.Box(new Rect(buttonX, buttonY, buttonW, buttonH),"Blue Team:\n"+gmScript.blueTeamString);
-			GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY, buttonW, buttonH/2), "Blue Team:\n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%");
-			GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*0.6f, buttonW, buttonH/2), "Red Team:\n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%");
-		}
-		//GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*1.2f, buttonW, buttonH), "My Cubes:\n"+myTotalOwned+"\n"+myPercentOfTeamTotal+"%\nClaims:\n"+myTotalClaims);
 		
 		if (won)
 		{
 			if (gameData.redScore > gameData.blueScore) // display the appropriate list
 			{
 				GUI.Box(new Rect(-9, -9, Screen.width+9, Screen.height+9), "\nRed Team Wins!\n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%"
-					+"\n\n\nBlue Team \n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%"+"\n\n\nRestart in: \n"+Mathf.CeilToInt(winWait-(float)Network.time));
+					+"\n\n\nBlue Team \n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%"+"\n\n\nRestart in: \n"+Mathf.CeilToInt(winWait-Time.time));
 			}
 			else 
 			{
 				GUI.Box(new Rect(-9, -9, Screen.width+9, Screen.height+9), "\nBlue Team Wins!\n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%"
-					+"\n\n\nRed Team \n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%"+"\n\n\nRestart in: \n"+Mathf.CeilToInt(winWait-(float)Network.time));
+					+"\n\n\nRed Team \n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%"+"\n\n\nRestart in: \n"+Mathf.CeilToInt(winWait-Time.time));
 			}
 		}
 		else if (gameData.redPercent > percentToWin-5 || gameData.bluePercent > percentToWin-5)

@@ -39,8 +39,14 @@ public class PG_Gun : MonoBehaviour
 		Screen.showCursor = false;
 	}
 	
+	public float freezeTimeout = 0;
+	
 	private void Update()
 	{
+		Downgrade();
+		
+		if (freezeTimeout > Network.time) { return; }
+		
 		if (tag != "Bot") // human player
 		{
 			if (Input.GetButton("Fire1"))
@@ -50,7 +56,6 @@ public class PG_Gun : MonoBehaviour
 				Shoot();
 			}
 		}
-		Downgrade();
 	}
 	
 	public void Shoot()

@@ -64,15 +64,15 @@ public class MenuManager : MonoBehaviour
 		upgrades = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasUpgrades", 1));
 		listed = System.Convert.ToBoolean(PlayerPrefs.GetInt("isListed", 1));
 		floor = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasFloor", 1));
-		spacing = PlayerPrefs.GetFloat("buildingSpacing", 1.5f);
-		citySize[0] = PlayerPrefs.GetInt("citySizeX", 3);
-		citySize[1] = PlayerPrefs.GetInt("citySizeY", 3);
+		spacing = PlayerPrefs.GetFloat("buildingSpacing", 1.0f);
+		citySize[0] = PlayerPrefs.GetInt("citySizeX", 4);
+		citySize[1] = PlayerPrefs.GetInt("citySizeY", 2);
 		citySize[2] = PlayerPrefs.GetInt("citySizeZ", 3);
-		minBuildingSize[0] = PlayerPrefs.GetInt("minBuildingSizeX", 3);
-		minBuildingSize[1] = PlayerPrefs.GetInt("minBuildingSizeY", 3);
-		minBuildingSize[2] = PlayerPrefs.GetInt("minBuildingSizeZ", 3);
+		minBuildingSize[0] = PlayerPrefs.GetInt("minBuildingSizeX", 1);
+		minBuildingSize[1] = PlayerPrefs.GetInt("minBuildingSizeY", 1);
+		minBuildingSize[2] = PlayerPrefs.GetInt("minBuildingSizeZ", 1);
 		maxBuildingSize[0] = PlayerPrefs.GetInt("maxBuildingSizeX", 3);
-		maxBuildingSize[1] = PlayerPrefs.GetInt("maxBuildingSizeY", 3);
+		maxBuildingSize[1] = PlayerPrefs.GetInt("maxBuildingSizeY", 2);
 		maxBuildingSize[2] = PlayerPrefs.GetInt("maxBuildingSizeZ", 3);
 		
 		state = State.list;

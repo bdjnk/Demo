@@ -30,10 +30,10 @@ public class PG_Cube : MonoBehaviour
 	}
 	
 	public void Struck(PG_Shot shot)
-	{		
-		if (shot != null && shot.gun.networkView.isMine)
+	{
+		if (shot != null)// && shot.gun.networkView.isMine)
 		{
-			foreach (Transform child in transform.parent) // splash effect
+			foreach (Transform child in transform.parent) // foreach cube in building, do splash effect
 			{
 				float distance = Vector3.Distance(transform.position, child.position);
 				
@@ -53,7 +53,7 @@ public class PG_Cube : MonoBehaviour
 			if (upgrade != null)
 			{
 				shot.gun.Upgrade(upgrade);
-				networkView.RPC("SetDecal", RPCMode.AllBuffered, "");
+				SetDecal("");
 			}
 		}
 	}
@@ -72,7 +72,7 @@ public class PG_Cube : MonoBehaviour
 				
 				if (amountBlue > resistence && renderer.material.color != gameData.blue)
 				{
-					networkView.RPC("SetBlue", RPCMode.AllBuffered);
+					SetBlue();
 				}
 			}
 			else if (texture == red)
@@ -82,7 +82,7 @@ public class PG_Cube : MonoBehaviour
 				
 				if (amountRed > resistence && renderer.material.color != gameData.red)
 				{
-					networkView.RPC("SetRed", RPCMode.AllBuffered);
+					SetRed();
 				}
 			}
 		}
@@ -94,29 +94,27 @@ public class PG_Cube : MonoBehaviour
 	[RPC] private void SetRed()
 	{	
 		if (renderer.material.color == gameData.blue)
-			{
-				gameData.blueScore--;
-			}
-			renderer.material.color = gameData.red;
-			gameData.redScore++;
+		{
+			gameData.blueScore--;
+		}
+		renderer.material.color = gameData.red;
+		gameData.redScore++;
 	}
 	
 	
 	[RPC] private void SetBlue()
 	{	
 		if (renderer.material.color == gameData.red)
-			{
-				gameData.redScore--;
-			}
-			renderer.material.color = gameData.blue;
-			gameData.blueScore++;
+		{
+			gameData.redScore--;
+		}
+		renderer.material.color = gameData.blue;
+		gameData.blueScore++;
 	}
 	
 	[RPC] public void SetGray()
 	{	
 		renderer.material.color = gameData.gray;
-		
+		amountRed = amountBlue = 0;
 	}
-	
-	
 }

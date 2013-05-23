@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GameData : MonoBehaviour
 {
@@ -15,24 +16,19 @@ public class GameData : MonoBehaviour
 	public Color blue;
 	public Color gray;
 	
-	//private Hashtable players;
+	public Vector3 mapCenter;
+	
+	[RPC] public void SetMapCenter(Vector3 center) { mapCenter = center; }
+	
+	public List<GameObject> players;
 	
 	private void Awake()
 	{
 		red = new Color(1, 0.4f, 0.4f);
 		blue = new Color(0.4f, 0.6f, 1);
 		gray = new Color(0.8f, 0.8f, 0.8f);
-		/*
-		if (Network.isServer)
-		{
-			players = new Hashtable(PlayerPrefs.GetInt("maxPlayers", 10));
-		}
-	}
-	
-	[RPC] public void AddPlayer(NetworkViewID netID, NetworkPlayer netPlayer)
-	{
-		players.Add(netPlayer.guid, netID);
-		*/
+		
+		players = new List<GameObject>(20);
 	}
 	
 	public Vector3 GetTeam(GameObject player)
@@ -56,12 +52,9 @@ public class GameData : MonoBehaviour
 	[RPC] private void joinRed() { redCount++; }
 	[RPC] private void joinBlue() { blueCount++; }
 	
-	public void LeaveGame()//NetworkPlayer netPlayer) // should only ever happen on the server
+	public void LeaveGame() // should only ever happen on the server
 	{
 		Network.RemoveRPCs(player.networkView.viewID);
-		
-		//Network.RemoveRPCs((NetworkViewID)players[netPlayer.guid]);
-		//players.Remove(netPlayer.guid);
 		
 		Color color = player.GetComponentInChildren<MeshRenderer>().material.color;
 		if (color == red)
@@ -87,8 +80,7 @@ public class GameData : MonoBehaviour
 	public int redPercent = 0;
 	public int bluePercent = 0;
 	
-	[RPC]
-	public void ClearData(bool exiting)
+	[RPC] public void ClearData(bool exiting)
 	{
 		if (exiting)
 		{

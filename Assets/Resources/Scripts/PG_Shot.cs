@@ -22,7 +22,6 @@ public class PG_Shot : MonoBehaviour
 		// persist for network functionality && this shot belongs to me (on the network)
 		if (Network.time  > timeAtStart + persist && gun != null && gun.networkView.isMine)
 		{
-			Network.RemoveRPCs(networkView.viewID);
 			Network.Destroy(gameObject); // destroy for the server and all clients
 		}
 	}
@@ -35,10 +34,13 @@ public class PG_Shot : MonoBehaviour
 		{
 			cubeScript.Struck(this);
 		}
-		if (gun != null && gun.networkView.isMine) // this shot belongs to me (on the network)
+		else if (gun.tag != "Bot" && (gun.transform.parent.tag == "Red" || gun.transform.parent.tag == "Blue")) // shot was fired by a player
 		{
-			Network.RemoveRPCs(networkView.viewID);
-			Network.Destroy(gameObject); // destroy for the server and all clients
+			if (other.tag == "Red" || other.tag == "Blue") // shot hit a player
+			{
+				gun.freezeTimeout = (float)Network.time + 2f;
+			}
 		}
+		Destroy(gameObject);
 	}
 }

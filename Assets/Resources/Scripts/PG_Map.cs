@@ -35,6 +35,8 @@ public class PG_Map : MonoBehaviour
 		Vector3 offset = Vector3.zero;
 		Vector3 temp = Vector3.zero; //TODO give a meaningful name
 		
+		Vector3 farCorner = Vector3.zero;
+		
 		int width = PlayerPrefs.GetInt("citySizeX");
 		int height = PlayerPrefs.GetInt("citySizeY");
 		int depth = PlayerPrefs.GetInt("citySizeZ");
@@ -53,21 +55,55 @@ public class PG_Map : MonoBehaviour
 				}
 			}
 		}
+		for (int w = 0; w < width; w++) { farCorner.x += offset.x; }
+		for (int h = 0; h < height; h++) { farCorner.y += offset.y; }
+		for (int d = 0; d < depth; d++) { farCorner.z += offset.z; }
+		
+		Vector3 mapCenter = new Vector3((farCorner.x-spacing)/2, (farCorner.y-spacing)/2, (farCorner.z-spacing)/2);
 		
 		//----------------------------------------------- bots
 		if (System.Convert.ToBoolean(PlayerPrefs.GetInt("hasBots", 1)))
 		{
+			farCorner += new Vector3(5-spacing, 5-spacing, 5-spacing);
+			
 			GameObject bot; //TODO bots should start facing the center of the city
-			bot = Network.Instantiate(botPrefab, new Vector3(-5, 1, -5), Quaternion.identity, 2) as GameObject;
-			bot = Network.Instantiate(botPrefab, new Vector3(-5, 1, offset.z+maxBuildingSize[0]*1.5f+4.5f), Quaternion.identity, 2) as GameObject;
-			bot = Network.Instantiate(botPrefab, new Vector3(-5, offset.y+maxBuildingSize[0]*1.5f+4.5f, -5), Quaternion.identity, 2) as GameObject;
-			bot = Network.Instantiate(botPrefab, new Vector3(offset.x+maxBuildingSize[0]*1.5f+4.5f, 1, -5), Quaternion.identity, 2) as GameObject;
-			bot = Network.Instantiate(botPrefab, new Vector3(-5, offset.y+maxBuildingSize[0]*1.5f+4.5f, offset.z+maxBuildingSize[0]*1.5f+4.5f), Quaternion.identity, 2) as GameObject;
-			bot = Network.Instantiate(botPrefab, new Vector3(offset.x+maxBuildingSize[0]*1.5f+4.5f, 1, offset.z+maxBuildingSize[0]*1.5f+4.5f), Quaternion.identity, 2) as GameObject;
-			bot = Network.Instantiate(botPrefab, new Vector3(offset.x+maxBuildingSize[0]*1.5f+4.5f, offset.y+maxBuildingSize[0]*1.5f+4.5f, -5), Quaternion.identity, 2) as GameObject;
-			bot = Network.Instantiate(botPrefab, new Vector3(offset.x+maxBuildingSize[0]*1.5f+4.5f, offset.y+maxBuildingSize[0]*1.5f+4.5f, offset.z+maxBuildingSize[0]*1.5f+4.5f), Quaternion.identity, 2) as GameObject;
+			
+			Vector3 position = new Vector3(-5, 1, -5);
+			Quaternion facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
+			position = new Vector3(-5, 1, farCorner.z);
+			facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
+			position = new Vector3(-5, farCorner.y, -5);
+			facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
+			position = new Vector3(farCorner.x, 1, -5);
+			facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
+			position = new Vector3(-5, farCorner.y, farCorner.z);
+			facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
+			position = new Vector3(farCorner.x, 1, farCorner.z);
+			facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
+			position = new Vector3(farCorner.x, farCorner.y, -5);
+			facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
+			position = new Vector3(farCorner.x, farCorner.y, farCorner.z);
+			facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
 		}
 		//----------------------------------------------- bots
+		
+		GetComponent<GameData>().networkView.RPC("SetMapCenter", RPCMode.AllBuffered, mapCenter);
 		
 		if (floor)
 		{

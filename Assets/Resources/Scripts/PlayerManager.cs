@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class PlayerManager : MonoBehaviour
 {
 	private GameData gameData;
+	public bool isServer;
 	
 	private int percentToWin = 75;
 	public int myScore = 0;
@@ -15,7 +16,7 @@ public class PlayerManager : MonoBehaviour
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
 	}
 	
-	private float gameEndTime;
+	public float gameEndTime;
 	
 	//TODO the first end game is not occuring for newly joined players
 	// perhaps make those player wait until the current game finishes...
@@ -43,16 +44,13 @@ public class PlayerManager : MonoBehaviour
 		
 		gameData.GetComponent<UpgradeManager>().enabled = true;
 		
-		if (Network.isServer)
+		if (Network.isServer) // only gets called once...
 		{
-			foreach (GameObject player in gameData.players)
-			{
-				player.networkView.RPC("SetTimer", RPCMode.AllBuffered, (float)Network.time + gameData.gameLength);
-			}
+			networkView.RPC("SetAsServer", RPCMode.AllBuffered);
+			networkView.RPC("SetTimer", RPCMode.AllBuffered, (float)Network.time + gameData.gameLength);
 		}
-		
-		//gameData.networkView.RPC("AddPlayer", RPCMode.Server, networkView.viewID, gameData.networkPlayer);
 	}
+	[RPC] private void SetAsServer() { isServer = true; }
 	
 	public void MouseEnable(bool state)
 	{

@@ -21,10 +21,10 @@ public class PlayerSetup : MonoBehaviour
 	
 	private void Update()
 	{
-		if (!done && playerManager.ready)
+		if (!done && playerManager.ready) // do once when the player is ready.
 		{
 			if (Network.isServer && !networkView.isMine) // RPC them the data.
-				{
+			{
 				PG_Cube cubeScript;
 				
 				foreach (GameObject cube in gameData.GetComponent<UpgradeManager>().cubes) // doesn't work here because the cubes aren't created yet.

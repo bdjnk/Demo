@@ -19,6 +19,9 @@ public class PG_Cube : MonoBehaviour
 	public float amountRed;
 	private float adjacentCubeDistance = 2.9f;
 	
+	private PG_Shot latest;
+	private PlayerManager captor;
+	
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
@@ -31,30 +34,29 @@ public class PG_Cube : MonoBehaviour
 	
 	public void Struck(PG_Shot shot)
 	{
-		if (shot != null)// && shot.gun.networkView.isMine)
+		latest = shot;
+	
+		foreach (Transform child in transform.parent) // foreach cube in building, do splash effect
 		{
-			foreach (Transform child in transform.parent) // foreach cube in building, do splash effect
+			float distance = Vector3.Distance(transform.position, child.position);
+			
+			if (distance < adjacentCubeDistance) // only consider adjacent cubes
 			{
-				float distance = Vector3.Distance(transform.position, child.position);
+				PG_Cube cubeScript = child.GetComponent<PG_Cube>();
 				
-				if (distance < adjacentCubeDistance) // only consider adjacent cubes
+				if (cubeScript != null) // this is a cube
 				{
-					PG_Cube cubeScript = child.GetComponent<PG_Cube>();
-					
-					if (cubeScript != null && shot != null) // this is a cube
-					{
-						cubeScript.Effects(shot, distance);
-					}
+					cubeScript.Effects(shot, distance);
 				}
 			}
-			
-			Texture upgrade = renderer.material.GetTexture("_DecalTex");
-			
-			if (upgrade != null)
-			{
-				shot.gun.Upgrade(upgrade);
-				SetDecal("");
-			}
+		}
+		
+		Texture upgrade = renderer.material.GetTexture("_DecalTex");
+		
+		if (upgrade != null)
+		{
+			shot.gun.Upgrade(upgrade);
+			SetDecal("");
 		}
 	}
 	
@@ -69,50 +71,38 @@ public class PG_Cube : MonoBehaviour
 			{
 				amountRed = Mathf.Max(0, amountRed - effect);
 				amountBlue = Mathf.Min(maxColor, amountBlue + effect);
-				
-				/*
-				if (amountBlue > resistence && renderer.material.color != gameData.blue)
-				{
-					SetBlue();
-					/*
-					if (networkView.isMine)
-					{
-						networkView.RPC("SetBlue", RPCMode.AllBuffered);
-					}
-				}
-				*/
 			}
 			else if (texture == red)
 			{
 				amountBlue = Mathf.Max(0, amountBlue - effect);
 				amountRed = Mathf.Min(maxColor, amountRed + effect);
-				
-				/*
-				if (amountRed > resistence && renderer.material.color != gameData.red)
-				{
-					SetRed();
-					/*
-					if (networkView.isMine)
-					{
-						networkView.RPC("SetRed", RPCMode.AllBuffered);
-					}
-				}
-				*/
 			}
-			SetColor();
+			SetColor(shot);
 		}
 	}
 	
-	public void SetColor()
+	public void SetColor(PG_Shot shot)
 	{
 		if (amountBlue > resistence && renderer.material.color != gameData.blue)
 		{
 			SetBlue();
+			InformCaptor(shot);
 		}
 		else if (amountRed > resistence && renderer.material.color != gameData.red)
 		{
 			SetRed();
+			InformCaptor(shot);
 		}
+	}
+	
+	private void InformCaptor(PG_Shot shot)
+	{
+		if (captor != null)
+			captor.myScore--; // do we have a former captor?
+		if (shot != null)
+			captor = shot.gun.transform.parent.GetComponent<PlayerManager>();
+		if (captor != null) 
+			captor.myScore++; // give the player their due
 	}
 	
 	//TODO URGENT ensure game score data is persisting properly
@@ -140,9 +130,14 @@ public class PG_Cube : MonoBehaviour
 	}
 	
 	[RPC] public void SetGray()
-	{	
+	{
+		if (captor != null)
+		{
+			captor.myScore--;
+			captor = null;
+		}
+		amountRed = amountBlue = 0;
 		renderer.material.color = gameData.gray;
 		SetDecal("");
-		amountRed = amountBlue = 0;
 	}
 }

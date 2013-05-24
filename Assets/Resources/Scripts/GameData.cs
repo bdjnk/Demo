@@ -92,6 +92,9 @@ public class GameData : MonoBehaviour
 			blueCount = 0;
 	  		totalCubes = 0;
 			ready = false;
+			gameLength = 0;
+			mapCenter = Vector3.zero;
+			players = new List<GameObject>(20);
 		}
 		redScore = 0;
 		blueScore = 0;

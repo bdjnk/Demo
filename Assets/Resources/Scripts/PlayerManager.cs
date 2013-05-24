@@ -7,16 +7,12 @@ public class PlayerManager : MonoBehaviour
 	private GameData gameData;
 	
 	private int percentToWin = 75;
-	private int totalCubes;
+	public int myScore = 0;
+	private int myPercent = 0;
 	
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
-	}
-	
-	private void Start()
-	{
-		totalCubes = gameData.GetComponent<PG_Map>().cubeCount;
 	}
 	
 	private float gameEndTime;
@@ -103,6 +99,8 @@ public class PlayerManager : MonoBehaviour
 	
 	private void Update()
 	{
+		myPercent = (int)(100.0f * myScore/gameData.totalCubes);
+		
 		if (Input.GetKeyUp(KeyCode.Q))
 		{
 			showHUD = !showHUD;
@@ -112,7 +110,7 @@ public class PlayerManager : MonoBehaviour
 			MouseEnable(false);
 		}
 		
-		if (gameData.gameLength == 0) { gameEndTime = (float)Network.time + 1; }
+		if (gameData.gameLength == 0) { gameEndTime = (float)Network.time + 1; } // don't end because of the timer
 		
 		if (!won)
 		{
@@ -163,28 +161,30 @@ public class PlayerManager : MonoBehaviour
 	
 	private void OnGUI()
 	{
+		float edge = Screen.width*0.02f;
+		float buttonW = 100f;
+		float buttonH = 70f;
+		
+		if (!won && gameData.gameLength > 0)
+		{
+			GUI.Box(new Rect(Screen.width-buttonW-edge, Screen.height-buttonH*0.6f-edge, buttonW, buttonH*0.6f), "Countdown:\n"+Mathf.CeilToInt(gameEndTime-(float)Network.time));
+		}
+		
 		if (!showHUD) { return; } // else show HUD
-			
-		float buttonX = Screen.width*0.02f;
-		float buttonY = Screen.width*0.02f;
-		float buttonW = Screen.width*0.12f;
-		float buttonH = Screen.width*0.20f;
 		
 		if (!won)
 		{
 			if (tag == "Red") // display the lists
 			{
-				//GUI.Box(new Rect(buttonX, buttonY, buttonW, buttonH),"Red Team:\n"+gmScript.redTeamString);
-				GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY, buttonW, buttonH/2), "Red Team:\n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%\nCountdown\n"+Mathf.CeilToInt(gameEndTime-(float)Network.time));
-				GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*0.6f, buttonW, buttonH/2), "Blue Team:\n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%");
+				GUI.Box(new Rect(Screen.width-buttonW-edge, edge, buttonW, buttonH), "Red Team:\n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%");
+				GUI.Box(new Rect(Screen.width-buttonW-edge, edge*2+buttonH, buttonW, buttonH), "Blue Team:\n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%");
 			}
 			else if (tag == "Blue")
 			{
-				//GUI.Box(new Rect(buttonX, buttonY, buttonW, buttonH),"Blue Team:\n"+gmScript.blueTeamString);
-				GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY, buttonW, buttonH/2), "Blue Team:\n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%\nCountdown\n"+Mathf.CeilToInt(gameEndTime-(float)Network.time));
-				GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*0.6f, buttonW, buttonH/2), "Red Team:\n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%");
+				GUI.Box(new Rect(Screen.width-buttonW-edge, edge, buttonW, buttonH), "Blue Team:\n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%");
+				GUI.Box(new Rect(Screen.width-buttonW-edge, edge*2+buttonH, buttonW, buttonH), "Red Team:\n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%");
 			}
-			//GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*1.2f, buttonW, buttonH), "My Cubes:\n"+myTotalOwned+"\n"+myPercentOfTeamTotal+"%\nClaims:\n"+myTotalClaims);
+			GUI.Box(new Rect(Screen.width-buttonW-edge, edge*3+buttonH*2, buttonW, buttonH*0.8f), "Personal:\n"+myScore+" cubes\n"+myPercent+"%");
 		}
 		
 		if (won)
@@ -204,11 +204,11 @@ public class PlayerManager : MonoBehaviour
 		{
 			if (gameData.blueScore > gameData.redScore)
 			{
-				GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*1.2f, buttonW, buttonH/2), "Blue Team\n"+(percentToWin - gameData.bluePercent)+"%\nfrom Win");
+				GUI.Box(new Rect(Screen.width-buttonW-edge, edge*4+buttonH*2+buttonH*0.8f, buttonW, buttonH*0.6f), "Blue Team\n"+(percentToWin - gameData.bluePercent)+"% to Win");
 			}
 			else
 			{
-				GUI.Box(new Rect(Screen.width-buttonW-buttonX, buttonY+buttonH*1.2f, buttonW, buttonH/2), "Red Team\n"+(percentToWin - gameData.redPercent)+"%\nfrom Win");
+				GUI.Box(new Rect(Screen.width-buttonW-edge, edge*4+buttonH*2+buttonH*0.8f, buttonW, buttonH*0.6f), "Red Team\n"+(percentToWin - gameData.redPercent)+"% to Win");
 			}
 		}
 	}

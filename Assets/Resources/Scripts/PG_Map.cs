@@ -21,6 +21,8 @@ public class PG_Map : MonoBehaviour
 	
 	public void CreateMap()
 	{
+		cubeCount = 0;
+		
 		minBuildingSize = new int [] {
 			PlayerPrefs.GetInt("minBuildingSizeX"),
 			PlayerPrefs.GetInt("minBuildingSizeY"),

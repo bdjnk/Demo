@@ -48,6 +48,6 @@ public class PlayerSetup : MonoBehaviour
 		PG_Cube cubeScript = cube.GetComponent<PG_Cube>();
 		cubeScript.amountRed = amountRed;
 		cubeScript.amountBlue = amountBlue;
-		cubeScript.SetColor();
+		cubeScript.SetColor(null);
 	}
 }

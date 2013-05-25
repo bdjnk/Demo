@@ -20,12 +20,5 @@ public class Ready : MonoBehaviour
 	private void SpawnPlayer()
 	{
 		player = Network.Instantiate(playerPrefab, new Vector3(-10, 2, -10), Quaternion.identity, 4) as GameObject;
-		
-		/*
-		PlayerManager playerManager = player.GetComponent<PlayerManager>();
-		
-		playerManager.Enable(true);
-		playerManager.JoinTeam();
-		*/
 	}
 }

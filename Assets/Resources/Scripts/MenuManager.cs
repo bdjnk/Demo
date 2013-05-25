@@ -299,7 +299,7 @@ public class MenuManager : MonoBehaviour
 			
 			// This is the wrong place for LeaveGame(). What if the player leaves unexpectedly?!
 			// I attempted to move it and ended up very frustrated. For now it's a "known bug".
-			GetComponent<GameData>().LeaveGame(); //TODO URGENT move to OnPlayerDisconnected()
+			//GetComponent<GameData>().LeaveGame(); //TODO URGENT move to OnPlayerDisconnected()
 			
 			Network.Disconnect();
 			return;
@@ -333,11 +333,31 @@ public class MenuManager : MonoBehaviour
 	// Called on the server whenever a player is disconnected from the server.
 	private void OnPlayerDisconnected(NetworkPlayer netPlayer)
 	{
+		GameData gameData = GetComponent<GameData>();
+		foreach (GameObject player in gameData.players)
+		{
+			if (player.networkView.owner == netPlayer)
+			{
+				gameData.players.Remove(player);
+				
+				Color color = player.GetComponentInChildren<MeshRenderer>().material.color;
+				if (color == gameData.red)
+				{
+					gameData.networkView.RPC("leaveRed", RPCMode.AllBuffered);
+				}
+				else // color == blue
+				{
+					gameData.networkView.RPC("leaveBlue", RPCMode.AllBuffered);
+				}
+		
+        		Network.DestroyPlayerObjects(netPlayer);
+				Network.RemoveRPCs(player.networkView.viewID);
+			}
+		}
+		
 		//TODO these numbers should really be constants in a seprate static class
 		Network.RemoveRPCs(netPlayer, 4); // player
         Network.RemoveRPCs(netPlayer, 3); // shots
-		//GetComponent<GameData>().LeaveGame(netPlayer);
-        Network.DestroyPlayerObjects(netPlayer);
 	}
 	
 	// Called on client during disconnection from server, but also on the server when the connection has disconnected.

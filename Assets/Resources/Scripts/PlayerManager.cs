@@ -62,7 +62,7 @@ public class PlayerManager : MonoBehaviour
 		}
 	}
 	
-	public void JoinTeam() // called from Ready.SpawnPlayer()
+	public void JoinTeam() // called once from PlayerSetup.Update()
 	{		
 		Vector3 color = gameData.GetTeam(gameObject);
 		networkView.RPC("SetColor", RPCMode.AllBuffered, color, networkView.viewID);

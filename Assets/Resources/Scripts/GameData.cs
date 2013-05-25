@@ -39,7 +39,7 @@ public class GameData : MonoBehaviour
 		blue = new Color(0.4f, 0.6f, 1);
 		gray = new Color(0.8f, 0.8f, 0.8f);
 		
-		players = new List<GameObject>(20);
+		ClearData(true);
 	}
 	
 	public Vector3 GetTeam(GameObject player)
@@ -78,15 +78,15 @@ public class GameData : MonoBehaviour
 		}
 	}
 	
-	[RPC] private void leaveRed() { redCount--; }
-	[RPC] private void leaveBlue() { blueCount--; }
+	[RPC] public void leaveRed() { redCount--; }
+	[RPC] public void leaveBlue() { blueCount--; }
 	
 	public int RedCount { get { return redCount; } }
 	public int BlueCount { get { return blueCount; } }
 	
-	[RPC] public void ClearData(bool exiting)
+	[RPC] public void ClearData(bool all)
 	{
-		if (exiting)
+		if (all)
 		{
 			redCount = 0;
 			blueCount = 0;

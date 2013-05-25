@@ -109,7 +109,7 @@ public class PG_Cube : MonoBehaviour
 	// scoring is only broken when the quit bug occurs, otherwise it's fine
 	
 	[RPC] private void SetRed()
-	{	
+	{
 		if (renderer.material.color == gameData.blue)
 		{
 			gameData.blueScore--;
@@ -120,7 +120,7 @@ public class PG_Cube : MonoBehaviour
 	
 	
 	[RPC] private void SetBlue()
-	{	
+	{
 		if (renderer.material.color == gameData.red)
 		{
 			gameData.redScore--;
@@ -136,6 +136,11 @@ public class PG_Cube : MonoBehaviour
 			captor.myScore--;
 			captor = null;
 		}
+		if (renderer.material.color == gameData.red)
+			gameData.redScore--;
+		else //if (renderer.material.color == gameData.blue)
+			gameData.blueScore--;
+		
 		amountRed = amountBlue = 0;
 		renderer.material.color = gameData.gray;
 		SetDecal("");

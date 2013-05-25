@@ -19,7 +19,6 @@ public class PG_Cube : MonoBehaviour
 	public float amountRed;
 	private float adjacentCubeDistance = 2.9f;
 	
-	private PG_Shot latest;
 	private PlayerManager captor;
 	
 	private void Awake()
@@ -34,8 +33,6 @@ public class PG_Cube : MonoBehaviour
 	
 	public void Struck(PG_Shot shot)
 	{
-		latest = shot;
-	
 		foreach (Transform child in transform.parent) // foreach cube in building, do splash effect
 		{
 			float distance = Vector3.Distance(transform.position, child.position);

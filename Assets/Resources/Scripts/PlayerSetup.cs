@@ -27,7 +27,7 @@ public class PlayerSetup : MonoBehaviour
 			{
 				PG_Cube cubeScript;
 				
-				foreach (GameObject cube in gameData.GetComponent<UpgradeManager>().cubes) // doesn't work here because the cubes aren't created yet.
+				foreach (GameObject cube in gameData.GetComponent<UpgradeManager>().cubes)
 				{
 					cubeScript = cube.GetComponent<PG_Cube>(); // RPC them amountRed and amountBlue, the rest can be calculated
 					networkView.RPC("SetCubes", networkView.owner, cube.networkView.viewID, cubeScript.amountRed, cubeScript.amountBlue);

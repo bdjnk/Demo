@@ -126,12 +126,14 @@ public class PlayerManager : MonoBehaviour
 			won = false;
 			winWait = 8;
 			
-			gameData.ClearData(false);
+			//gameData.ClearData(false);
 			
 			foreach (GameObject cube in gameData.GetComponent<UpgradeManager>().cubes)
 			{
-				if (cube != null)
+				if (cube != null && cube.renderer.material.color != gameData.gray)
+				{
 					cube.GetComponent<PG_Cube>().SetGray();
+				}
 			}
 			
 			GetComponentInChildren<PG_Gun>().enabled = true;

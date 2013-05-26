@@ -51,14 +51,6 @@ public class GameData : MonoBehaviour
 		if (state == State.inGame) // starting a new round
 		{
 			ClearData(false);
-			
-			foreach (GameObject cube in GetComponent<UpgradeManager>().cubes)
-			{
-				if (cube != null && cube.renderer.material.color != gray)
-				{
-					cube.GetComponent<PG_Cube>().SetGray();
-				}
-			}
 		}
 	}
 	
@@ -87,6 +79,14 @@ public class GameData : MonoBehaviour
 			{
 				state = State.inGame;
 				networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)state);
+				
+				foreach (GameObject cube in GetComponent<UpgradeManager>().cubes)
+				{
+					if (cube != null && cube.renderer.material.color != gray)
+					{
+						cube.networkView.RPC ("SetGray", RPCMode.AllBuffered);
+					}
+				}
 			}
 		}
 	}

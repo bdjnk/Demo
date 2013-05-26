@@ -124,8 +124,8 @@ public class PG_Cube : MonoBehaviour
 		}
 		renderer.material.color = gameData.red;
 		gameData.redScore++;
+		StartCoroutine("startHitEffect","Red");
 	}
-	
 	
 	[RPC] private void SetBlue()
 	{	
@@ -135,6 +135,21 @@ public class PG_Cube : MonoBehaviour
 		}
 		renderer.material.color = gameData.blue;
 		gameData.blueScore++;
+		StartCoroutine("startHitEffect","Blue");
+	}
+	
+	IEnumerator startHitEffect(string hitColor){
+		Texture prior = renderer.material.GetTexture("_DecalTex");
+		for (int i=1;i<=5;i++){
+			renderer.material.SetTexture("_DecalTex", Resources.Load("Textures/"+hitColor+"Hit"+i) as Texture);
+			yield return new WaitForSeconds(0.1f);
+		}
+		renderer.material.SetTexture("_DecalTex", prior);
+		/*if(hitColor=="Red"){
+			renderer.material.color = gameData.red;
+		} else {
+			renderer.material.color = gameData.blue;
+		}*/
 	}
 	
 	[RPC] public void SetGray()

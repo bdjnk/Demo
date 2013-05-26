@@ -126,7 +126,7 @@ public class PlayerManager : MonoBehaviour
 			won = false;
 			winWait = 8;
 			
-			//gameData.ClearData(false);
+			gameData.ClearData(false);
 			
 			foreach (GameObject cube in gameData.GetComponent<UpgradeManager>().cubes)
 			{

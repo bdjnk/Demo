@@ -223,43 +223,54 @@ public class MenuManager : MonoBehaviour
 		
 		innerWidth = Screen.width-scrollBarWidth;
 		
-		GUI.BeginGroup(new Rect(edge, 5, 400, 25));
+		GUI.BeginGroup(new Rect(edge, 5, 565, 25));
 		
-		if (GUI.Button(new Rect(0, 0, 65, 25), "Refresh")) // refresh our list of servers
+		
+		
+		GUI.Button(new Rect(0, 0, 90, 25), "Kelvin Mode");
+		GUI.Button(new Rect(100, 0, 150, 25), "About Paint The Town");
+		GUI.Button(new Rect(260, 0, 150, 25), "About PositiveGames");
+		GUI.Button(new Rect(425, 0, 65, 25), "Credits");
+		GUI.Button(new Rect(500, 0, 65, 25), "Quit");
+		
+		GUI.EndGroup();
+		
+		
+		if (GUI.Button(new Rect(10, 50, 65, 25), "Refresh")) // refresh our list of servers
 		{
 			MasterServer.RequestHostList(gameName);
 		}
-		GUI.Label(new Rect(70, 0, 200, 25), "the server list to join a game, or");
-		if (GUI.Button(new Rect(260, 0, 80, 25), "create one."))
+		GUI.Label(new Rect(90, 50, 200, 25), "the server list to join a game, or");
+		if (GUI.Button(new Rect(290, 50, 80, 25), "create one."))
 		{
 			state = State.create;
 		}
 		
-		GUI.EndGroup();
 		
-		GUI.Label(new Rect((Screen.width-edge)-200, 5, 40, 25), "Name:");
-		playerName = GUI.TextField(new Rect((Screen.width-edge)-150, 5, 150, 25), playerName, 16);
+		
+		GUI.Label(new Rect((Screen.width-edge)-200, 50, 40, 25), "Name:");
+		playerName = GUI.TextField(new Rect((Screen.width-edge)-150, 50, 150, 25), playerName, 16);
 		PlayerPrefs.SetString("playerName", playerName); // may be inefficient...
 		
-		GUI.BeginGroup(new Rect(edge, 35, innerWidth, 25));
+		GUI.BeginGroup(new Rect(edge, 70, innerWidth, 25));
 			
-		GUI.Label(new Rect(edge, 0, innerWidth-300, 25), "Name");
-		GUI.Label(new Rect(innerWidth-300, 0, 100, 25), "Size");
-		GUI.Label(new Rect(innerWidth-200, 0, 100, 25), "Players");
-		GUI.Label(new Rect(innerWidth-100, 0, 100, 25), "Ping");
+		GUI.Label(new Rect(edge, 90, innerWidth-300, 25), "Name");
+		GUI.Label(new Rect(innerWidth-300, 90, 100, 25), "Size");
+		GUI.Label(new Rect(innerWidth-200, 90, 100, 25), "Players");
+		GUI.Label(new Rect(innerWidth-100, 90, 100, 25), "Ping");
 		
 		GUI.EndGroup();
 		
 		hostData = MasterServer.PollHostList();
 		if (hostData == null || hostData.Length == 0) // the server list is empty (or null)
 		{
-			GUI.Label(new Rect(edge, 60, 250, serverHeight), "No servers available, try refreshing.");
+			GUI.Label(new Rect(edge, 100, 250, serverHeight), "No servers available, try refreshing.");
 		}
 		else
 		{
 			// this scrollbox's outer height is limited by the screen height in increments of serverHeight
 			scrollPosition = GUI.BeginScrollView(
-				new Rect(edge, 60, (Screen.width-edge*2),
+				new Rect(edge, 90, (Screen.width-edge*2),
 					Mathf.Min(serverHeight*hostData.Length, Mathf.Round((Screen.height-60)/serverHeight)*serverHeight)),
 				scrollPosition, new Rect(0, 0, innerWidth*0.98f, serverHeight*hostData.Length), false, true);
 			

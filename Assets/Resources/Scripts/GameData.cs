@@ -32,6 +32,8 @@ public class GameData : MonoBehaviour
 	
 	public List<GameObject> players;
 	
+	private GameObject winSound;
+	
 	public State state;
 	public enum State
     {
@@ -39,14 +41,16 @@ public class GameData : MonoBehaviour
 		inGame
     };
 	
-	public float gameLength;
+	public float gameLength = 0;
 	[RPC] public void SetGameLength(float length) { gameLength = length; }
 	
-	public float gameEndTime;
+	public float gameEndTime = 0;
 	[RPC] private void SetEndTime(float endTime, int newState)
 	{
 		gameEndTime = endTime;
+
 		state = (State)newState;
+		Instantiate(winSound, this.transform.position, Quaternion.identity);
 		
 		if (state == State.inGame) // starting a new round
 		{
@@ -63,15 +67,14 @@ public class GameData : MonoBehaviour
 		
 		if (Network.isServer)
 		{
-			if (gameLength == 0) { gameEndTime = (float)Network.time + 1; } // don't end because of the timer
+			//if (gameLength == 0) { gameEndTime = (float)Network.time + 8f; } // don't end because of the timer
 			
 			if (state == State.inGame)
 			{
-				if ((redPercent >= percentToWin || bluePercent >= percentToWin) || (gameEndTime > 0 && Network.time > gameEndTime))
+				if ((redPercent >= percentToWin || bluePercent >= percentToWin) || (gameLength!=0 && gameEndTime > 0 && Network.time > gameEndTime))
 				{
 					state = State.betweenGames;
 					//gameEndTime = (float)Network.time + 8;
-					
 					networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + 8, (int)state);
 				}
 			}
@@ -106,6 +109,8 @@ public class GameData : MonoBehaviour
 		gray = new Color(0.8f, 0.8f, 0.8f);
 		
 		ClearData(true);
+		
+		winSound = Resources.Load ("Prefabs/Winner") as GameObject;
 	}
 	
 	public Vector3 GetTeam(GameObject player)

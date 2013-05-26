@@ -25,7 +25,7 @@ public class MenuManager : MonoBehaviour
 	private bool upgrades = true;
 	private bool listed = true;
 	private bool floor = true;
-	private bool timed = true;
+	private bool timed = false;
 	private float timer = 2;
 	private float spacing = 1.5f;
 	

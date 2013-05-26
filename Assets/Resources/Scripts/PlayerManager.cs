@@ -10,9 +10,12 @@ public class PlayerManager : MonoBehaviour
 	public int myScore = 0;
 	private int myPercent = 0;
 	
+	private GameObject winSound;
+	
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
+		
 	}
 	
 	public bool ready = false;
@@ -87,6 +90,7 @@ public class PlayerManager : MonoBehaviour
 	private void Update()
 	{
 		myPercent = (int)(100.0f * myScore/gameData.totalCubes);
+		//Debug.Log ("Percent " + myPercent);
 		
 		if (Input.GetKeyUp(KeyCode.Q))
 		{

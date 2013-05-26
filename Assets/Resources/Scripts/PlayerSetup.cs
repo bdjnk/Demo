@@ -50,4 +50,8 @@ public class PlayerSetup : MonoBehaviour
 		cubeScript.amountBlue = amountBlue;
 		cubeScript.SetColor(null);
 	}
+	
+	void OnTriggerEnter(Collider other){
+		Debug.Log ("players collider");
+	}
 }

@@ -20,12 +20,12 @@ public class PG_Cube : MonoBehaviour
 	private float adjacentCubeDistance = 2.9f;
 	
 	private PG_Shot latest;
-	//private PlayerManager captor;
-	private NetworkViewID captor;
+	private NetworkViewID captorID;
 	
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
+		captorID = NetworkViewID.unassigned;
 	}
 	
 	[RPC] private void SetDecal(string upgrade)
@@ -86,35 +86,43 @@ public class PG_Cube : MonoBehaviour
 	{
 		if (amountBlue > resistence && renderer.material.color != gameData.blue)
 		{
-			SetBlue();
-			InformCaptor(shot);
+			networkView.RPC("SetBlue", RPCMode.AllBuffered);
+			//SetBlue();
+			
+			if (shot != null)
+			{
+				networkView.RPC("InformCaptor", RPCMode.AllBuffered, shot.gun.transform.parent.networkView.viewID);
+			}
+			//InformCaptor(shot);
 		}
 		else if (amountRed > resistence && renderer.material.color != gameData.red)
 		{
-			SetRed();
-			InformCaptor(shot);
+			networkView.RPC("SetRed", RPCMode.AllBuffered);
+			//SetRed();
+			
+			if (shot != null)
+			{
+				networkView.RPC("InformCaptor", RPCMode.AllBuffered, shot.gun.transform.parent.networkView.viewID);
+			}
+			//InformCaptor(shot);
 		}
 	}
 	
-	private void InformCaptor(PG_Shot shot)
+	[RPC] private void InformCaptor(NetworkViewID id) //TODO only send to the actual captor(s).
 	{
-		if (shot != null)
-			networkView.RPC ("UpdateCaptor",RPCMode.AllBuffered,shot.gun.transform.parent.networkView.viewID);
-	}
-	
-	[RPC]
-	public void UpdateCaptor(NetworkViewID captor){
-		if(this.captor != NetworkViewID.unassigned && this.captor.isMine){
-			NetworkView.Find(this.captor).GetComponent<PlayerManager>().myScore--;
+		GameObject captor = NetworkView.Find(id).gameObject;
+		
+		if (this.captorID != NetworkViewID.unassigned && captorID.isMine)
+		{
+			captor.GetComponent<PlayerManager>().myScore--; // do we have a previous captor?
 		}
-		this.captor = captor;
-		if(captor.isMine){
-			NetworkView.Find(captor).GetComponent<PlayerManager>().myScore++;
+		captorID = id;
+		
+		if (captorID.isMine)
+		{
+			captor.GetComponent<PlayerManager>().myScore++; // give the player their due
 		}
 	}
-	
-	//TODO URGENT ensure game score data is persisting properly
-	// scoring is only broken when the quit bug occurs, otherwise it's fine
 	
 	[RPC] private void SetRed()
 	{	
@@ -124,7 +132,7 @@ public class PG_Cube : MonoBehaviour
 		}
 		renderer.material.color = gameData.red;
 		gameData.redScore++;
-		StartCoroutine("startHitEffect","Red");
+		StartCoroutine("HitVisuals","Red");
 	}
 	
 	[RPC] private void SetBlue()
@@ -135,29 +143,26 @@ public class PG_Cube : MonoBehaviour
 		}
 		renderer.material.color = gameData.blue;
 		gameData.blueScore++;
-		StartCoroutine("startHitEffect","Blue");
+		StartCoroutine("HitVisuals","Blue");
 	}
 	
-	IEnumerator startHitEffect(string hitColor){
+	IEnumerator HitVisuals(string hitColor)
+	{
 		Texture prior = renderer.material.GetTexture("_DecalTex");
-		for (int i=1;i<=5;i++){
+		for (int i = 1; i <= 5; i++)
+		{
 			renderer.material.SetTexture("_DecalTex", Resources.Load("Textures/"+hitColor+"Hit"+i) as Texture);
 			yield return new WaitForSeconds(0.1f);
 		}
 		renderer.material.SetTexture("_DecalTex", prior);
-		/*if(hitColor=="Red"){
-			renderer.material.color = gameData.red;
-		} else {
-			renderer.material.color = gameData.blue;
-		}*/
 	}
 	
 	[RPC] public void SetGray()
 	{
-		if (captor != NetworkViewID.unassigned && captor.isMine)
+		if (captorID != NetworkViewID.unassigned && captorID.isMine)
 		{
-			NetworkView.Find(captor).GetComponent<PlayerManager>().myScore--;
-			captor = NetworkViewID.unassigned;
+			NetworkView.Find(captorID).GetComponent<PlayerManager>().myScore--;
+			captorID = NetworkViewID.unassigned;
 		}
 		amountRed = amountBlue = 0;
 		renderer.material.color = gameData.gray;

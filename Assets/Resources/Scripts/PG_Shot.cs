@@ -28,17 +28,20 @@ public class PG_Shot : MonoBehaviour
 	
 	private void OnTriggerEnter(Collider other)
 	{
-		PG_Cube cubeScript =  other.GetComponent<PG_Cube>();
-		
-		if (cubeScript != null) // this is a cube we're dealing with here
+		if (Network.isServer) // <== AUTHORITATIVE SERVER
 		{
-			cubeScript.Struck(this);
-		}
-		else if (gun.tag != "Bot" && (gun.transform.parent.tag == "Red" || gun.transform.parent.tag == "Blue")) // shot was fired by a player
-		{
-			if (other.tag == "Red" || other.tag == "Blue") // shot hit a player
+			PG_Cube cubeScript =  other.GetComponent<PG_Cube>();
+			
+			if (cubeScript != null) // this is a cube we're dealing with here
 			{
-				gun.freezeTimeout = (float)Network.time + 2f;
+				cubeScript.Struck(this);
+			}
+			else if (gun.tag != "Bot" && (gun.transform.parent.tag == "Red" || gun.transform.parent.tag == "Blue")) // shot was fired by a player
+			{
+				if (other.tag == "Red" || other.tag == "Blue") // shot hit a player
+				{
+					gun.freezeTimeout = (float)Network.time + 2f;
+				}
 			}
 		}
 		Destroy(gameObject);

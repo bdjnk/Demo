@@ -22,16 +22,82 @@ public class GameData : MonoBehaviour
 	public int redPercent = 0;
 	public int bluePercent = 0;
 	
+	public int percentToWin = 75;
+	
 	public int totalCubes = 0;
 	[RPC] public void SetCubeCount(int cubeCount) { totalCubes = cubeCount; }
-	
-	public float gameLength;
-	[RPC] public void SetTimer(float timer) { gameLength = timer; }
 	
 	public Vector3 mapCenter;
 	[RPC] public void SetMapCenter(Vector3 center) { mapCenter = center; }
 	
 	public List<GameObject> players;
+	
+	public State state;
+	public enum State
+    {
+		betweenGames,
+		inGame
+    };
+	
+	public float gameLength;
+	[RPC] public void SetGameLength(float length) { gameLength = length; }
+	
+	public float gameEndTime;
+	[RPC] private void SetEndTime(float endTime, int newState)
+	{
+		gameEndTime = endTime;
+		state = (State)newState;
+		
+		if (state == State.inGame) // starting a new round
+		{
+			ClearData(false);
+			
+			foreach (GameObject cube in GetComponent<UpgradeManager>().cubes)
+			{
+				if (cube != null && cube.renderer.material.color != gray)
+				{
+					cube.GetComponent<PG_Cube>().SetGray();
+				}
+			}
+		}
+	}
+	
+	private void Update()
+	{
+		if (!ready) { return; }
+		
+		redPercent = (int)(100.0f * redScore/totalCubes);
+		bluePercent = (int)(100.0f * blueScore/totalCubes);
+		
+		if (Network.isServer)
+		{
+			if (gameLength == 0) { gameEndTime = (float)Network.time + 1; } // don't end because of the timer
+			
+			if (state == State.inGame)
+			{
+				if ((redPercent >= percentToWin || bluePercent >= percentToWin) || (gameEndTime > 0 && Network.time > gameEndTime))
+				{
+					state = State.betweenGames;
+					//gameEndTime = (float)Network.time + 8;
+					
+					networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + 8, (int)state);
+				}
+			}
+			else if (state == State.betweenGames && Network.time > gameEndTime)
+			{
+				state = State.inGame;
+				networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)state);
+			}
+		}
+	}
+	
+	private void Start()
+	{
+		if (Network.isServer)
+		{
+			networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)State.inGame);
+		}
+	}
 	
 	private void Awake()
 	{
@@ -100,13 +166,5 @@ public class GameData : MonoBehaviour
 		blueScore = 0;
 	  	redPercent = 0;
 	  	bluePercent = 0;
-	}
-	
-	private void Update()
-	{
-		if (!ready) { return; }
-		
-		redPercent = (int)(100.0f * redScore/totalCubes);
-		bluePercent = (int)(100.0f * blueScore/totalCubes);
 	}
 }

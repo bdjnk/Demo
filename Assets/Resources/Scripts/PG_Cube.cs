@@ -20,7 +20,8 @@ public class PG_Cube : MonoBehaviour
 	private float adjacentCubeDistance = 2.9f;
 	
 	private PG_Shot latest;
-	private PlayerManager captor;
+	//private PlayerManager captor;
+	private NetworkViewID captor;
 	
 	private void Awake()
 	{
@@ -97,12 +98,19 @@ public class PG_Cube : MonoBehaviour
 	
 	private void InformCaptor(PG_Shot shot)
 	{
-		if (captor != null)
-			captor.myScore--; // do we have a former captor?
 		if (shot != null)
-			captor = shot.gun.transform.parent.GetComponent<PlayerManager>();
-		if (captor != null) 
-			captor.myScore++; // give the player their due
+			networkView.RPC ("UpdateCaptor",RPCMode.AllBuffered,shot.gun.transform.parent.networkView.viewID);
+	}
+	
+	[RPC]
+	public void UpdateCaptor(NetworkViewID captor){
+		if(this.captor != NetworkViewID.unassigned && this.captor.isMine){
+			NetworkView.Find(this.captor).GetComponent<PlayerManager>().myScore--;
+		}
+		this.captor = captor;
+		if(captor.isMine){
+			NetworkView.Find(captor).GetComponent<PlayerManager>().myScore++;
+		}
 	}
 	
 	//TODO URGENT ensure game score data is persisting properly
@@ -131,10 +139,10 @@ public class PG_Cube : MonoBehaviour
 	
 	[RPC] public void SetGray()
 	{
-		if (captor != null)
+		if (captor != NetworkViewID.unassigned && captor.isMine)
 		{
-			captor.myScore--;
-			captor = null;
+			NetworkView.Find(captor).GetComponent<PlayerManager>().myScore--;
+			captor = NetworkViewID.unassigned;
 		}
 		amountRed = amountBlue = 0;
 		renderer.material.color = gameData.gray;

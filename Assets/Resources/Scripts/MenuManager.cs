@@ -333,6 +333,9 @@ public class MenuManager : MonoBehaviour
 	// Called on the server whenever a player is disconnected from the server.
 	private void OnPlayerDisconnected(NetworkPlayer netPlayer)
 	{
+		Network.RemoveRPCs(netPlayer, 4); // player
+        Network.RemoveRPCs(netPlayer, 3); // shots
+		
 		GameData gameData = GetComponent<GameData>();
 		foreach (GameObject player in gameData.players)
 		{
@@ -349,15 +352,15 @@ public class MenuManager : MonoBehaviour
 				{
 					gameData.networkView.RPC("leaveBlue", RPCMode.AllBuffered);
 				}
-		
-        		Network.DestroyPlayerObjects(netPlayer);
+				Debug.Log ("deleting player: " + netPlayer.ToString());
+        		//Network.DestroyPlayerObjects(netPlayer);
 				Network.RemoveRPCs(player.networkView.viewID);
+				Network.DestroyPlayerObjects(netPlayer);
 			}
 		}
 		
 		//TODO these numbers should really be constants in a seprate static class
-		Network.RemoveRPCs(netPlayer, 4); // player
-        Network.RemoveRPCs(netPlayer, 3); // shots
+		
 	}
 	
 	// Called on client during disconnection from server, but also on the server when the connection has disconnected.

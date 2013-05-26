@@ -117,16 +117,16 @@ public class SpotLight : MonoBehaviour {
 		
 	}
 	public void startDimLight(){
-		Debug.Log ("test1 ");
+		//Debug.Log ("test1 ");
 		StartCoroutine("dimLight");
 	}
 	
 	public IEnumerator dimLight(){
-		Debug.Log ("test ");
+		//Debug.Log ("test ");
 		for (float i = mLight.intensity;i>0.11f;i-=0.1f){
 			mLight.intensity =i;
 			yield return new WaitForSeconds(0.2f);
-			Debug.Log ("test inside here");
+			//Debug.Log ("test inside here");
 		}
 	}
 	

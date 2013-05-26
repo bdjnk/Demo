@@ -21,11 +21,15 @@ public class PG_Cube : MonoBehaviour
 	
 	private PG_Shot latest;
 	private NetworkViewID captorID;
+	private GameObject upgradeClaim;
+	private GameObject standardClaim;
 	
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
 		captorID = NetworkViewID.unassigned;
+		upgradeClaim = Resources.Load ("Prefabs/UpgradeClaim") as GameObject;
+		standardClaim = Resources.Load ("Prefabs/CubeClaim") as GameObject;
 	}
 	
 	[RPC] private void SetDecal(string upgrade)
@@ -58,6 +62,11 @@ public class PG_Cube : MonoBehaviour
 		{
 			shot.gun.Upgrade(upgrade);
 			SetDecal("");
+			if(upgrade.name=="BlastShots" || upgrade.name=="RapidFire" ||
+				upgrade.name=="FastShots" || upgrade.name=="MoveQuick" ||
+				upgrade.name=="EvadeBots"){
+				Instantiate(upgradeClaim, transform.position, Quaternion.identity);
+			}
 		}
 	}
 	
@@ -72,11 +81,13 @@ public class PG_Cube : MonoBehaviour
 			{
 				amountRed = Mathf.Max(0, amountRed - effect);
 				amountBlue = Mathf.Min(maxColor, amountBlue + effect);
+				Instantiate(standardClaim, this.transform.position, Quaternion.identity);
 			}
 			else if (texture == red)
 			{
 				amountBlue = Mathf.Max(0, amountBlue - effect);
 				amountRed = Mathf.Min(maxColor, amountRed + effect);
+				Instantiate(standardClaim, this.transform.position, Quaternion.identity);
 			}
 			SetColor(shot);
 		}

@@ -40,7 +40,7 @@ public class PaintCubeScript : MonoBehaviour {
 	}
 	
 	IEnumerator setTextureOffset(){
-		for (int i=0;i<90;i++){
+		for (int i=0;i<88;i++){
 			renderer.material.SetTextureOffset("_DecalTex",new Vector2(0f,0.01f*(i-5)));
 			yield return new WaitForSeconds(0.2f);
 		}	

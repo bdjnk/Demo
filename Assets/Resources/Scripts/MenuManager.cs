@@ -25,7 +25,7 @@ public class MenuManager : MonoBehaviour
 	private bool upgrades = true;
 	private bool listed = true;
 	private bool floor = true;
-	private bool timed = true;
+	private bool timed = false;
 	private float timer = 2;
 	private float spacing = 1.5f;
 	
@@ -229,9 +229,7 @@ public class MenuManager : MonoBehaviour
 		
 		GUI.Button(new Rect(0, 0, 90, 25), "Kelvin Mode");
 		GUI.Button(new Rect(100, 0, 150, 25), "About Paint The Town");
-		if (GUI.Button(new Rect(260, 0, 150, 25), "About PositiveGames")){
-			Application.LoadLevel("AboutPositive");
-		}
+		GUI.Button(new Rect(260, 0, 150, 25), "About PositiveGames");
 		GUI.Button(new Rect(425, 0, 65, 25), "Credits");
 		GUI.Button(new Rect(500, 0, 65, 25), "Quit");
 		

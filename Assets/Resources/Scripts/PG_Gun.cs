@@ -22,15 +22,20 @@ public class PG_Gun : MonoBehaviour
 			GUI.DrawTexture(new Rect(xMin, yMin, crosshairImage.width, crosshairImage.height), crosshairImage);
 			
 			if (bs != null)
-				GUI.DrawTexture(new Rect(0, 0, 40, 40), bs);
+				GUI.Box(new Rect(Screen.width - 230, Screen.height-50, 40, 40), bs);
+			    //GUI.DrawTexture(new Rect(0, 0, 40, 40), bs);
 			if (rf != null)
-				GUI.DrawTexture(new Rect(40, 0, 40, 40), rf);
+				GUI.Box(new Rect(Screen.width - 185, Screen.height-50, 40, 40), rf);
+				//GUI.DrawTexture(new Rect(40, 0, 40, 40), rf);
 			if (fs != null)
-				GUI.DrawTexture(new Rect(80, 0, 40, 40), fs);
+				GUI.Box(new Rect(Screen.width - 140, Screen.height-50, 40, 40), fs);
+				//GUI.DrawTexture(new Rect(80, 0, 40, 40), fs);
 			if (qm != null)
-				GUI.DrawTexture(new Rect(120, 0, 40, 40), qm);
+				GUI.Box(new Rect(Screen.width - 95, Screen.height-50, 40, 40), qm);
+				//GUI.DrawTexture(new Rect(120, 0, 40, 40), qm);
 			if (eb != null)
-				GUI.DrawTexture(new Rect(160, 0, 40, 40), eb);
+				GUI.Box(new Rect(Screen.width - 50, Screen.height-50, 40, 40), eb);
+				//GUI.DrawTexture(new Rect(160, 0, 40, 40), eb);
 		}
 	}
 	

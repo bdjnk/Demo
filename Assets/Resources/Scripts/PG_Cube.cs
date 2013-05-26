@@ -22,10 +22,12 @@ public class PG_Cube : MonoBehaviour
 	private PG_Shot latest;
 	//private PlayerManager captor;
 	private NetworkViewID captor;
+	private GameObject upgradeClaim;
 	
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
+		upgradeClaim = Resources.Load ("Prefabs/UpgradeClaim") as GameObject;
 	}
 	
 	[RPC] private void SetDecal(string upgrade)
@@ -58,6 +60,13 @@ public class PG_Cube : MonoBehaviour
 		{
 			shot.gun.Upgrade(upgrade);
 			SetDecal("");
+			//don't need to hear upgrade on network - only local
+			Debug.Log ("up: " + upgrade.ToString());
+			if(upgrade.name=="BlastShots" || upgrade.name=="RapidFire" ||
+				upgrade.name=="FastShots" || upgrade.name=="MoveQuick" ||
+				upgrade.name=="EvadeBots"){
+				Instantiate(upgradeClaim, transform.position, Quaternion.identity);
+			}
 		}
 	}
 	
@@ -145,6 +154,7 @@ public class PG_Cube : MonoBehaviour
 			yield return new WaitForSeconds(0.1f);
 		}
 		renderer.material.SetTexture("_DecalTex", prior);
+		//too slow to keep up with game
 		/*if(hitColor=="Red"){
 			renderer.material.color = gameData.red;
 		} else {

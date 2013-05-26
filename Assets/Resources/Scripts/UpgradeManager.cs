@@ -7,6 +7,7 @@ public class UpgradeManager : MonoBehaviour
 	public GameObject[] cubes;
 	
 	private bool hasUpgrades;
+	
 
 	private void Start()
 	{

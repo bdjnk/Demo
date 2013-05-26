@@ -115,7 +115,7 @@ public class PG_Map : MonoBehaviour
 		GetComponent<GameData>().networkView.RPC("SetCubeCount", RPCMode.AllBuffered, cubeCount);
 		
 		float timer = System.Convert.ToBoolean(PlayerPrefs.GetInt("isTimed", 1)) ? PlayerPrefs.GetFloat("timer", 2) : 0;
-		GetComponent<GameData>().networkView.RPC("SetTimer", RPCMode.AllBuffered, timer*60);
+		GetComponent<GameData>().networkView.RPC("SetGameLength", RPCMode.AllBuffered, timer*60);
 		
 		GameObject done = Network.Instantiate(donePrefab, Vector3.zero, Quaternion.identity, 1) as GameObject;
 		done.isStatic = true;

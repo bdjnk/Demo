@@ -127,13 +127,13 @@ public class PlayerManager : MonoBehaviour
 		{
 			if (tag == "Red") // display the lists
 			{
-				GUI.Box(new Rect(Screen.width-buttonW-edge, edge, buttonW, buttonH), "Red Team:\n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%");
-				GUI.Box(new Rect(Screen.width-buttonW-edge, edge*2+buttonH, buttonW, buttonH), "Blue Team:\n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%");
+				GUI.Box(new Rect(Screen.width-buttonW-edge, edge, buttonW, buttonH), "Red Team:\n"+gameData.redCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%");
+				GUI.Box(new Rect(Screen.width-buttonW-edge, edge*2+buttonH, buttonW, buttonH), "Blue Team:\n"+gameData.blueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%");
 			}
 			else if (tag == "Blue")
 			{
-				GUI.Box(new Rect(Screen.width-buttonW-edge, edge, buttonW, buttonH), "Blue Team:\n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%");
-				GUI.Box(new Rect(Screen.width-buttonW-edge, edge*2+buttonH, buttonW, buttonH), "Red Team:\n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%");
+				GUI.Box(new Rect(Screen.width-buttonW-edge, edge, buttonW, buttonH), "Blue Team:\n"+gameData.blueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%");
+				GUI.Box(new Rect(Screen.width-buttonW-edge, edge*2+buttonH, buttonW, buttonH), "Red Team:\n"+gameData.redCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%");
 			}
 			GUI.Box(new Rect(Screen.width-buttonW-edge, edge*3+buttonH*2, buttonW, buttonH*0.8f), "Personal:\n"+myScore+" cubes\n"+myPercent+"%");
 		}
@@ -142,13 +142,13 @@ public class PlayerManager : MonoBehaviour
 		{
 			if (gameData.redScore > gameData.blueScore) // display the appropriate list
 			{
-				GUI.Box(new Rect(-9, -9, Screen.width+9, Screen.height+9), "\nRed Team Wins!\n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%"
-					+"\n\n\nBlue Team \n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%"+"\n\n\nRestart in: \n"+Mathf.CeilToInt(gameData.gameEndTime-(float)Network.time));
+				GUI.Box(new Rect(-9, -9, Screen.width+9, Screen.height+9), "\nRed Team Wins!\n"+gameData.redCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%"
+					+"\n\n\nBlue Team \n"+gameData.blueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%"+"\n\n\nRestart in: \n"+Mathf.CeilToInt(gameData.gameEndTime-(float)Network.time));
 			}
 			else 
 			{
-				GUI.Box(new Rect(-9, -9, Screen.width+9, Screen.height+9), "\nBlue Team Wins!\n"+gameData.BlueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%"
-					+"\n\n\nRed Team \n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%"+"\n\n\nRestart in: \n"+Mathf.CeilToInt(gameData.gameEndTime-(float)Network.time));
+				GUI.Box(new Rect(-9, -9, Screen.width+9, Screen.height+9), "\nBlue Team Wins!\n"+gameData.blueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%"
+					+"\n\n\nRed Team \n"+gameData.redCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%"+"\n\n\nRestart in: \n"+Mathf.CeilToInt(gameData.gameEndTime-(float)Network.time));
 			}
 		}
 		else if (gameData.redPercent > gameData.percentToWin-5 || gameData.bluePercent > gameData.percentToWin-5)

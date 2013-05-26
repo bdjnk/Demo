@@ -306,12 +306,6 @@ public class MenuManager : MonoBehaviour
 		
 		if (Input.GetKeyUp(KeyCode.X))
 		{
-			Screen.lockCursor = false;
-			
-			// This is the wrong place for LeaveGame(). What if the player leaves unexpectedly?!
-			// I attempted to move it and ended up very frustrated. For now it's a "known bug".
-			//GetComponent<GameData>().LeaveGame(); //TODO URGENT move to OnPlayerDisconnected()
-			
 			Network.Disconnect();
 			return;
 		}
@@ -375,6 +369,7 @@ public class MenuManager : MonoBehaviour
 	// Called on client during disconnection from server, but also on the server when the connection has disconnected.
 	private void OnDisconnectedFromServer(NetworkDisconnection info)
 	{
+		Screen.lockCursor = false;
 		Screen.showCursor = true;
 		GetComponent<GameData>().ClearData(true);
 		GetComponent<UpgradeManager>().enabled = false;

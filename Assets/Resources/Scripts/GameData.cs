@@ -13,8 +13,8 @@ public class GameData : MonoBehaviour
 	public Color blue;
 	public Color gray;
 	
-	private int redCount;
-	private int blueCount;
+	public int redCount;
+	public int blueCount;
 	
 	public int redScore = 0;
 	public int blueScore = 0;
@@ -128,27 +128,8 @@ public class GameData : MonoBehaviour
 	[RPC] private void joinRed() { redCount++; }
 	[RPC] private void joinBlue() { blueCount++; }
 	
-	public void LeaveGame() // should only ever happen on the server
-	{
-		players.Remove(player);
-		Network.RemoveRPCs(player.networkView.viewID);
-		
-		Color color = player.GetComponentInChildren<MeshRenderer>().material.color;
-		if (color == red)
-		{
-			networkView.RPC("leaveRed", RPCMode.AllBuffered);
-		}
-		else // color == blue
-		{
-			networkView.RPC("leaveBlue", RPCMode.AllBuffered);
-		}
-	}
-	
 	[RPC] public void leaveRed() { redCount--; }
 	[RPC] public void leaveBlue() { blueCount--; }
-	
-	public int RedCount { get { return redCount; } }
-	public int BlueCount { get { return blueCount; } }
 	
 	[RPC] public void ClearData(bool all)
 	{

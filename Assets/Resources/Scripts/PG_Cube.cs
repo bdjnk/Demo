@@ -23,11 +23,13 @@ public class PG_Cube : MonoBehaviour
 	//private PlayerManager captor;
 	private NetworkViewID captor;
 	private GameObject upgradeClaim;
+	private GameObject standardClaim;
 	
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
 		upgradeClaim = Resources.Load ("Prefabs/UpgradeClaim") as GameObject;
+		standardClaim = Resources.Load ("Prefabs/CubeClaim") as GameObject;
 	}
 	
 	[RPC] private void SetDecal(string upgrade)
@@ -61,7 +63,7 @@ public class PG_Cube : MonoBehaviour
 			shot.gun.Upgrade(upgrade);
 			SetDecal("");
 			//don't need to hear upgrade on network - only local
-			Debug.Log ("up: " + upgrade.ToString());
+			//Debug.Log ("up: " + upgrade.ToString());
 			if(upgrade.name=="BlastShots" || upgrade.name=="RapidFire" ||
 				upgrade.name=="FastShots" || upgrade.name=="MoveQuick" ||
 				upgrade.name=="EvadeBots"){
@@ -81,11 +83,13 @@ public class PG_Cube : MonoBehaviour
 			{
 				amountRed = Mathf.Max(0, amountRed - effect);
 				amountBlue = Mathf.Min(maxColor, amountBlue + effect);
+				Instantiate(standardClaim, this.transform.position, Quaternion.identity);
 			}
 			else if (texture == red)
 			{
 				amountBlue = Mathf.Max(0, amountBlue - effect);
 				amountRed = Mathf.Min(maxColor, amountRed + effect);
+				Instantiate(standardClaim, this.transform.position, Quaternion.identity);
 			}
 			SetColor(shot);
 		}

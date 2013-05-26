@@ -11,9 +11,12 @@ public class PlayerManager : MonoBehaviour
 	public int myScore = 0;
 	private int myPercent = 0;
 	
+	private GameObject winSound;
+	
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
+		winSound = Resources.Load ("Prefabs/Winner") as GameObject;
 	}
 	
 	public float gameEndTime;
@@ -116,7 +119,7 @@ public class PlayerManager : MonoBehaviour
 			{
 				won = true;
 				winWait += Time.time;
-				
+				Instantiate(winSound, this.transform.position, Quaternion.identity);
 				GetComponentInChildren<PG_Gun>().enabled = false;
 			}
 		}
@@ -155,6 +158,7 @@ public class PlayerManager : MonoBehaviour
 		winWait += Time.time;
 		
 		GetComponentInChildren<PG_Gun>().enabled = false;
+		
 	}
 	
 	private bool showHUD = true;
@@ -188,7 +192,7 @@ public class PlayerManager : MonoBehaviour
 		}
 		
 		if (won)
-		{
+		{	
 			if (gameData.redScore > gameData.blueScore) // display the appropriate list
 			{
 				GUI.Box(new Rect(-9, -9, Screen.width+9, Screen.height+9), "\nRed Team Wins!\n"+gameData.RedCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%"

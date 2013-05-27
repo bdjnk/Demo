@@ -11,8 +11,6 @@ public class UpgradeManager : MonoBehaviour
 
 	private void Start()
 	{
-		cubes = GameObject.FindGameObjectsWithTag("Cube");
-		//hasUpgrades = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasUpgrades", 1));
 		if (Network.isServer)
 		{
 			networkView.RPC("SetEnabled", RPCMode.AllBuffered, PlayerPrefs.GetInt("hasUpgrades", 1));
@@ -20,6 +18,11 @@ public class UpgradeManager : MonoBehaviour
 	}
 	
 	[RPC] private void SetEnabled(int state) { hasUpgrades = System.Convert.ToBoolean(state); }
+	
+	private void OnEnable()
+	{
+		cubes = GameObject.FindGameObjectsWithTag("Cube");
+	}
 	
 	private void Update()
 	{

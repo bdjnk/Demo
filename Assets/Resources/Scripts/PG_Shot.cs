@@ -17,7 +17,7 @@ public class PG_Shot : MonoBehaviour
 		}
 		timeAtStart = (float)Network.time;
 		
-		stunSound = Resources.Load ("Prefabs/Stun") as GameObject;
+		stunSound = Resources.Load("Prefabs/Stun") as GameObject;
 	}
 	
 	private void Update()
@@ -44,8 +44,7 @@ public class PG_Shot : MonoBehaviour
 				if (other.tag == "Red" || other.tag == "Blue") // shot hit a player
 				{
 					gun.freezeTimeout = (float)Network.time + 2f;
-					//play sound
-					Instantiate(stunSound, this.transform.position, Quaternion.identity);
+					Instantiate(stunSound, this.transform.position, Quaternion.identity); //play sound
 				}
 			}
 		}

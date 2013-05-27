@@ -10,8 +10,6 @@ public class PlayerManager : MonoBehaviour
 	public int myScore = 0;
 	private int myPercent = 0;
 	
-	private GameObject winSound;
-	
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
@@ -35,6 +33,8 @@ public class PlayerManager : MonoBehaviour
 		
 		GetComponentInChildren<Camera>().enabled = state;
 		GetComponentInChildren<PG_Gun>().enabled = state;
+		
+		GetComponentInChildren<AudioListener>().enabled = state;
 		
 		MouseEnable(state);
 		

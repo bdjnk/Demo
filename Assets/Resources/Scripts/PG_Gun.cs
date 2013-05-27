@@ -22,20 +22,15 @@ public class PG_Gun : MonoBehaviour
 			GUI.DrawTexture(new Rect(xMin, yMin, crosshairImage.width, crosshairImage.height), crosshairImage);
 			
 			if (bs != null)
-				GUI.Box(new Rect(Screen.width - 230, Screen.height-50, 40, 40), bs);
-			    //GUI.DrawTexture(new Rect(0, 0, 40, 40), bs);
+				GUI.Box(new Rect(10, Screen.height-50, 40, 40), bs);
 			if (rf != null)
-				GUI.Box(new Rect(Screen.width - 185, Screen.height-50, 40, 40), rf);
-				//GUI.DrawTexture(new Rect(40, 0, 40, 40), rf);
+				GUI.Box(new Rect(60, Screen.height-50, 40, 40), rf);
 			if (fs != null)
-				GUI.Box(new Rect(Screen.width - 140, Screen.height-50, 40, 40), fs);
-				//GUI.DrawTexture(new Rect(80, 0, 40, 40), fs);
+				GUI.Box(new Rect(110, Screen.height-50, 40, 40), fs);
 			if (qm != null)
-				GUI.Box(new Rect(Screen.width - 95, Screen.height-50, 40, 40), qm);
-				//GUI.DrawTexture(new Rect(120, 0, 40, 40), qm);
+				GUI.Box(new Rect(160, Screen.height-50, 40, 40), qm);
 			if (eb != null)
-				GUI.Box(new Rect(Screen.width - 50, Screen.height-50, 40, 40), eb);
-				//GUI.DrawTexture(new Rect(160, 0, 40, 40), eb);
+				GUI.Box(new Rect(210, Screen.height-50, 40, 40), eb);
 		}
 	}
 	
@@ -71,6 +66,7 @@ public class PG_Gun : MonoBehaviour
 			Vector3 pos = transform.position + transform.forward * transform.localScale.z * 1f;
 			GameObject shot = Network.Instantiate(shotPrefab, pos, transform.rotation, 3) as GameObject;
 			networkView.RPC("InitializeShot", RPCMode.All, shot.networkView.viewID, networkView.viewID);
+			GetComponent<AudioSource>().Play();
 		}
 	}
 	
@@ -130,36 +126,36 @@ public class PG_Gun : MonoBehaviour
 	{
 		if (upgrade.name == "BlastShots")
 		{
-			if (bs == null) {
+			if (bs == null)
+			{
 				bs = upgrade;
-				bsd = Time.time + 9.0f;
-				
 				power += 2;
 			}
+			bsd = Time.time + 9.0f;
 		}
 		else if (upgrade.name == "RapidFire")
 		{
-			if (rf == null) {
+			if (rf == null)
+			{
 				rf = upgrade;
-				rfd = Time.time + 9.0f;
-				
 				rate /= 2;
 			}
+			rfd = Time.time + 9.0f;
 		}
 		else if (upgrade.name == "FastShots")
 		{
-			if (fs == null) {
+			if (fs == null)
+			{
 				fs = upgrade;
-				fsd = Time.time + 9.0f;
-				
 				speed *= 2;
 			}
+			fsd = Time.time + 9.0f;
 		}
 		else if (upgrade.name == "MoveQuick")
 		{
-			if (qm == null) {
+			if (qm == null)
+			{
 				qm = upgrade;
-				qmd = Time.time + 9.0f;
 				
 				CharacterMotor cm = transform.parent.GetComponent<CharacterMotor>();
 				cm.jumping.baseHeight = 4;
@@ -168,15 +164,15 @@ public class PG_Gun : MonoBehaviour
 				cm.movement.maxBackwardsSpeed *= 2;
 				cm.movement.maxGroundAcceleration *= 3;
 			}
+				qmd = Time.time + 9.0f;
 		}
 		else if (upgrade.name == "EvadeBots")
 		{
 			if (eb == null) {
 				eb = upgrade;
-				ebd = Time.time + 9.0f;
-				
 				// do nothing else, for now
 			}
+			ebd = Time.time + 9.0f;
 		}
 	}
 }

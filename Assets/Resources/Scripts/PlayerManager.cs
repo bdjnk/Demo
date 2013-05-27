@@ -21,7 +21,7 @@ public class PlayerManager : MonoBehaviour
 	
 	private void OnNetworkInstantiate (NetworkMessageInfo info)
 	{
-		networkView.RPC("Ready", RPCMode.All);
+		networkView.RPC("Ready", RPCMode.All); // clones, we are ready!
 	}
 	
 	public void Enable(bool state)

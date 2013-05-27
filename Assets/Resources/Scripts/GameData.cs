@@ -85,7 +85,7 @@ public class GameData : MonoBehaviour
 				
 				foreach (GameObject cube in GetComponent<UpgradeManager>().cubes)
 				{
-					if (cube != null && cube.renderer.material.color != gray)
+					if (cube != null && (cube.renderer.material.color != gray || cube.renderer.material.GetTexture("_DecalTex") != null))
 					{
 						cube.networkView.RPC ("SetGray", RPCMode.AllBuffered);
 					}
@@ -145,6 +145,7 @@ public class GameData : MonoBehaviour
 	  		totalCubes = 0;
 			ready = false;
 			gameLength = 0;
+			gameEndTime = 0;
 			mapCenter = Vector3.zero;
 			players = new List<GameObject>(20);
 		}

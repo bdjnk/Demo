@@ -62,11 +62,7 @@ public class PG_Cube : MonoBehaviour
 		{
 			shot.gun.Upgrade(upgrade);
 			SetDecal("");
-			if(upgrade.name=="BlastShots" || upgrade.name=="RapidFire" ||
-				upgrade.name=="FastShots" || upgrade.name=="MoveQuick" ||
-				upgrade.name=="EvadeBots"){
-				Instantiate(upgradeClaim, transform.position, Quaternion.identity);
-			}
+			Instantiate(upgradeClaim, transform.position, Quaternion.identity);
 		}
 	}
 	
@@ -159,13 +155,15 @@ public class PG_Cube : MonoBehaviour
 	
 	IEnumerator HitVisuals(string hitColor)
 	{
-		Texture prior = renderer.material.GetTexture("_DecalTex");
+		Texture prior = renderer.material.mainTexture;//GetTexture("_DecalTex");
 		for (int i = 1; i <= 5; i++)
 		{
-			renderer.material.SetTexture("_DecalTex", Resources.Load("Textures/"+hitColor+"Hit"+i) as Texture);
+			renderer.material.mainTexture = Resources.Load("Textures/"+hitColor+"Hit"+i) as Texture;
+			//renderer.material.SetTexture("_DecalTex", Resources.Load("Textures/"+hitColor+"Hit"+i) as Texture);
 			yield return new WaitForSeconds(0.1f);
 		}
-		renderer.material.SetTexture("_DecalTex", prior);
+		renderer.material.mainTexture = prior;
+		//renderer.material.SetTexture("_DecalTex", prior);
 	}
 	
 	[RPC] public void SetGray()

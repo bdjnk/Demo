@@ -34,6 +34,7 @@ public class PG_Cube : MonoBehaviour
 	
 	[RPC] private void SetDecal(string upgrade)
 	{
+		//renderer.material.SetTexture("_MainTex", null);
 		renderer.material.SetTexture("_DecalTex", Resources.Load("Textures/"+upgrade) as Texture);
 	}
 	
@@ -61,8 +62,8 @@ public class PG_Cube : MonoBehaviour
 		if (upgrade != null)
 		{
 			shot.gun.Upgrade(upgrade);
-			SetDecal("");
-			Instantiate(upgradeClaim, transform.position, Quaternion.identity);
+			networkView.RPC("SetDecal",RPCMode.AllBuffered,"");
+			Network.Instantiate(upgradeClaim, transform.position, Quaternion.identity,5);
 		}
 	}
 	

@@ -52,6 +52,28 @@ public class MouseLook : MonoBehaviour {
 			
 			transform.localEulerAngles = new Vector3(-rotationY, transform.localEulerAngles.y, 0);
 		}
+		//added to play with sensitivity settings
+		if(Input.GetKeyUp(KeyCode.R)){
+			if(sensitivityX>0){
+				sensitivityX--;
+			}
+		}
+		if(Input.GetKeyUp(KeyCode.T)){
+			if(sensitivityX<20){
+				sensitivityX++;
+			}
+		}
+		if(Input.GetKeyUp(KeyCode.F)){
+			if(sensitivityY>0){
+				sensitivityY--;
+			}
+		}
+		if(Input.GetKeyUp(KeyCode.G)){
+			if(sensitivityY<20){
+				sensitivityY++;
+			}
+		}
+		
 	}
 	
 	void Start ()

@@ -91,8 +91,8 @@ public class GameData : MonoBehaviour
 		if(ground!=null)
 			ground.SetActive(true);
 		//set player position above if already below
-		if(transform.position.y < -0.5f){
-			player.transform.position= new Vector3(transform.position.x,3f,transform.position.z);
+		if(player.transform.position.y < -0.5f){
+			player.transform.position= new Vector3(player.transform.position.x,3f,player.transform.position.z);
 		}
 	}
 	

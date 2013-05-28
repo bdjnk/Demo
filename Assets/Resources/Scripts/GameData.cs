@@ -65,7 +65,6 @@ public class GameData : MonoBehaviour
 		if (state == State.inGame) // starting a new round
 		{
 			ClearData(false);
-			ground = GameObject.Find("Ground(Clone)");
 			
 			if (levelType == LevelType.space)
 			{
@@ -153,6 +152,8 @@ public class GameData : MonoBehaviour
 	
 	private void OnEnable()
 	{
+		ground = GameObject.Find("Ground(Clone)");
+		
 		if (Network.isServer)
 		{
 			networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)State.inGame, (int)LevelType.sky);

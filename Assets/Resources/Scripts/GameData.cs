@@ -34,6 +34,8 @@ public class GameData : MonoBehaviour
 	
 	private GameObject winSound;
 	
+	private GameObject ground;
+	
 	public State state;
 	public enum State
     {
@@ -41,20 +43,56 @@ public class GameData : MonoBehaviour
 		inGame
     };
 	
+	public LevelType levelType;
+	public enum LevelType
+	{
+		space,
+		sky
+	}
+	
 	public float gameLength = 0;
 	[RPC] public void SetGameLength(float length) { gameLength = length; }
 	
 	public float gameEndTime = 0;
-	[RPC] private void SetEndTime(float endTime, int newState)
+	[RPC] private void SetEndTime(float endTime, int newState, int levelState)
 	{
 		gameEndTime = endTime;
 
 		state = (State)newState;
+		levelType = (LevelType)levelState;
 		Instantiate(winSound, this.transform.position, Quaternion.identity);
 		
 		if (state == State.inGame) // starting a new round
 		{
 			ClearData(false);
+			if(levelType == LevelType.space){
+				LoadSpace();
+			} 
+			if(levelType == LevelType.sky){
+				LoadSky();
+			}
+		}
+	}
+	
+	private void LoadSpace()
+	{
+		Material mSky = Resources.Load ("Skyboxes/DeepSpaceBlueWithPlanet/DSBWP") as Material;
+		RenderSettings.skybox = mSky;
+		//disable ground if it does exist
+		ground = GameObject.Find ("Ground(Clone)");
+		if(ground!=null)
+			ground.SetActive(false);
+		//set gravity?
+	}
+	
+	private void LoadSky(){
+		Material mSky = Resources.Load ("Skyboxes/Sunny2/Sunny2 Skybox") as Material;
+		RenderSettings.skybox = mSky;
+		if(ground!=null)
+			ground.SetActive(true);
+		//set player position above if already below
+		if(transform.position.y < -0.5f){
+			player.transform.position= new Vector3(transform.position.x,3f,transform.position.z);
 		}
 	}
 	
@@ -74,14 +112,22 @@ public class GameData : MonoBehaviour
 				if ((redPercent >= percentToWin || bluePercent >= percentToWin) || (gameLength!=0 && gameEndTime > 0 && Network.time > gameEndTime))
 				{
 					state = State.betweenGames;
+					
 					//gameEndTime = (float)Network.time + 8;
-					networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + 8, (int)state);
+					networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + 8, (int)state,(int)levelType);
 				}
 			}
 			else if (state == State.betweenGames && Network.time > gameEndTime)
 			{
 				state = State.inGame;
-				networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)state);
+				//change level type before new game
+				if(levelType!=null && levelType==LevelType.sky)
+				{
+					levelType = LevelType.space;
+				} else {
+					levelType = LevelType.sky;
+				}
+				networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)state,(int)levelType);
 				
 				foreach (GameObject cube in GetComponent<UpgradeManager>().cubes)
 				{
@@ -98,7 +144,7 @@ public class GameData : MonoBehaviour
 	{
 		if (Network.isServer)
 		{
-			networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)State.inGame);
+			networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)State.inGame,(int)LevelType.sky);
 		}
 	}
 	

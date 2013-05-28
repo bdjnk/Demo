@@ -66,7 +66,7 @@ public class PG_Gun : MonoBehaviour
 			Vector3 pos = transform.position + transform.forward * transform.localScale.z * 1f;
 			GameObject shot = Network.Instantiate(shotPrefab, pos, transform.rotation, 3) as GameObject;
 			networkView.RPC("InitializeShot", RPCMode.All, shot.networkView.viewID, networkView.viewID);
-			GetComponent<AudioSource>().Play();
+			//GetComponent<AudioSource>().Play();
 		}
 	}
 	

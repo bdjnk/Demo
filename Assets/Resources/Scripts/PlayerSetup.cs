@@ -11,12 +11,14 @@ public class PlayerSetup : MonoBehaviour
 	private bool done = false;
 	private float wait;
 	
+
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
 		gameData.players.Add(gameObject);
 		
 		playerManager = GetComponent<PlayerManager>();
+		
 	}
 	
 	private void Update()

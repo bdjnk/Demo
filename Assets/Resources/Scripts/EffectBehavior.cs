@@ -12,7 +12,7 @@ public class EffectBehavior : MonoBehaviour
 		
 		if (networkView == null)
 		{
-			Destroy (this.gameObject,persist);
+			Destroy (this.gameObject, persist);
 		}
 	}
 	

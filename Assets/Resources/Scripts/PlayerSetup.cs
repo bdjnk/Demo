@@ -11,20 +11,20 @@ public class PlayerSetup : MonoBehaviour
 	private bool done = false;
 	private float wait;
 	
-
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
 		gameData.players.Add(gameObject);
 		
 		playerManager = GetComponent<PlayerManager>();
-		
 	}
 	
 	private void Update()
 	{
 		if (!done && playerManager.ready) // do once when the player is ready.
 		{
+			gameData.enabled = true;
+			
 			if (Network.isServer && !networkView.isMine) // RPC them the data.
 			{
 				PG_Cube cubeScript;

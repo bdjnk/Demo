@@ -61,9 +61,6 @@ public class PlayerManager : MonoBehaviour
 	{		
 		Vector3 color = gameData.GetTeam(gameObject);
 		networkView.RPC("SetColor", RPCMode.AllBuffered, color, networkView.viewID);
-		
-		//GameObject colorize = Network.Instantiate(new GameObject(), Vector3.zero, Quaternion.identity, 5) as GameObject;
-		//networkView.RPC("InitializeColorize", RPCMode.All, colorize.networkView.viewID, color);
 	}
 	
 	[RPC] private void SetColor(Vector3 color, NetworkViewID playerID)
@@ -90,7 +87,6 @@ public class PlayerManager : MonoBehaviour
 	private void Update()
 	{
 		myPercent = (int)(100.0f * myScore/gameData.totalCubes);
-		//Debug.Log ("Percent " + myPercent);
 		
 		if (Input.GetKeyUp(KeyCode.Q))
 		{

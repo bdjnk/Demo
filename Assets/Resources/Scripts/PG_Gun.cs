@@ -121,68 +121,58 @@ public class PG_Gun : MonoBehaviour
 			eb = null;
 		}
 	}
-	[RPC]
-	public void Freeze(NetworkViewID gunID){
-		if (gunID.isMine){
-			freezeTimeout = (float)Network.time + 2f;
-		}
-	}
 	
-	[RPC]
-	public void Upgrade(string upName,NetworkViewID shotID) // all upgrade numbers should be variables
+	[RPC] public void Upgrade(string upgrade) // all upgrade numbers should be variables
 	{
-		if(shotID.isMine){
-			Texture upgrade = Resources.Load ("Textures/"+upName) as Texture;
-			if (upgrade.name == "BlastShots")
+		if (upgrade == "BlastShots")
+		{
+			if (bs == null)
 			{
-				if (bs == null)
-				{
-					bs = upgrade;
-					power += 2;
-				}
-				bsd = Time.time + 9.0f;
+				bs = Resources.Load("Textures/"+upgrade) as Texture;
+				power += 2;
 			}
-			else if (upgrade.name == "RapidFire")
+			bsd = Time.time + 9.0f;
+		}
+		else if (upgrade == "RapidFire")
+		{
+			if (rf == null)
 			{
-				if (rf == null)
-				{
-					rf = upgrade;
-					rate /= 2;
-				}
-				rfd = Time.time + 9.0f;
+				rf = Resources.Load("Textures/"+upgrade) as Texture;
+				rate /= 2;
 			}
-			else if (upgrade.name == "FastShots")
+			rfd = Time.time + 9.0f;
+		}
+		else if (upgrade == "FastShots")
+		{
+			if (fs == null)
 			{
-				if (fs == null)
-				{
-					fs = upgrade;
-					speed *= 2;
-				}
-				fsd = Time.time + 9.0f;
+				fs = Resources.Load("Textures/"+upgrade) as Texture;
+				speed *= 2;
 			}
-			else if (upgrade.name == "MoveQuick")
+			fsd = Time.time + 9.0f;
+		}
+		else if (upgrade == "MoveQuick")
+		{
+			if (qm == null)
 			{
-				if (qm == null)
-				{
-					qm = upgrade;
-					
-					CharacterMotor cm = transform.parent.GetComponent<CharacterMotor>();
-					cm.jumping.baseHeight = 4;
-					cm.movement.maxForwardSpeed *= 2;
-					cm.movement.maxSidewaysSpeed *= 2;
-					cm.movement.maxBackwardsSpeed *= 2;
-					cm.movement.maxGroundAcceleration *= 3;
-				}
-					qmd = Time.time + 9.0f;
+				qm = Resources.Load("Textures/"+upgrade) as Texture;
+				
+				CharacterMotor cm = transform.parent.GetComponent<CharacterMotor>();
+				cm.jumping.baseHeight = 4;
+				cm.movement.maxForwardSpeed *= 2;
+				cm.movement.maxSidewaysSpeed *= 2;
+				cm.movement.maxBackwardsSpeed *= 2;
+				cm.movement.maxGroundAcceleration *= 3;
 			}
-			else if (upgrade.name == "EvadeBots")
-			{
-				if (eb == null) {
-					eb = upgrade;
-					// do nothing else, for now
-				}
-				ebd = Time.time + 9.0f;
+				qmd = Time.time + 9.0f;
+		}
+		else if (upgrade == "EvadeBots")
+		{
+			if (eb == null) {
+				eb = Resources.Load("Textures/"+upgrade) as Texture;
+				// do nothing else, for now
 			}
+			ebd = Time.time + 9.0f;
 		}
 	}
 }

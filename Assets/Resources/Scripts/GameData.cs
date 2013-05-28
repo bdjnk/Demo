@@ -48,7 +48,7 @@ public class GameData : MonoBehaviour
 	{
 		space,
 		sky
-	}
+	};
 	
 	public float gameLength = 0;
 	[RPC] public void SetGameLength(float length) { gameLength = length; }
@@ -60,15 +60,20 @@ public class GameData : MonoBehaviour
 
 		state = (State)newState;
 		levelType = (LevelType)levelState;
-		Network.Instantiate(winSound, this.transform.position, Quaternion.identity,210);
+		
+		Instantiate(winSound, this.transform.position, Quaternion.identity);
 		
 		if (state == State.inGame) // starting a new round
 		{
 			ClearData(false);
-			if(levelType == LevelType.space){
+			ground = GameObject.Find("Ground(Clone)");
+			
+			if (levelType == LevelType.space)
+			{
 				LoadSpace();
 			} 
-			if(levelType == LevelType.sky){
+			if (levelType == LevelType.sky)
+			{
 				LoadSky();
 			}
 		}
@@ -76,23 +81,27 @@ public class GameData : MonoBehaviour
 	
 	private void LoadSpace()
 	{
-		Material mSky = Resources.Load ("Skyboxes/DeepSpaceBlueWithPlanet/DSBWP") as Material;
+		Material mSky = Resources.Load("Skyboxes/DeepSpaceBlueWithPlanet/DSBWP") as Material;
 		RenderSettings.skybox = mSky;
-		//disable ground if it does exist
-		ground = GameObject.Find ("Ground(Clone)");
-		if(ground!=null)
+		
+		if (ground != null) // disable it
+		{
 			ground.SetActive(false);
-		//set gravity?
+		}
 	}
 	
-	private void LoadSky(){
-		Material mSky = Resources.Load ("Skyboxes/Sunny2/Sunny2 Skybox") as Material;
+	private void LoadSky()
+	{
+		Material mSky = Resources.Load("Skyboxes/Sunny2/Sunny2 Skybox") as Material;
 		RenderSettings.skybox = mSky;
-		if(ground!=null)
+		
+		if (ground != null)
+		{
 			ground.SetActive(true);
-		//set player position above if already below
-		if(player.transform.position.y < -0.5f){
-			player.transform.position= new Vector3(player.transform.position.x,3f,player.transform.position.z);
+		}
+		if (player != null && player.transform.position.y < -0.5f) // keep player above ground
+		{
+			player.transform.position= new Vector3(player.transform.position.x, 3f, player.transform.position.z);
 		}
 	}
 	
@@ -114,20 +123,23 @@ public class GameData : MonoBehaviour
 					state = State.betweenGames;
 					
 					//gameEndTime = (float)Network.time + 8;
-					networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + 8, (int)state,(int)levelType);
+					networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + 8, (int)state, (int)levelType);
 				}
 			}
 			else if (state == State.betweenGames && Network.time > gameEndTime)
 			{
 				state = State.inGame;
+				
 				//change level type before new game
-				if(levelType!=null && levelType==LevelType.sky)
+				if (levelType != null && levelType == LevelType.sky)
 				{
 					levelType = LevelType.space;
-				} else {
+				}
+				else
+				{
 					levelType = LevelType.sky;
 				}
-				networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)state,(int)levelType);
+				networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)state, (int)levelType);
 				
 				foreach (GameObject cube in GetComponent<UpgradeManager>().cubes)
 				{
@@ -140,11 +152,11 @@ public class GameData : MonoBehaviour
 		}
 	}
 	
-	private void Start()
+	private void OnEnable()
 	{
 		if (Network.isServer)
 		{
-			networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)State.inGame,(int)LevelType.sky);
+			networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)State.inGame, (int)LevelType.sky);
 		}
 	}
 	
@@ -184,6 +196,11 @@ public class GameData : MonoBehaviour
 	
 	[RPC] public void ClearData(bool all)
 	{
+		redScore = 0;
+		blueScore = 0;
+	  	redPercent = 0;
+	  	bluePercent = 0;
+		
 		if (all)
 		{
 			redCount = 0;
@@ -194,10 +211,7 @@ public class GameData : MonoBehaviour
 			gameEndTime = 0;
 			mapCenter = Vector3.zero;
 			players = new List<GameObject>(20);
+			enabled = false;
 		}
-		redScore = 0;
-		blueScore = 0;
-	  	redPercent = 0;
-	  	bluePercent = 0;
 	}
 }

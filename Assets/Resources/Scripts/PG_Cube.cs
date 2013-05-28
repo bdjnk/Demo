@@ -12,7 +12,6 @@ public class PG_Cube : MonoBehaviour
 	public Material gray;
 	public Texture red;
 	public Texture blue;
-	private Texture prior;
 	
 	public int resistence = 4;
 	public int maxColor = 5;
@@ -22,21 +21,18 @@ public class PG_Cube : MonoBehaviour
 	
 	private PG_Shot latest;
 	private NetworkViewID captorID;
-	private GameObject upgradeClaim;
-	private GameObject standardClaim;
 	
+	public GameObject upgradeClaim;
+	public AudioClip standardClaim;
 	
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
 		captorID = NetworkViewID.unassigned;
-		upgradeClaim = Resources.Load ("Prefabs/UpgradeClaim") as GameObject;
-		standardClaim = Resources.Load ("Prefabs/CubeClaim") as GameObject;
 	}
 	
 	[RPC] private void SetDecal(string upgrade)
 	{
-		//renderer.material.SetTexture("_MainTex", null);
 		renderer.material.SetTexture("_DecalTex", Resources.Load("Textures/"+upgrade) as Texture);
 	}
 	
@@ -63,9 +59,10 @@ public class PG_Cube : MonoBehaviour
 		
 		if (upgrade != null)
 		{
-			shot.gun.networkView.RPC("Upgrade",RPCMode.AllBuffered,upgrade.name,shot.networkView.viewID);
-			networkView.RPC("SetDecal",RPCMode.AllBuffered,"");
-			Network.Instantiate(upgradeClaim, transform.position, Quaternion.identity,210);
+			//shot.gun.Upgrade(upgrade);
+			shot.gun.networkView.RPC("Upgrade", RPCMode.AllBuffered, upgrade.name);
+			networkView.RPC("SetDecal", RPCMode.AllBuffered, "");
+			Network.Instantiate(upgradeClaim, transform.position, Quaternion.identity, 210);
 		}
 	}
 	
@@ -80,41 +77,39 @@ public class PG_Cube : MonoBehaviour
 			{
 				amountRed = Mathf.Max(0, amountRed - effect);
 				amountBlue = Mathf.Min(maxColor, amountBlue + effect);
-				Network.Instantiate(standardClaim, this.transform.position, Quaternion.identity,210);
+				networkView.RPC("PlayClaim", RPCMode.All);
 			}
 			else if (texture == red)
 			{
 				amountBlue = Mathf.Max(0, amountBlue - effect);
 				amountRed = Mathf.Min(maxColor, amountRed + effect);
-				Network.Instantiate(standardClaim, this.transform.position, Quaternion.identity,210);
+				networkView.RPC("PlayClaim", RPCMode.All);
 			}
 			SetColor(shot);
 		}
 	}
+	
+	[RPC] private void PlayClaim() { GetComponent<AudioSource>().PlayOneShot(standardClaim); }
 	
 	public void SetColor(PG_Shot shot)
 	{
 		if (amountBlue > resistence && renderer.material.color != gameData.blue)
 		{
 			networkView.RPC("SetBlue", RPCMode.AllBuffered);
-			//SetBlue();
 			
 			if (shot != null)
 			{
 				networkView.RPC("InformCaptor", RPCMode.AllBuffered, shot.gun.transform.parent.networkView.viewID);
 			}
-			//InformCaptor(shot);
 		}
 		else if (amountRed > resistence && renderer.material.color != gameData.red)
 		{
 			networkView.RPC("SetRed", RPCMode.AllBuffered);
-			//SetRed();
 			
 			if (shot != null)
 			{
 				networkView.RPC("InformCaptor", RPCMode.AllBuffered, shot.gun.transform.parent.networkView.viewID);
 			}
-			//InformCaptor(shot);
 		}
 	}
 	
@@ -142,9 +137,7 @@ public class PG_Cube : MonoBehaviour
 		}
 		renderer.material.color = gameData.red;
 		gameData.redScore++;
-		if(Network.isServer){//setred is called in real time on server
-			networkView.RPC("HitVisualStart",RPCMode.All,"Red");//no buffer
-		}
+		StartCoroutine("HitVisuals","Red");
 	}
 	
 	[RPC] private void SetBlue()
@@ -155,13 +148,7 @@ public class PG_Cube : MonoBehaviour
 		}
 		renderer.material.color = gameData.blue;
 		gameData.blueScore++;
-		if(Network.isServer){//setblue is called in real time on server
-			networkView.RPC("HitVisualStart",RPCMode.All,"Blue");//no buffer
-		}
-	}
-	[RPC]
-	private void HitVisualStart(string hitColor){
-			StartCoroutine("HitVisuals",hitColor);
+		StartCoroutine("HitVisuals","Blue");
 	}
 	
 	IEnumerator HitVisuals(string hitColor)
@@ -170,11 +157,9 @@ public class PG_Cube : MonoBehaviour
 		for (int i = 1; i <= 5; i++)
 		{
 			renderer.material.mainTexture = Resources.Load("Textures/"+hitColor+"Hit"+i) as Texture;
-			//renderer.material.SetTexture("_DecalTex", Resources.Load("Textures/"+hitColor+"Hit"+i) as Texture);
 			yield return new WaitForSeconds(0.1f);
 		}
 		renderer.material.mainTexture = prior;
-		//renderer.material.SetTexture("_DecalTex", prior);
 	}
 	
 	[RPC] public void SetGray()
@@ -187,10 +172,5 @@ public class PG_Cube : MonoBehaviour
 		amountRed = amountBlue = 0;
 		renderer.material.color = gameData.gray;
 		SetDecal("");
-		/*if(Network.isServer){
-			Network.RemoveRPCs(this.gameObject.networkView.viewID);
-			Network.Destroy(this.gameObject);
-			Destroy(this.gameObject);
-		}*/
 	}
 }

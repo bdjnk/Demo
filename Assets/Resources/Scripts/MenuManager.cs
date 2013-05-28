@@ -229,13 +229,17 @@ public class MenuManager : MonoBehaviour
 		
 		GUI.Button(new Rect(0, 0, 90, 25), "Kelvin Mode");
 		GUI.Button(new Rect(100, 0, 150, 25), "About Paint The Town");
-		if(GUI.Button(new Rect(260, 0, 150, 25), "About PositiveGames"))
+		
+		if (GUI.Button(new Rect(260, 0, 150, 25), "About PositiveGames"))
 		{
 			Application.LoadLevel("AboutPositive");
 		}
-		
 		GUI.Button(new Rect(425, 0, 65, 25), "Credits");
-		GUI.Button(new Rect(500, 0, 65, 25), "Quit");
+		
+		if (GUI.Button(new Rect(500, 0, 65, 25), "Quit"))
+		{
+			Application.Quit();
+		}
 		
 		GUI.EndGroup();
 		

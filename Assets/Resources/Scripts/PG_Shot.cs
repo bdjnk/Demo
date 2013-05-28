@@ -31,22 +31,21 @@ public class PG_Shot : MonoBehaviour
 	
 	private void OnTriggerEnter(Collider other)
 	{
-		if (Network.isServer) // <== AUTHORITATIVE SERVER
+		PG_Cube cubeScript =  other.GetComponent<PG_Cube>();
+		
+		if (cubeScript != null) // this is a cube we're dealing with here
 		{
-			PG_Cube cubeScript =  other.GetComponent<PG_Cube>();
-			
-			if (cubeScript != null) // this is a cube we're dealing with here
+			if (Network.isServer) // <== AUTHORITATIVE SERVER
 			{
-				cubeScript.Struck(this);
+				cubeScript.Struck(this); // only server based cube strikes are real
 			}
-			else if (gun.tag != "Bot" && (gun.transform.parent.tag == "Red" || gun.transform.parent.tag == "Blue")) // shot was fired by a player
+		}
+		else if (gun.tag != "Bot" && (gun.transform.parent.tag == "Red" || gun.transform.parent.tag == "Blue")) // shot was fired by a player
+		{
+			if (other.tag == "Red" || other.tag == "Blue") // shot hit a player
 			{
-				if (other.tag == "Red" || other.tag == "Blue") // shot hit a player
-				{
-					gun.networkView.RPC("Freeze",RPCMode.AllBuffered,gun.networkView.viewID);
-						//gun.freezeTimeout = (float)Network.time + 2f;
-					Network.Instantiate(stunSound, this.transform.position, Quaternion.identity,210); //play sound
-				}
+				gun.freezeTimeout = (float)Network.time + 2f;
+				Instantiate(stunSound, this.transform.position, Quaternion.identity); //play sound
 			}
 		}
 		Destroy(gameObject);

@@ -43,8 +43,9 @@ public class PG_Shot : MonoBehaviour
 			{
 				if (other.tag == "Red" || other.tag == "Blue") // shot hit a player
 				{
-					gun.freezeTimeout = (float)Network.time + 2f;
-					Instantiate(stunSound, this.transform.position, Quaternion.identity); //play sound
+					gun.networkView.RPC("Freeze",RPCMode.AllBuffered,gun.networkView.viewID);
+						//gun.freezeTimeout = (float)Network.time + 2f;
+					Network.Instantiate(stunSound, this.transform.position, Quaternion.identity,210); //play sound
 				}
 			}
 		}

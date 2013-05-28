@@ -60,7 +60,7 @@ public class GameData : MonoBehaviour
 
 		state = (State)newState;
 		levelType = (LevelType)levelState;
-		Instantiate(winSound, this.transform.position, Quaternion.identity);
+		Network.Instantiate(winSound, this.transform.position, Quaternion.identity,210);
 		
 		if (state == State.inGame) // starting a new round
 		{

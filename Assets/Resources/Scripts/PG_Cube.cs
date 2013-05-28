@@ -12,6 +12,7 @@ public class PG_Cube : MonoBehaviour
 	public Material gray;
 	public Texture red;
 	public Texture blue;
+	private Texture prior;
 	
 	public int resistence = 4;
 	public int maxColor = 5;
@@ -23,6 +24,7 @@ public class PG_Cube : MonoBehaviour
 	private NetworkViewID captorID;
 	private GameObject upgradeClaim;
 	private GameObject standardClaim;
+	
 	
 	private void Awake()
 	{
@@ -61,9 +63,9 @@ public class PG_Cube : MonoBehaviour
 		
 		if (upgrade != null)
 		{
-			shot.gun.Upgrade(upgrade);
+			shot.gun.networkView.RPC("Upgrade",RPCMode.AllBuffered,upgrade.name,shot.networkView.viewID);
 			networkView.RPC("SetDecal",RPCMode.AllBuffered,"");
-			Network.Instantiate(upgradeClaim, transform.position, Quaternion.identity,5);
+			Network.Instantiate(upgradeClaim, transform.position, Quaternion.identity,210);
 		}
 	}
 	
@@ -78,13 +80,13 @@ public class PG_Cube : MonoBehaviour
 			{
 				amountRed = Mathf.Max(0, amountRed - effect);
 				amountBlue = Mathf.Min(maxColor, amountBlue + effect);
-				Instantiate(standardClaim, this.transform.position, Quaternion.identity);
+				Network.Instantiate(standardClaim, this.transform.position, Quaternion.identity,210);
 			}
 			else if (texture == red)
 			{
 				amountBlue = Mathf.Max(0, amountBlue - effect);
 				amountRed = Mathf.Min(maxColor, amountRed + effect);
-				Instantiate(standardClaim, this.transform.position, Quaternion.identity);
+				Network.Instantiate(standardClaim, this.transform.position, Quaternion.identity,210);
 			}
 			SetColor(shot);
 		}
@@ -140,7 +142,9 @@ public class PG_Cube : MonoBehaviour
 		}
 		renderer.material.color = gameData.red;
 		gameData.redScore++;
-		StartCoroutine("HitVisuals","Red");
+		if(Network.isServer){//setred is called in real time on server
+			networkView.RPC("HitVisualStart",RPCMode.All,"Red");//no buffer
+		}
 	}
 	
 	[RPC] private void SetBlue()
@@ -151,7 +155,13 @@ public class PG_Cube : MonoBehaviour
 		}
 		renderer.material.color = gameData.blue;
 		gameData.blueScore++;
-		StartCoroutine("HitVisuals","Blue");
+		if(Network.isServer){//setblue is called in real time on server
+			networkView.RPC("HitVisualStart",RPCMode.All,"Blue");//no buffer
+		}
+	}
+	[RPC]
+	private void HitVisualStart(string hitColor){
+			StartCoroutine("HitVisuals",hitColor);
 	}
 	
 	IEnumerator HitVisuals(string hitColor)
@@ -177,5 +187,10 @@ public class PG_Cube : MonoBehaviour
 		amountRed = amountBlue = 0;
 		renderer.material.color = gameData.gray;
 		SetDecal("");
+		/*if(Network.isServer){
+			Network.RemoveRPCs(this.gameObject.networkView.viewID);
+			Network.Destroy(this.gameObject);
+			Destroy(this.gameObject);
+		}*/
 	}
 }

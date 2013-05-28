@@ -121,58 +121,68 @@ public class PG_Gun : MonoBehaviour
 			eb = null;
 		}
 	}
+	[RPC]
+	public void Freeze(NetworkViewID gunID){
+		if (gunID.isMine){
+			freezeTimeout = (float)Network.time + 2f;
+		}
+	}
 	
-	public void Upgrade(Texture upgrade) // all upgrade numbers should be variables
+	[RPC]
+	public void Upgrade(string upName,NetworkViewID shotID) // all upgrade numbers should be variables
 	{
-		if (upgrade.name == "BlastShots")
-		{
-			if (bs == null)
+		if(shotID.isMine){
+			Texture upgrade = Resources.Load ("Textures/"+upName) as Texture;
+			if (upgrade.name == "BlastShots")
 			{
-				bs = upgrade;
-				power += 2;
+				if (bs == null)
+				{
+					bs = upgrade;
+					power += 2;
+				}
+				bsd = Time.time + 9.0f;
 			}
-			bsd = Time.time + 9.0f;
-		}
-		else if (upgrade.name == "RapidFire")
-		{
-			if (rf == null)
+			else if (upgrade.name == "RapidFire")
 			{
-				rf = upgrade;
-				rate /= 2;
+				if (rf == null)
+				{
+					rf = upgrade;
+					rate /= 2;
+				}
+				rfd = Time.time + 9.0f;
 			}
-			rfd = Time.time + 9.0f;
-		}
-		else if (upgrade.name == "FastShots")
-		{
-			if (fs == null)
+			else if (upgrade.name == "FastShots")
 			{
-				fs = upgrade;
-				speed *= 2;
+				if (fs == null)
+				{
+					fs = upgrade;
+					speed *= 2;
+				}
+				fsd = Time.time + 9.0f;
 			}
-			fsd = Time.time + 9.0f;
-		}
-		else if (upgrade.name == "MoveQuick")
-		{
-			if (qm == null)
+			else if (upgrade.name == "MoveQuick")
 			{
-				qm = upgrade;
-				
-				CharacterMotor cm = transform.parent.GetComponent<CharacterMotor>();
-				cm.jumping.baseHeight = 4;
-				cm.movement.maxForwardSpeed *= 2;
-				cm.movement.maxSidewaysSpeed *= 2;
-				cm.movement.maxBackwardsSpeed *= 2;
-				cm.movement.maxGroundAcceleration *= 3;
+				if (qm == null)
+				{
+					qm = upgrade;
+					
+					CharacterMotor cm = transform.parent.GetComponent<CharacterMotor>();
+					cm.jumping.baseHeight = 4;
+					cm.movement.maxForwardSpeed *= 2;
+					cm.movement.maxSidewaysSpeed *= 2;
+					cm.movement.maxBackwardsSpeed *= 2;
+					cm.movement.maxGroundAcceleration *= 3;
+				}
+					qmd = Time.time + 9.0f;
 			}
-				qmd = Time.time + 9.0f;
-		}
-		else if (upgrade.name == "EvadeBots")
-		{
-			if (eb == null) {
-				eb = upgrade;
-				// do nothing else, for now
+			else if (upgrade.name == "EvadeBots")
+			{
+				if (eb == null) {
+					eb = upgrade;
+					// do nothing else, for now
+				}
+				ebd = Time.time + 9.0f;
 			}
-			ebd = Time.time + 9.0f;
 		}
 	}
 }

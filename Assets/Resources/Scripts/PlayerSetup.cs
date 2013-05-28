@@ -14,8 +14,6 @@ public class PlayerSetup : MonoBehaviour
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
-		gameData.players.Add(gameObject);
-		
 		playerManager = GetComponent<PlayerManager>();
 	}
 	

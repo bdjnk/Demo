@@ -77,19 +77,15 @@ public class PG_Cube : MonoBehaviour
 			{
 				amountRed = Mathf.Max(0, amountRed - effect);
 				amountBlue = Mathf.Min(maxColor, amountBlue + effect);
-				networkView.RPC("PlayClaim", RPCMode.All);
 			}
 			else if (texture == red)
 			{
 				amountBlue = Mathf.Max(0, amountBlue - effect);
 				amountRed = Mathf.Min(maxColor, amountRed + effect);
-				networkView.RPC("PlayClaim", RPCMode.All);
 			}
 			SetColor(shot);
 		}
 	}
-	
-	[RPC] private void PlayClaim() { GetComponent<AudioSource>().PlayOneShot(standardClaim); }
 	
 	public void SetColor(PG_Shot shot)
 	{
@@ -130,7 +126,11 @@ public class PG_Cube : MonoBehaviour
 	}
 	
 	[RPC] private void SetRed()
-	{	
+	{
+		// putting the sound here (and not right before the call) makes it play for everyone,
+		// but maybe it should just play for the person who shot...
+		GetComponent<AudioSource>().PlayOneShot(standardClaim);
+		
 		if (renderer.material.color == gameData.blue)
 		{
 			gameData.blueScore--;
@@ -141,7 +141,9 @@ public class PG_Cube : MonoBehaviour
 	}
 	
 	[RPC] private void SetBlue()
-	{	
+	{
+		GetComponent<AudioSource>().PlayOneShot(standardClaim);
+		
 		if (renderer.material.color == gameData.red)
 		{
 			gameData.redScore--;

@@ -340,7 +340,6 @@ public class MenuManager : MonoBehaviour
 	// Called on the server whenever a new player has successfully connected.
 	private void OnPlayerConnected(NetworkPlayer netPlayer)
 	{
-		GetComponent<GameData>().networkPlayer = netPlayer;
 	}
 	
 	// Called on the server whenever a player is disconnected from the server.
@@ -356,16 +355,14 @@ public class MenuManager : MonoBehaviour
 		{
 			if (player.networkView.owner == netPlayer)
 			{
-				gameData.players.Remove(player);
-				
 				Color color = player.GetComponentInChildren<MeshRenderer>().material.color;
 				if (color == gameData.red)
 				{
-					gameData.networkView.RPC("leaveRed", RPCMode.AllBuffered);
+					gameData.networkView.RPC("LeaveRed", RPCMode.AllBuffered, netPlayer);
 				}
 				else // color == blue
 				{
-					gameData.networkView.RPC("leaveBlue", RPCMode.AllBuffered);
+					gameData.networkView.RPC("LeaveBlue", RPCMode.AllBuffered, netPlayer);
 				}
 		
 				Network.RemoveRPCs(player.networkView.viewID);

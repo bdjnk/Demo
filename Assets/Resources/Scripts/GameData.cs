@@ -174,8 +174,7 @@ public class GameData : MonoBehaviour
 	public Vector3 GetTeam(GameObject newPlayer)
 	{
 		player = newPlayer;
-		players.Add(player);
-		netPlayers.Add(player.networkView.owner);
+		networkView.RPC("AddPlayer", RPCMode.AllBuffered, player.networkView.viewID);
 		
 		ready = true;
 		
@@ -191,29 +190,23 @@ public class GameData : MonoBehaviour
 		}
 	}
 	
+	[RPC] private void AddPlayer(NetworkViewID id)
+	{
+		GameObject player = NetworkView.Find(id).gameObject;
+		players.Add(player);
+		netPlayers.Add(player.networkView.owner);
+	}
+	
 	[RPC] private void JoinRed() { redCount++; }
 	[RPC] private void JoinBlue() { blueCount++; }
 	
-	[RPC] public void LeaveRed(NetworkPlayer netPlayer)
+	[RPC] public void LeaveRed() { redCount--; }
+	[RPC] public void LeaveBlue() { blueCount--; }
+	
+	[RPC] public void RemovePlayer(NetworkPlayer netPlayer)
 	{
-		RemovePlayer(netPlayer);
-		redCount--;
-	}
-	[RPC] public void LeaveBlue(NetworkPlayer netPlayer)
-	{
-		RemovePlayer(netPlayer);
-		blueCount--;
-	}
-	private void RemovePlayer(NetworkPlayer netPlayer)
-	{
-		foreach (GameObject player in players)
-		{
-			if (player.networkView.owner == netPlayer)
-			{
-				players.Remove(player);
-				netPlayers.Remove(netPlayer);
-			}
-		}
+		players.RemoveAll(null);
+		netPlayers.Remove(netPlayer);
 	}
 	
 	[RPC] public void ClearData(bool all)

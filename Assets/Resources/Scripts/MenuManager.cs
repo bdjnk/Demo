@@ -358,17 +358,18 @@ public class MenuManager : MonoBehaviour
 				Color color = player.GetComponentInChildren<MeshRenderer>().material.color;
 				if (color == gameData.red)
 				{
-					gameData.networkView.RPC("LeaveRed", RPCMode.AllBuffered, netPlayer);
+					gameData.networkView.RPC("LeaveRed", RPCMode.AllBuffered);
 				}
 				else // color == blue
 				{
-					gameData.networkView.RPC("LeaveBlue", RPCMode.AllBuffered, netPlayer);
+					gameData.networkView.RPC("LeaveBlue", RPCMode.AllBuffered);
 				}
-		
 				Network.RemoveRPCs(player.networkView.viewID);
-        		Network.DestroyPlayerObjects(netPlayer);
 			}
 		}
+		Network.DestroyPlayerObjects(netPlayer);
+		
+		gameData.networkView.RPC("RemovePlayer", RPCMode.AllBuffered, netPlayer);
 	}
 	
 	// Called on client during disconnection from server, but also on the server when the connection has disconnected.

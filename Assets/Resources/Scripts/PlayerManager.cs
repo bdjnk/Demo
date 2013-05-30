@@ -13,7 +13,6 @@ public class PlayerManager : MonoBehaviour
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
-		
 	}
 	
 	public bool ready = false;

@@ -36,7 +36,7 @@ public class PlayerSetup : MonoBehaviour
 			else if (networkView.isMine)
 			{
 				playerManager.Enable(true);
-				playerManager.JoinTeam();
+				playerManager.JoinTeam(false); // false means we're not switching colors
 			}
 			done = true;
 		}

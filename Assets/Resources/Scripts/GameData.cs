@@ -110,6 +110,82 @@ public class GameData : MonoBehaviour
 		redPercent = (int)(100.0f * redScore/totalCubes);
 		bluePercent = (int)(100.0f * blueScore/totalCubes);
 		
+		// -- code for rebalancing as necessary ---------------------------------------------------
+		if (networkView.isMine)
+		{
+			PlayerManager best;
+			PlayerManager worst;
+			best = worst = player.GetComponent<PlayerManager>();
+			
+			if (blueCount > redCount+1) // if we have 2 more blue players than red players
+			{
+				foreach (GameObject otherPlayer in players)
+				{
+					PlayerManager temp = otherPlayer.GetComponent<PlayerManager>();
+					
+					if (temp.myColor == blue)
+					{
+						if (worst.myColor == red || best.myColor == red)
+						{
+							best = worst = temp;
+							continue;
+						}
+						if (temp.myScore < worst.myScore)
+						{
+							worst = temp;
+						}
+						else if (temp.myScore > best.myScore)
+						{
+							best = temp;
+						}
+					}
+				}
+				
+				if (redScore >= blueScore)
+				{
+					best.JoinTeam(true); // true means we're switching colors
+				}
+				else
+				{
+					worst.JoinTeam(true);
+				}
+			}
+			else if (redCount > blueCount+1)
+			{
+				foreach (GameObject otherPlayer in players)
+				{
+					PlayerManager temp = otherPlayer.GetComponent<PlayerManager>();
+					
+					if (temp.myColor == red)
+					{
+						if (worst.myColor == blue || best.myColor == blue)
+						{
+							best = worst = temp;
+							continue;
+						}
+						if (temp.myScore < worst.myScore)
+						{
+							worst = temp;
+						}
+						else if (temp.myScore > best.myScore)
+						{
+							best = temp;
+						}
+					}
+				}
+				
+				if (blueScore > redScore)
+				{
+					best.JoinTeam(true); // true means we're switching colors
+				}
+				else
+				{
+					worst.JoinTeam(true);
+				}
+			}
+		}
+		
+		// -- code for ending and restarting rounds -----------------------------------------------
 		if (Network.isServer)
 		{
 			if (state == State.inGame)
@@ -176,7 +252,7 @@ public class GameData : MonoBehaviour
 		winSound = Resources.Load ("Prefabs/Winner") as GameObject;
 	}
 	
-	public Vector3 GetTeam(GameObject newPlayer)
+	public Vector3 GetTeam(GameObject newPlayer, bool switching)
 	{
 		player = newPlayer;
 		networkView.RPC("AddPlayer", RPCMode.AllBuffered, player.networkView.viewID);
@@ -185,11 +261,19 @@ public class GameData : MonoBehaviour
 		
 		if (redCount < blueCount)
 		{
+			if (switching)
+			{
+				networkView.RPC("LeaveBlue", RPCMode.AllBuffered);
+			}
 			networkView.RPC("JoinRed", RPCMode.AllBuffered);
 			return new Vector3(red.r, red.g, red.b);
 		}
 		else // blueCount <= redCount
 		{
+			if (switching)
+			{
+				networkView.RPC("LeaveRed", RPCMode.AllBuffered);
+			}
 			networkView.RPC("JoinBlue", RPCMode.AllBuffered);
 			return new Vector3(blue.r, blue.g, blue.b);
 		}

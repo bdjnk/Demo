@@ -112,15 +112,11 @@ public class GameData : MonoBehaviour
 		
 		if (Network.isServer)
 		{
-			//if (gameLength == 0) { gameEndTime = (float)Network.time + 8f; } // don't end because of the timer
-			
 			if (state == State.inGame)
 			{
 				if ((redPercent >= percentToWin || bluePercent >= percentToWin) || (gameLength!=0 && gameEndTime > 0 && Network.time > gameEndTime))
 				{
 					state = State.betweenGames;
-					
-					//gameEndTime = (float)Network.time + 8;
 					networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + 8, (int)state, (int)levelType);
 				}
 			}
@@ -128,8 +124,7 @@ public class GameData : MonoBehaviour
 			{
 				state = State.inGame;
 				
-				//change level type before new game
-				if (levelType == LevelType.sky)
+				if (levelType == LevelType.sky) //change level type before new game
 				{
 					levelType = LevelType.space;
 				}
@@ -137,6 +132,9 @@ public class GameData : MonoBehaviour
 				{
 					levelType = LevelType.sky;
 				}
+				/* This is the code which fails to reset all RPCs and Network.Instantiate calls when the game ends,
+				 * resulting is a build-up of network crap that drowns joining players and slows everything down.
+				 * 
 				networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)state, (int)levelType);
 				
 				foreach (GameObject cube in GetComponent<UpgradeManager>().cubes)
@@ -146,6 +144,13 @@ public class GameData : MonoBehaviour
 						cube.networkView.RPC ("SetGray", RPCMode.AllBuffered);
 					}
 				}
+				*/
+				GetComponent<MenuManager>().networkView.RPC("ClearClient", RPCMode.All);
+				foreach(NetworkPlayer netPlayer in netPlayers)
+				{
+					GetComponent<MenuManager>().OnPlayerDisconnected(netPlayer);
+				}
+				GetComponent<PG_Map>().CreateMap();
 			}
 		}
 	}

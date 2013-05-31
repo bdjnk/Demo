@@ -30,7 +30,7 @@ public class PlayerSetup : MonoBehaviour
 				foreach (GameObject cube in gameData.GetComponent<UpgradeManager>().cubes)
 				{
 					cubeScript = cube.GetComponent<PG_Cube>(); // RPC them amountRed and amountBlue, the rest can be calculated
-					networkView.RPC("SetCubes", networkView.owner, cube.networkView.viewID, cubeScript.amountRed, cubeScript.amountBlue);
+					networkView.RPC("SetCube", networkView.owner, cube.networkView.viewID, cubeScript.amountRed, cubeScript.amountBlue);
 				}
 			}
 			else if (networkView.isMine)
@@ -42,7 +42,7 @@ public class PlayerSetup : MonoBehaviour
 		}
 	}
 	
-	[RPC] private void SetCubes(NetworkViewID id, float amountRed, float amountBlue)
+	[RPC] private void SetCube(NetworkViewID id, float amountRed, float amountBlue)
 	{
 		GameObject cube = NetworkView.Find(id).gameObject;
 		PG_Cube cubeScript = cube.GetComponent<PG_Cube>();

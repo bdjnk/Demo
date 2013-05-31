@@ -327,6 +327,7 @@ public class MenuManager : MonoBehaviour
 		MasterServer.RegisterHost(gameName, serverName);
 	}
 	
+	// Called on the server whenever a Network.InitializeServer was invoked and has completed.
 	private void OnServerInitialized()
 	{
 		GetComponent<PG_Map>().CreateMap();
@@ -343,7 +344,7 @@ public class MenuManager : MonoBehaviour
 	}
 	
 	// Called on the server whenever a player is disconnected from the server.
-	private void OnPlayerDisconnected(NetworkPlayer netPlayer)
+	public void OnPlayerDisconnected(NetworkPlayer netPlayer)
 	{
 		//TODO these numbers should really be constants in a seprate static class
 		Network.RemoveRPCs(netPlayer, 4); // player
@@ -377,6 +378,14 @@ public class MenuManager : MonoBehaviour
 	{
 		Screen.lockCursor = false;
 		Screen.showCursor = true;
+		
+		ClearClient();
+		
+		MasterServer.RequestHostList(gameName);
+		state = State.list;
+	}
+	[RPC] public void ClearClient()
+	{
 		GetComponent<GameData>().ClearData(true);
 		GetComponent<UpgradeManager>().enabled = false;
 			
@@ -387,9 +396,6 @@ public class MenuManager : MonoBehaviour
 				Destroy(go);
 			}
 		}
-		
-		MasterServer.RequestHostList(gameName);
-		state = State.list;
 	}
 	
 	// Called on clients or servers when reporting events from the MasterServer.

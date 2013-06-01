@@ -221,6 +221,7 @@ public class GameData : MonoBehaviour
 					}
 				}
 				*/
+				Network.RemoveRPCs(networkView.owner);
 				GetComponent<MenuManager>().networkView.RPC("ClearClient", RPCMode.All);
 				foreach(NetworkPlayer netPlayer in netPlayers)
 				{

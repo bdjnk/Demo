@@ -356,8 +356,7 @@ public class MenuManager : MonoBehaviour
 		{
 			if (player.networkView.owner == netPlayer)
 			{
-				Color color = player.GetComponentInChildren<MeshRenderer>().material.color;
-				if (color == gameData.red)
+				if (player.GetComponent<PlayerManager>().myColor == gameData.red)
 				{
 					gameData.networkView.RPC("LeaveRed", RPCMode.AllBuffered);
 				}

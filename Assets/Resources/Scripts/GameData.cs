@@ -119,6 +119,7 @@ public class GameData : MonoBehaviour
 			
 			if (blueCount > redCount+1) // if we have 2 more blue players than red players
 			{
+				players.RemoveAll(item => item == null);
 				foreach (GameObject otherPlayer in players)
 				{
 					PlayerManager temp = otherPlayer.GetComponent<PlayerManager>();
@@ -152,6 +153,7 @@ public class GameData : MonoBehaviour
 			}
 			else if (redCount > blueCount+1)
 			{
+				players.RemoveAll(item => item == null);
 				foreach (GameObject otherPlayer in players)
 				{
 					PlayerManager temp = otherPlayer.GetComponent<PlayerManager>();
@@ -222,11 +224,12 @@ public class GameData : MonoBehaviour
 				}
 				*/
 				Network.RemoveRPCs(networkView.owner);
-				GetComponent<MenuManager>().networkView.RPC("ClearClient", RPCMode.All);
 				foreach(NetworkPlayer netPlayer in netPlayers)
 				{
 					GetComponent<MenuManager>().OnPlayerDisconnected(netPlayer);
+					GetComponent<MenuManager>().networkView.RPC("ClearClient", RPCMode.All);
 				}
+				
 				GetComponent<PG_Map>().CreateMap();
 			}
 		}
@@ -295,7 +298,7 @@ public class GameData : MonoBehaviour
 	
 	[RPC] public void RemovePlayer(NetworkPlayer netPlayer)
 	{
-		players.RemoveAll(null);
+		players.RemoveAll(item => item == null);
 		netPlayers.Remove(netPlayer);
 	}
 	

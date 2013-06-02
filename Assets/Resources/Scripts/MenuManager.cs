@@ -344,7 +344,14 @@ public class MenuManager : MonoBehaviour
 	}
 	
 	// Called on the server whenever a player is disconnected from the server.
-	public void OnPlayerDisconnected(NetworkPlayer netPlayer)
+	private void OnPlayerDisconnected(NetworkPlayer netPlayer)
+	{
+		ClearServer(netPlayer);
+		
+		Network.DestroyPlayerObjects(netPlayer);
+		GetComponent<GameData>().networkView.RPC("RemovePlayer", RPCMode.AllBuffered, netPlayer);
+	}
+	public void ClearServer(NetworkPlayer netPlayer)
 	{
 		//TODO these numbers should really be constants in a seprate static class
 		Network.RemoveRPCs(netPlayer, 4); // player
@@ -367,9 +374,6 @@ public class MenuManager : MonoBehaviour
 				Network.RemoveRPCs(player.networkView.viewID);
 			}
 		}
-		Network.DestroyPlayerObjects(netPlayer);
-		
-		gameData.networkView.RPC("RemovePlayer", RPCMode.AllBuffered, netPlayer);
 	}
 	
 	// Called on client during disconnection from server, but also on the server when the connection has disconnected.

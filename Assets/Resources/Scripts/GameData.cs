@@ -226,11 +226,12 @@ public class GameData : MonoBehaviour
 				Network.RemoveRPCs(networkView.owner);
 				foreach(NetworkPlayer netPlayer in netPlayers)
 				{
-					GetComponent<MenuManager>().OnPlayerDisconnected(netPlayer);
+					GetComponent<MenuManager>().ClearServer(netPlayer);
 					GetComponent<MenuManager>().networkView.RPC("ClearClient", RPCMode.All);
 				}
 				
 				GetComponent<PG_Map>().CreateMap();
+				networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)state, (int)levelType);
 			}
 		}
 	}

@@ -8,6 +8,8 @@ public class UpgradeManager : MonoBehaviour
 	
 	private bool hasUpgrades;
 	
+	public float interval = 2;
+	private float delay = 0;
 
 	private void Start()
 	{
@@ -21,17 +23,19 @@ public class UpgradeManager : MonoBehaviour
 	
 	private void OnEnable()
 	{
+		delay = (float)Network.time + interval;
 		cubes = GameObject.FindGameObjectsWithTag("Cube");
 	}
 	
 	private void Update()
 	{
-		if (hasUpgrades && Input.GetKeyUp(KeyCode.E))
+		if (hasUpgrades && Network.time > delay)//Input.GetKeyUp(KeyCode.E))
 		{
 			Texture upgrade = upgrades[Random.Range(0, upgrades.Length)]; // random upgrade texture
 			GameObject cube = cubes[Random.Range(0, cubes.Length)]; // grab a random cube from the map
 			
 			cube.GetComponent<PG_Cube>().networkView.RPC("SetDecal", RPCMode.AllBuffered, upgrade.name);
+			delay = (float)Network.time + interval;
 		}
 	}
 }

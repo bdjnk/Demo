@@ -2,10 +2,12 @@ using UnityEngine;
 using System.Collections;
 
 public class PaintCubeScript : MonoBehaviour {
-
+	
+	SpotLight mLight; 
+	
 	// Use this for initialization
 	void Start () {
-	
+			mLight = GameObject.Find("Camera").GetComponent<SpotLight>();
 	}
 	
 	// Update is called once per frame
@@ -33,6 +35,10 @@ public class PaintCubeScript : MonoBehaviour {
 				yield return new WaitForSeconds(0.25f);
 			}
 		} 
+		startStory();
+	}
+	
+	public void startCreatedBy(){
 		renderer.material.SetTexture("_DecalTex", Resources.Load("Textures/CreatedBy") as Texture);
 		renderer.material.SetTextureScale("_DecalTex", new Vector2(1.0f,0.2f));
 		renderer.material.SetTextureOffset("_DecalTex",new Vector2(0f,-0.05f));
@@ -40,17 +46,49 @@ public class PaintCubeScript : MonoBehaviour {
 	}
 	
 	IEnumerator setTextureOffset(){
+		for (int i=0;i<103;i++){
+			renderer.material.SetTextureOffset("_DecalTex",new Vector2(0f,0.01f*(i-20)));
+			yield return new WaitForSeconds(0.15f);
+		}	
+
+		yield return new WaitForSeconds(4.0f);
+
+		startResetPaint();
+
+	}
+	
+	public void startStory(){
+		renderer.material.SetTexture("_DecalTex", Resources.Load("Textures/Story4") as Texture);
+		renderer.material.SetTextureScale("_DecalTex", new Vector2(1.0f,0.2f));
+		renderer.material.SetTextureOffset("_DecalTex",new Vector2(0f,-0.05f));
+		StartCoroutine("setTextureOffset2");
+	}
+
+	public IEnumerator setTextureOffset2(){
 		for (int i=0;i<88;i++){
 			renderer.material.SetTextureOffset("_DecalTex",new Vector2(0f,0.01f*(i-5)));
 			yield return new WaitForSeconds(0.2f);
-		}	
-		SpotLight mLight = GameObject.Find("Camera").GetComponent<SpotLight>();
+		}
+
+		startCreatedBy();
+	}
+	
+	public void startResetPaint(){
+		StartCoroutine("lightReset");
+	}
+	
+	public IEnumerator lightReset(){
 		mLight.startDimLight();
-		yield return new WaitForSeconds(3.0f);
+		yield return new WaitForSeconds(4.0f);
+		mLight.Reset();
+		yield return new WaitForSeconds(4.0f);
+		resetPaint();
+	}
+	
+	public void resetPaint(){
 		renderer.material.SetTexture("_DecalTex", Resources.Load("Textures/PaintTheTown1") as Texture);
 		renderer.material.SetTextureScale("_DecalTex", new Vector2(1.0f,1.0f));
 		renderer.material.SetTextureOffset("_DecalTex",new Vector2(0f,0f));
-		mLight.Reset();
 	}
-
+		
 }

@@ -29,7 +29,7 @@ public class SpotLight : MonoBehaviour {
 	bool finalRoll = false;
 	bool nodd = true;
 	
-	float incrementLook=0.01f;
+	float incrementLook=0.02f;
 	float trackTotal=0.0f;
 	int reverseCount = 0;
 	bool shoot = false;
@@ -130,16 +130,31 @@ public class SpotLight : MonoBehaviour {
 		}
 	}
 	
+	public void startBrightenLight(){
+		//Debug.Log ("test1 ");
+		StartCoroutine("brightenLight");
+	}
+	
+	public IEnumerator brightenLight(){
+		//Debug.Log ("test ");
+		for (float i =0.10f;i<1.20f;i+=0.1f){
+			mLight.intensity=i;
+			yield return new WaitForSeconds(0.1f);
+			//Debug.Log ("test inside here");
+		}
+		mLight.intensity=1.20f;
+	}
+	
 	public void Reset(){
 		//nodd = true;
 		finalRoll = true;
 		reverse = true;
 		reverseCount=0;
 		//Light l1 = GameObject.Find ("target").GetComponentInChildren<Light>();
-		mLight.intensity = 1.19f;
-		
+		//mLight.intensity = 1.19f;
+		startBrightenLight();
 		transform.forward= mainCam.transform.position - transform.position;
 	}
-	
+
 
 }

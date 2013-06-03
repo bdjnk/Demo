@@ -36,7 +36,7 @@ public class MenuManager : MonoBehaviour
 	private string serverName;
 	private string playerName;
 	
-	private int levelType;
+	private int levelType;//0 is space,1 is sky(earth)
 	
 	
 	// State Variables
@@ -178,16 +178,42 @@ public class MenuManager : MonoBehaviour
 			IntSlider(new Rect(edge+200, sliderHeight*11+edge, 200, sliderHeight), maxBuildingSize[1], 1, 9, "Height", 1, true));
 		maxBuildingSize[2] = Mathf.Max(minBuildingSize[2],
 			IntSlider(new Rect(edge+200, sliderHeight*12+edge, 200, sliderHeight), maxBuildingSize[2], 1, 9, "Depth", 1, true));
-		
-		if (GUI.Button(new Rect(100, sliderHeight*14+edge, 100, sliderHeight), "Create"))
-		{
+		//was x = 100, 200 respectively
+		if (GUI.Button(new Rect(50, sliderHeight*14+edge, 100, sliderHeight), "Earth"))
+		{	
+			//some simple checks on names
+			if(serverName=="" || serverName =="Server Name"){
+				serverName = "Earth - Click Here";
+			}
+			if(playerName==""){
+				playerName = "Player";
+			}
+			levelType = 1;
+			
 			state = State.play;
 			
 			savePreferences();
 			
 			CreateServer();
 		}
-		if (GUI.Button(new Rect(200, sliderHeight*14+edge, 100, sliderHeight), "Cancel"))
+		if (GUI.Button(new Rect(150, sliderHeight*14+edge, 100, sliderHeight), "Space"))
+		{
+			//some simple checks on names
+			if(serverName=="" || serverName =="Server Name"){
+				serverName = "Space - Click Here";
+			}
+			if(playerName==""){
+				playerName = "Player";
+			}
+			levelType = 0;
+			
+			state = State.play;
+			
+			savePreferences();
+			
+			CreateServer();
+		}
+		if (GUI.Button(new Rect(250, sliderHeight*14+edge, 100, sliderHeight), "Cancel"))
 		{
 			PlayerPrefs.SetString("serverName", serverName);
 			state = State.list;
@@ -415,7 +441,7 @@ public class MenuManager : MonoBehaviour
 	
 	private void setKelvinSession()
 	{
-		playerName = "Kelvin";
+		//playerName = "Kelvin";
 		serverName = "Kelvin Server - Click Here";
 		maxPlayers = 10;
 		bots = false;
@@ -439,7 +465,7 @@ public class MenuManager : MonoBehaviour
 	
 	private void setEarthSession()
 	{
-		playerName = "Player";
+		//playerName = "Player";
 		serverName = "Earth Server - Click Here";
 		maxPlayers = 10;
 		bots = false;
@@ -463,7 +489,7 @@ public class MenuManager : MonoBehaviour
 	
 	private void setSpaceSession()
 	{
-		playerName = "Player";
+		//playerName = "Player";
 		serverName = "Space Server - Click Here";
 		maxPlayers = 10;
 		bots = false;

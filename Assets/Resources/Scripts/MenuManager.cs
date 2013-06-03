@@ -36,8 +36,7 @@ public class MenuManager : MonoBehaviour
 	private string serverName;
 	private string playerName;
 	
-	private int levelType;//0 is space,1 is sky(earth)
-	
+	private int levelType; //0 is space,1 is sky (earth)
 	
 	// State Variables
 	private int firstRun = 0;
@@ -438,7 +437,6 @@ public class MenuManager : MonoBehaviour
 		Debug.Log(mse);
 	}
 	
-	
 	private void setKelvinSession()
 	{
 		//playerName = "Kelvin";
@@ -484,7 +482,7 @@ public class MenuManager : MonoBehaviour
 		maxBuildingSize[0] = 5;
 		maxBuildingSize[1] = 4;
 		maxBuildingSize[2] = 3;
-		levelType = 1;//1 is levelType.sky
+		levelType = 1; //1 is levelType.sky
 	}
 	
 	private void setSpaceSession()
@@ -508,7 +506,7 @@ public class MenuManager : MonoBehaviour
 		maxBuildingSize[0] = 5;
 		maxBuildingSize[1] = 4;
 		maxBuildingSize[2] = 3;
-		levelType = 0;//0 is levelType.space
+		levelType = 0; //0 is levelType.space
 	}
 	
 	private void savePreferences()
@@ -539,6 +537,6 @@ public class MenuManager : MonoBehaviour
 		PlayerPrefs.SetInt("maxBuildingSizeY", maxBuildingSize[1]);
 		PlayerPrefs.SetInt("maxBuildingSizeZ", maxBuildingSize[2]);
 		
-		PlayerPrefs.SetInt("serverType", levelType);//intLevel converts to levelType
+		PlayerPrefs.SetInt("serverType", levelType); //intLevel converts to levelType
 	}
 }

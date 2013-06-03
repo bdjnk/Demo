@@ -204,31 +204,7 @@ public class GameData : MonoBehaviour
 			else if (state == State.betweenGames && Network.time > gameEndTime)
 			{
 				state = State.inGame;
-				//disable level switching because it does not work with the new destroy all methods
-				/*
-				if (levelType == LevelType.sky) //change level type before new game
-				{
-					levelType = LevelType.space;
-				}
-				else
-				{
-					levelType = LevelType.sky;
-				}
-				*/
 				
-				/* This is the code which fails to reset all RPCs and Network.Instantiate calls when the game ends,
-				 * resulting is a build-up of network crap that drowns joining players and slows everything down.
-				 * 
-				networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)state, (int)levelType);
-				
-				foreach (GameObject cube in GetComponent<UpgradeManager>().cubes)
-				{
-					if (cube != null && (cube.renderer.material.color != gray || cube.renderer.material.GetTexture("_DecalTex") != null))
-					{
-						cube.networkView.RPC ("SetGray", RPCMode.AllBuffered);
-					}
-				}
-				*/
 				Network.RemoveRPCs(networkView.owner);
 				foreach(NetworkPlayer netPlayer in netPlayers)
 				{

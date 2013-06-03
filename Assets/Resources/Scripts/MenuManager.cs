@@ -254,11 +254,14 @@ public class MenuManager : MonoBehaviour
 		
 		if (GUI.Button(new Rect(310, 0, 100, 25), "Join a Server"))
 		{
-			state = State.play;
 			MasterServer.RequestHostList(gameName);
 			hostData = MasterServer.PollHostList();
-			int randomServer = Random.Range(0,hostData.Length-1);
-			Network.Connect(hostData[randomServer]);			
+			if (hostData.Length != 0)
+			{
+				state = State.play;
+				int randomServer = Random.Range(0, hostData.Length-1);
+				Network.Connect(hostData[randomServer]);
+			}
 		}
 		
 		if (GUI.Button(new Rect(420, 0, 150, 25), "About PositiveGames"))
@@ -283,8 +286,6 @@ public class MenuManager : MonoBehaviour
 		{
 			state = State.create;
 		}
-		
-		
 		
 		GUI.Label(new Rect((Screen.width-edge)-200, 50, 40, 25), "Name:");
 		playerName = GUI.TextField(new Rect((Screen.width-edge)-150, 50, 150, 25), playerName, 16);

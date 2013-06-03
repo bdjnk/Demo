@@ -81,6 +81,11 @@ public class PlayerManager : MonoBehaviour
 				
 				player.GetComponentInChildren<PG_Gun>().shotPrefab = Resources.Load("Prefabs/"+colorName+"Shot") as GameObject;
 				player.tag = colorName;
+				if(gameData.levelType == GameData.LevelType.space){
+					player.GetComponentInChildren<CharacterMotor>().movement.maxFallSpeed = 1f;
+				} else {
+					player.GetComponentInChildren<CharacterMotor>().movement.maxFallSpeed = 20f;
+				}
 			}
 		}
 	}

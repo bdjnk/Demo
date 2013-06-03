@@ -81,11 +81,13 @@ public class GameData : MonoBehaviour
 	{
 		Material mSky = Resources.Load("Skyboxes/DeepSpaceBlueWithPlanet/DSBWP") as Material;
 		RenderSettings.skybox = mSky;
+		ground = GameObject.Find("Ground(Clone)");
 		
 		if (ground != null) // disable it
 		{
 			ground.SetActive(false);
 		}
+		//player.GetComponentInChildren<CharacterMotor>().movement.maxFallSpeed = 5f;
 	}
 	
 	private void LoadSky()
@@ -101,6 +103,7 @@ public class GameData : MonoBehaviour
 		{
 			player.transform.position= new Vector3(player.transform.position.x, 3f, player.transform.position.z);
 		}
+		//player.GetComponentInChildren<CharacterMotor>().movement.maxFallSpeed = 20f;
 	}
 	
 	private void Update()
@@ -201,7 +204,8 @@ public class GameData : MonoBehaviour
 			else if (state == State.betweenGames && Network.time > gameEndTime)
 			{
 				state = State.inGame;
-				
+				//disable level switching because it does not work with the new destroy all methods
+				/*
 				if (levelType == LevelType.sky) //change level type before new game
 				{
 					levelType = LevelType.space;
@@ -210,6 +214,8 @@ public class GameData : MonoBehaviour
 				{
 					levelType = LevelType.sky;
 				}
+				*/
+				
 				/* This is the code which fails to reset all RPCs and Network.Instantiate calls when the game ends,
 				 * resulting is a build-up of network crap that drowns joining players and slows everything down.
 				 * 
@@ -238,11 +244,13 @@ public class GameData : MonoBehaviour
 	
 	private void OnEnable()
 	{
-		ground = GameObject.Find("Ground(Clone)");
-		
+
 		if (Network.isServer)
 		{
-			networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)State.inGame, (int)LevelType.sky);
+			levelType = (LevelType) PlayerPrefs.GetInt("serverType", (int) LevelType.sky);
+			Debug.Log ("level: " + levelType.ToString() + "  " + (int) levelType);
+			int intLevelType = (int) levelType;
+			networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)State.inGame, intLevelType);
 		}
 	}
 	
@@ -255,6 +263,7 @@ public class GameData : MonoBehaviour
 		ClearData(true);
 		
 		winSound = Resources.Load ("Prefabs/Winner") as GameObject;
+		
 	}
 	
 	public Vector3 GetTeam(GameObject newPlayer, bool switching)

@@ -36,6 +36,9 @@ public class MenuManager : MonoBehaviour
 	private string serverName;
 	private string playerName;
 	
+	private int levelType;
+	
+	
 	// State Variables
 	private int firstRun = 0;
 	
@@ -180,31 +183,7 @@ public class MenuManager : MonoBehaviour
 		{
 			state = State.play;
 			
-			PlayerPrefs.SetString("serverName", serverName);
-			
-			PlayerPrefs.SetInt("maxPlayers", maxPlayers);
-			
-			PlayerPrefs.SetInt("hasBots", bots ? 1 : 0);
-			PlayerPrefs.SetInt("hasUpgrades", upgrades ? 1 : 0);
-			PlayerPrefs.SetInt("isListed", listed ? 1 : 0);
-			PlayerPrefs.SetInt("hasFloor", floor ? 1 : 0);
-			
-			PlayerPrefs.SetInt("isTimed", timed ? 1 : 0);
-			PlayerPrefs.SetFloat("timer", timer);
-			
-			PlayerPrefs.SetFloat("buildingSpacing", spacing);
-			
-			PlayerPrefs.SetInt("citySizeX", citySize[0]);
-			PlayerPrefs.SetInt("citySizeY", citySize[1]);
-			PlayerPrefs.SetInt("citySizeZ", citySize[2]);
-			
-			PlayerPrefs.SetInt("minBuildingSizeX", minBuildingSize[0]);
-			PlayerPrefs.SetInt("minBuildingSizeY", minBuildingSize[1]);
-			PlayerPrefs.SetInt("minBuildingSizeZ", minBuildingSize[2]);
-			
-			PlayerPrefs.SetInt("maxBuildingSizeX", maxBuildingSize[0]);
-			PlayerPrefs.SetInt("maxBuildingSizeY", maxBuildingSize[1]);
-			PlayerPrefs.SetInt("maxBuildingSizeZ", maxBuildingSize[2]);
+			savePreferences();
 			
 			CreateServer();
 		}
@@ -223,24 +202,50 @@ public class MenuManager : MonoBehaviour
 		
 		innerWidth = Screen.width-scrollBarWidth;
 		
-		GUI.BeginGroup(new Rect(edge, 5, 565, 25));
+		GUI.BeginGroup(new Rect(edge, 5, 640, 25));
 		
+		if (GUI.Button(new Rect(0, 0, 90, 25), "Kelvin Mode"))
+		{
+			setKelvinSession();	
+			savePreferences();
+			state = State.play;
+			CreateServer();
+		}
 		
+		if (GUI.Button(new Rect(100, 0, 90, 25), "Earth Server"))
+		{
+			setEarthSession();
+			savePreferences();
+			state = State.play;
+			CreateServer();
+		}
+		if (GUI.Button(new Rect(200, 0, 100, 25), "Space Server"))
+		{
+			setSpaceSession();
+			savePreferences();
+			state = State.play;
+			CreateServer();
+		}
 		
-		GUI.Button(new Rect(0, 0, 90, 25), "Kelvin Mode");
-		GUI.Button(new Rect(100, 0, 150, 25), "About Paint The Town");
+		if (GUI.Button(new Rect(310, 0, 100, 25), "Join a Server"))
+		{
+			state = State.play;
+			MasterServer.RequestHostList(gameName);
+			hostData = MasterServer.PollHostList();
+			int randomServer = Random.Range(0,hostData.Length-1);
+			Network.Connect(hostData[randomServer]);			
+		}
 		
-		if (GUI.Button(new Rect(260, 0, 150, 25), "About PositiveGames"))
+		if (GUI.Button(new Rect(420, 0, 150, 25), "About PositiveGames"))
 		{
 			Application.LoadLevel("AboutPositive");
 		}
-		GUI.Button(new Rect(425, 0, 65, 25), "Credits");
 		
-		if (GUI.Button(new Rect(500, 0, 65, 25), "Quit"))
+		if (GUI.Button(new Rect(580, 0, 40, 25), "Quit"))
 		{
 			Application.Quit();
 		}
-		
+				
 		GUI.EndGroup();
 		
 		
@@ -405,5 +410,109 @@ public class MenuManager : MonoBehaviour
 	private void OnMasterServerEvent(MasterServerEvent mse)
 	{
 		Debug.Log(mse);
+	}
+	
+	
+	private void setKelvinSession()
+	{
+		playerName = "Kelvin";
+		serverName = "Kelvin Server - Click Here";
+		maxPlayers = 10;
+		bots = false;
+		upgrades = true;
+		listed = true;
+		floor = true;
+		timed = true;
+		timer = 1f;
+		spacing = 1.4f;
+		citySize[0] = 2;
+		citySize[1] = 1;
+		citySize[2] = 2;
+		minBuildingSize[0] = 2;
+		minBuildingSize[1] = 2;
+		minBuildingSize[2] = 2;
+		maxBuildingSize[0] = 3;
+		maxBuildingSize[1] = 3;
+		maxBuildingSize[2] = 3;
+		levelType = 1;//1 is levelType.sky
+	}
+	
+	private void setEarthSession()
+	{
+		playerName = "Player";
+		serverName = "Earth Server - Click Here";
+		maxPlayers = 10;
+		bots = false;
+		upgrades = true;
+		listed = true;
+		floor = true;
+		timed = true;
+		timer = 1.5f;
+		spacing = 1.7f;
+		citySize[0] = 4;
+		citySize[1] = 2;
+		citySize[2] = 3;
+		minBuildingSize[0] = 4;
+		minBuildingSize[1] = 2;
+		minBuildingSize[2] = 2;
+		maxBuildingSize[0] = 5;
+		maxBuildingSize[1] = 4;
+		maxBuildingSize[2] = 3;
+		levelType = 1;//1 is levelType.sky
+	}
+	
+	private void setSpaceSession()
+	{
+		playerName = "Player";
+		serverName = "Space Server - Click Here";
+		maxPlayers = 10;
+		bots = false;
+		upgrades = true;
+		listed = true;
+		floor = true;
+		timed = true;
+		timer = 1.5f;
+		spacing = 1.7f;
+		citySize[0] = 4;
+		citySize[1] = 2;
+		citySize[2] = 3;
+		minBuildingSize[0] = 4;
+		minBuildingSize[1] = 2;
+		minBuildingSize[2] = 2;
+		maxBuildingSize[0] = 5;
+		maxBuildingSize[1] = 4;
+		maxBuildingSize[2] = 3;
+		levelType = 0;//0 is levelType.space
+	}
+	
+	private void savePreferences()
+	{
+		PlayerPrefs.SetString("serverName", serverName);
+			
+		PlayerPrefs.SetInt("maxPlayers", maxPlayers);
+		
+		PlayerPrefs.SetInt("hasBots", bots ? 1 : 0);
+		PlayerPrefs.SetInt("hasUpgrades", upgrades ? 1 : 0);
+		PlayerPrefs.SetInt("isListed", listed ? 1 : 0);
+		PlayerPrefs.SetInt("hasFloor", floor ? 1 : 0);
+		
+		PlayerPrefs.SetInt("isTimed", timed ? 1 : 0);
+		PlayerPrefs.SetFloat("timer", timer);
+		
+		PlayerPrefs.SetFloat("buildingSpacing", spacing);
+		
+		PlayerPrefs.SetInt("citySizeX", citySize[0]);
+		PlayerPrefs.SetInt("citySizeY", citySize[1]);
+		PlayerPrefs.SetInt("citySizeZ", citySize[2]);
+		
+		PlayerPrefs.SetInt("minBuildingSizeX", minBuildingSize[0]);
+		PlayerPrefs.SetInt("minBuildingSizeY", minBuildingSize[1]);
+		PlayerPrefs.SetInt("minBuildingSizeZ", minBuildingSize[2]);
+		
+		PlayerPrefs.SetInt("maxBuildingSizeX", maxBuildingSize[0]);
+		PlayerPrefs.SetInt("maxBuildingSizeY", maxBuildingSize[1]);
+		PlayerPrefs.SetInt("maxBuildingSizeZ", maxBuildingSize[2]);
+		
+		PlayerPrefs.SetInt("serverType", levelType);//intLevel converts to levelType
 	}
 }

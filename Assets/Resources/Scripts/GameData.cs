@@ -116,6 +116,8 @@ public class GameData : MonoBehaviour
 		//player.GetComponentInChildren<CharacterMotor>().movement.maxFallSpeed = 20f;
 	}
 	
+	bool finished = false;
+	
 	private void Update()
 	{
 		if (!ready) { return; }
@@ -124,8 +126,10 @@ public class GameData : MonoBehaviour
 		bluePercent = (int)(100.0f * blueScore/totalCubes);
 		
 		// -- code for rebalancing as necessary ---------------------------------------------------
-		if (networkView.isMine)
+		if (networkView.isMine && finished)
 		{
+			finished = false;
+			
 			PlayerManager best;
 			PlayerManager worst;
 			best = worst = player.GetComponent<PlayerManager>();
@@ -298,6 +302,7 @@ public class GameData : MonoBehaviour
 	{
 		players.RemoveAll(item => item == null);
 		netPlayers.Remove(netPlayer);
+		finished = true;
 	}
 	
 	[RPC] public void ClearData(bool all)

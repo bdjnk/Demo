@@ -13,7 +13,7 @@ public class PG_Gun : MonoBehaviour
 	
 	public Texture2D crosshairImage;
 	public Texture bs, eb, fs, qm, rf;
-	public float bsd, ebd, fsd, qmd, rfd;
+	private float bsd, ebd, fsd, qmd, rfd;
 	
 	private void OnGUI() // replace with GUITextures (much faster)
 	{

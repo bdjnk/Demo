@@ -8,7 +8,7 @@ public class PG_Bot : MonoBehaviour
 	private int speed = 3;
 	
 	public PG_Gun gun;
-	private Color myColor;
+	public Color myColor;
 	
 	private GameData gameData;
 	
@@ -41,17 +41,17 @@ public class PG_Bot : MonoBehaviour
 		{
 			if (player.GetComponent<PlayerManager>().myColor != myColor)
 			{
-				float tempd = Vector3.Distance(player.transform.position, transform.position);
+				float closest = Vector3.Distance(player.transform.position, transform.position);
 				
-				if (tempd < distance)
+				if (closest < distance)
 				{
-					distance = tempd;
+					distance = closest;
 					target = player.transform;
 				}
 			}
 		}
 		
-		if (target != null)
+		if (target != null && target.GetComponentInChildren<PG_Gun>().eb == null)
 		{
 			float angle = Vector3.Angle(target.position - transform.position, transform.forward);
 			
@@ -67,6 +67,10 @@ public class PG_Bot : MonoBehaviour
 			{
 				transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(gameData.mapCenter - transform.position), speed);
 			}
+		}
+		else
+		{
+			transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(gameData.mapCenter - transform.position), speed);
 		}
 		
 		if (transform.position.x <= -5 && transform.position.z <= gameData.extent.z+5) //(0,f,0->f)

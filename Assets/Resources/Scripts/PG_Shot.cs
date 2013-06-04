@@ -56,7 +56,10 @@ public class PG_Shot : MonoBehaviour
 			}
 			else if (gun.tag == "Bot")
 			{
-				other.GetComponentInChildren<PG_Gun>().freezeTimeout = (float)Network.time + 0.5f;
+				if (gun.GetComponent<PG_Bot>().myColor != other.GetComponent<PlayerManager>().myColor)
+				{
+					other.GetComponentInChildren<PG_Gun>().freezeTimeout = (float)Network.time + 1;
+				}
 			}
 		}
 		else if (other.tag == "Bot") // shot hit a bot

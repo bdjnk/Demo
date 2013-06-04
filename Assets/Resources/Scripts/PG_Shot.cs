@@ -33,19 +33,37 @@ public class PG_Shot : MonoBehaviour
 	{
 		PG_Cube cubeScript =  other.GetComponent<PG_Cube>();
 		
-		if (cubeScript != null) // this is a cube we're dealing with here
+		if (cubeScript != null) // shot hit a cube
 		{
 			if (Network.isServer) // <== AUTHORITATIVE SERVER
 			{
 				cubeScript.Struck(this); // only server based cube strikes are real
 			}
 		}
-		else if (gun.tag != "Bot" && (gun.transform.parent.tag == "Red" || gun.transform.parent.tag == "Blue")) // shot was fired by a player
+		else if (other.tag == "Red" || other.tag == "Blue") // shot hit a player
 		{
-			if (other.tag == "Red" || other.tag == "Blue") // shot hit a player
+			if (gun.tag != "Bot") // shot was fired by a player
 			{
-				gun.freezeTimeout = (float)Network.time + 2f;
-				Instantiate(stunSound, this.transform.position, Quaternion.identity); //play sound
+				if (gun.aggressive)
+				{
+					other.GetComponentInChildren<PG_Gun>().freezeTimeout = (float)Network.time + 2f;
+				}
+				else // peaceful
+				{
+					gun.freezeTimeout = (float)Network.time + 2f;
+					Instantiate(stunSound, this.transform.position, Quaternion.identity); //play sound
+				}
+			}
+			else if (gun.tag == "Bot")
+			{
+				other.GetComponentInChildren<PG_Gun>().freezeTimeout = (float)Network.time + 0.5f;
+			}
+		}
+		else if (other.tag == "Bot") // shot hit a bot
+		{
+			if (gun.tag != "Bot") // shot was fired by a player
+			{
+				//TODO maybe switch the bot's team affiliations
 			}
 		}
 		Destroy(gameObject);

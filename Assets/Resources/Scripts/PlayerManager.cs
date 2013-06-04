@@ -77,7 +77,6 @@ public class PlayerManager : MonoBehaviour
 				player.GetComponentInChildren<MeshRenderer>().material.color = myColor;
 				
 				string colorName = Mathf.Approximately(color.x, 1) ? "Red" : "Blue"; // if red ~= 255
-				Debug.LogWarning("Color set to "+colorName);
 				
 				player.GetComponentInChildren<PG_Gun>().shotPrefab = Resources.Load("Prefabs/"+colorName+"Shot") as GameObject;
 				player.tag = colorName;

@@ -9,6 +9,8 @@ public class PG_Gun : MonoBehaviour
 	public float power = 3f;
 	private float delay = 0;
 	
+	public bool aggressive = false;
+	
 	public Texture2D crosshairImage;
 	public Texture bs, eb, fs, qm, rf;
 	public float bsd, ebd, fsd, qmd, rfd;
@@ -36,8 +38,14 @@ public class PG_Gun : MonoBehaviour
 	
 	private void Start()
 	{
+		if (Network.isServer)
+		{
+			networkView.RPC("SetAggressive", RPCMode.AllBuffered, PlayerPrefs.GetInt("aggressive", 1));
+		}
 		Screen.showCursor = false;
 	}
+	
+	[RPC] private void SetAggressive(int state) { aggressive = System.Convert.ToBoolean(state); }
 	
 	public float freezeTimeout = 0;
 	

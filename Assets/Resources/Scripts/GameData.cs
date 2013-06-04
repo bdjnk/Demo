@@ -231,7 +231,7 @@ public class GameData : MonoBehaviour
 		if (Network.isServer)
 		{
 			levelType = (LevelType) PlayerPrefs.GetInt("serverType", (int) LevelType.sky);
-			Debug.Log ("level: " + levelType.ToString() + "  " + (int) levelType);
+			Debug.Log("level: " + levelType.ToString() + "  " + (int) levelType);
 			int intLevelType = (int) levelType;
 			networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)State.inGame, intLevelType);
 		}
@@ -245,7 +245,7 @@ public class GameData : MonoBehaviour
 		
 		ClearData(true);
 		
-		winSound = Resources.Load ("Prefabs/Winner") as GameObject;
+		winSound = Resources.Load("Prefabs/Winner") as GameObject;
 		
 	}
 	

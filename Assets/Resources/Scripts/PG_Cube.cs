@@ -31,6 +31,13 @@ public class PG_Cube : MonoBehaviour
 		captorID = NetworkViewID.unassigned;
 	}
 	
+	private PG_Building building;
+	
+	private void Start()
+	{
+		building = transform.parent.GetComponent<PG_Building>();
+	}
+	
 	[RPC] private void SetDecal(string upgrade)
 	{
 		renderer.material.SetTexture("_DecalTex", Resources.Load("Textures/"+upgrade) as Texture);
@@ -39,6 +46,8 @@ public class PG_Cube : MonoBehaviour
 	public void Struck(PG_Shot shot)
 	{
 		latest = shot;
+		
+		if (building.owned) { return; } // nothing to be done <-- COMMENT TO UNDO BUILDING LOCKING
 	
 		foreach (Transform child in transform.parent) // foreach cube in building, do splash effect
 		{
@@ -134,9 +143,11 @@ public class PG_Cube : MonoBehaviour
 		if (renderer.material.color == gameData.blue)
 		{
 			gameData.blueScore--;
+			building.blue--;
 		}
 		renderer.material.color = gameData.red;
 		gameData.redScore++;
+		building.red++;
 		StartCoroutine("HitVisuals","Red");
 	}
 	
@@ -147,9 +158,11 @@ public class PG_Cube : MonoBehaviour
 		if (renderer.material.color == gameData.red)
 		{
 			gameData.redScore--;
+			building.red--;
 		}
 		renderer.material.color = gameData.blue;
 		gameData.blueScore++;
+		building.blue++;
 		StartCoroutine("HitVisuals","Blue");
 	}
 	
@@ -164,7 +177,7 @@ public class PG_Cube : MonoBehaviour
 		renderer.material.mainTexture = prior;
 	}
 	
-	[RPC] public void SetGray()
+	[RPC] public void SetGray() // never used [06/03/2013]
 	{
 		if (captorID != NetworkViewID.unassigned && captorID.isMine)
 		{

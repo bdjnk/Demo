@@ -23,7 +23,7 @@ public class MenuManager : MonoBehaviour
 	private int maxPlayers = 10;
 	private bool bots = true;
 	private bool upgrades = true;
-	private bool listed = true;
+	private bool aggressive = true;
 	private bool floor = true;
 	private bool timed = false;
 	private float timer = 2;
@@ -66,7 +66,7 @@ public class MenuManager : MonoBehaviour
 		maxPlayers = PlayerPrefs.GetInt("maxPlayers", 10);
 		bots = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasBots", 1));
 		upgrades = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasUpgrades", 1));
-		listed = System.Convert.ToBoolean(PlayerPrefs.GetInt("isListed", 1));
+		aggressive = System.Convert.ToBoolean(PlayerPrefs.GetInt("aggressive", 1));
 		floor = System.Convert.ToBoolean(PlayerPrefs.GetInt("hasFloor", 1));
 		timed = System.Convert.ToBoolean(PlayerPrefs.GetInt("isTimed", 0));
 		timer = PlayerPrefs.GetFloat("timer", 2);
@@ -160,8 +160,8 @@ public class MenuManager : MonoBehaviour
 		
 		floor = GUI.Toggle(new Rect(edge+300, sliderHeight*5+edge, 100, sliderHeight), floor, " Floor");
 		upgrades = GUI.Toggle(new Rect(edge+200, sliderHeight*5+edge, 100, sliderHeight), upgrades, " Upgrades");
-		bots = GUI.Toggle(new Rect(edge+300, sliderHeight*6+edge, 100, sliderHeight), bots, " Bots"); // bots are disabled for now
-		listed = GUI.Toggle(new Rect(edge+200, sliderHeight*6+edge, 100, sliderHeight), true, " List"); // all games are listed for now
+		bots = GUI.Toggle(new Rect(edge+300, sliderHeight*6+edge, 100, sliderHeight), bots, " Bots");
+		aggressive = GUI.Toggle(new Rect(edge+200, sliderHeight*6+edge, 100, sliderHeight), aggressive, " Aggressive");
 		
 		spacing = FloatSlider(new Rect(edge+200, sliderHeight*7+edge, 85, sliderHeight), spacing, 0, 9, "Spacing", 0.2f, false);
 		
@@ -228,7 +228,7 @@ public class MenuManager : MonoBehaviour
 		
 		if (GUI.Button(new Rect(0, 0, 90, 25), "Kelvin Mode"))
 		{
-			setKelvinSession();	
+			setKelvinSession();
 			savePreferences();
 			state = State.play;
 			CreateServer();
@@ -442,7 +442,7 @@ public class MenuManager : MonoBehaviour
 		maxPlayers = 10;
 		bots = false;
 		upgrades = true;
-		listed = true;
+		aggressive = true;
 		floor = true;
 		timed = true;
 		timer = 1f;
@@ -466,7 +466,7 @@ public class MenuManager : MonoBehaviour
 		maxPlayers = 10;
 		bots = false;
 		upgrades = true;
-		listed = true;
+		aggressive = true;
 		floor = true;
 		timed = true;
 		timer = 1.5f;
@@ -490,7 +490,7 @@ public class MenuManager : MonoBehaviour
 		maxPlayers = 10;
 		bots = false;
 		upgrades = true;
-		listed = true;
+		aggressive = true;
 		floor = true;
 		timed = true;
 		timer = 1.5f;
@@ -515,7 +515,7 @@ public class MenuManager : MonoBehaviour
 		
 		PlayerPrefs.SetInt("hasBots", bots ? 1 : 0);
 		PlayerPrefs.SetInt("hasUpgrades", upgrades ? 1 : 0);
-		PlayerPrefs.SetInt("isListed", listed ? 1 : 0);
+		PlayerPrefs.SetInt("aggressive", aggressive ? 1 : 0);
 		PlayerPrefs.SetInt("hasFloor", floor ? 1 : 0);
 		
 		PlayerPrefs.SetInt("isTimed", timed ? 1 : 0);

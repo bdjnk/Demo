@@ -131,6 +131,7 @@ public class PG_Map : MonoBehaviour
 		GameObject building = Network.Instantiate(buildingPrefab, Vector3.zero,Quaternion.identity, 0) as GameObject;
 		
 		Vector3 center = Vector3.zero;
+		int buildingCubeCount = 0;
 		
 		for (int w = 0; w < width; w++)
 		{
@@ -142,13 +143,16 @@ public class PG_Map : MonoBehaviour
 					networkView.RPC("SetParent", RPCMode.AllBuffered, cube.networkView.viewID, building.networkView.viewID);
 					cube.isStatic = true;
 					
-			    	cubeCount++;
+			    	buildingCubeCount++;
 					center += cube.transform.position;
 				}
 			}
 		}
 		building.transform.position += offset;
 		building.isStatic = true;
+		
+		building.GetComponent<PG_Building>().networkView.RPC("SetCubeCount", RPCMode.AllBuffered, buildingCubeCount);
+		cubeCount += buildingCubeCount;
 		
 		int count = width * height * depth;
 		center /= count;

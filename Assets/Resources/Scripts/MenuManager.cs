@@ -170,17 +170,17 @@ public class MenuManager : MonoBehaviour
 		minBuildingSize[0] = IntSlider(new Rect(edge, sliderHeight*10+edge, 200, sliderHeight), minBuildingSize[0], 1, 9, "Width", 1, true);
 		if (minBuildingSize[0] > maxBuildingSize[0]) { maxBuildingSize[0] = minBuildingSize[0]; }
 		minBuildingSize[1] = IntSlider(new Rect(edge, sliderHeight*11+edge, 200, sliderHeight), minBuildingSize[1], 1, 9, "Height", 1, true);
-		if (minBuildingSize[1] > maxBuildingSize[0]) { maxBuildingSize[1] = minBuildingSize[1]; }
+		if (minBuildingSize[1] > maxBuildingSize[1]) { maxBuildingSize[1] = minBuildingSize[1]; }
 		minBuildingSize[2] = IntSlider(new Rect(edge, sliderHeight*12+edge, 200, sliderHeight), minBuildingSize[2], 1, 9, "Depth", 1, true);
-		if (minBuildingSize[2] > maxBuildingSize[0]) { maxBuildingSize[2] = minBuildingSize[2]; }
+		if (minBuildingSize[2] > maxBuildingSize[2]) { maxBuildingSize[2] = minBuildingSize[2]; }
 		
 		GUI.Label(new Rect(edge+200, sliderHeight*9+edge, 200, sliderHeight), "Maximum Building Dimensions");
 		maxBuildingSize[0] = IntSlider(new Rect(edge+200, sliderHeight*10+edge, 200, sliderHeight), maxBuildingSize[0], 1, 9, "Width", 1, true);
 		if (maxBuildingSize[0] < minBuildingSize[0]) { minBuildingSize[0] = maxBuildingSize[0]; }
 		maxBuildingSize[1] = IntSlider(new Rect(edge+200, sliderHeight*11+edge, 200, sliderHeight), maxBuildingSize[1], 1, 9, "Height", 1, true);
-		if (maxBuildingSize[1] < minBuildingSize[0]) { minBuildingSize[1] = maxBuildingSize[1]; }
+		if (maxBuildingSize[1] < minBuildingSize[1]) { minBuildingSize[1] = maxBuildingSize[1]; }
 		maxBuildingSize[2] = IntSlider(new Rect(edge+200, sliderHeight*12+edge, 200, sliderHeight), maxBuildingSize[2], 1, 9, "Depth", 1, true);
-		if (maxBuildingSize[2] < minBuildingSize[0]) { minBuildingSize[2] = maxBuildingSize[2]; }
+		if (maxBuildingSize[2] < minBuildingSize[2]) { minBuildingSize[2] = maxBuildingSize[2]; }
 		
 		if (GUI.Button(new Rect(50, sliderHeight*14+edge, 100, sliderHeight), "Earth"))
 		{

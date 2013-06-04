@@ -18,6 +18,11 @@ public class GameData : MonoBehaviour
 	public int redScore = 0;
 	public int blueScore = 0;
 	
+	public int redOwned = 0;
+	public int blueOwned = 0;
+	[RPC] public void AddRedOwned(int owned) { redOwned += owned; }
+	[RPC] public void AddBlueOwned(int owned) { blueOwned += owned; }
+	
 	public int redPercent = 0;
 	public int bluePercent = 0;
 	
@@ -195,7 +200,9 @@ public class GameData : MonoBehaviour
 		{
 			if (state == State.inGame)
 			{
-				if ((redPercent >= percentToWin || bluePercent >= percentToWin) || (gameLength!=0 && gameEndTime > 0 && Network.time > gameEndTime))
+				if ((redPercent >= percentToWin || bluePercent >= percentToWin)
+					|| (gameLength != 0 && gameEndTime > 0 && Network.time > gameEndTime)
+					|| (redOwned > totalCubes/2 || blueOwned > totalCubes/2))
 				{
 					state = State.betweenGames;
 					networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + 8, (int)state, (int)levelType);
@@ -292,6 +299,8 @@ public class GameData : MonoBehaviour
 	{
 		redScore = 0;
 		blueScore = 0;
+		redOwned = 0;
+		blueOwned = 0;
 	  	redPercent = 0;
 	  	bluePercent = 0;
 		

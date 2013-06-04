@@ -160,15 +160,18 @@ public class MenuManager : MonoBehaviour
 		
 		floor = GUI.Toggle(new Rect(edge+300, sliderHeight*5+edge, 100, sliderHeight), floor, " Floor");
 		upgrades = GUI.Toggle(new Rect(edge+200, sliderHeight*5+edge, 100, sliderHeight), upgrades, " Upgrades");
-		bots = GUI.Toggle(new Rect(edge+300, sliderHeight*6+edge, 100, sliderHeight), false, " Bots"); // bots are disabled for now
+		bots = GUI.Toggle(new Rect(edge+300, sliderHeight*6+edge, 100, sliderHeight), bots, " Bots"); // bots are disabled for now
 		listed = GUI.Toggle(new Rect(edge+200, sliderHeight*6+edge, 100, sliderHeight), true, " List"); // all games are listed for now
 		
-		spacing = FloatSlider(new Rect(edge+200, sliderHeight*7+edge, 80, sliderHeight), spacing, 1.0f, 4, "Spacing", 0.1f, false);
+		spacing = FloatSlider(new Rect(edge+200, sliderHeight*7+edge, 80, sliderHeight), spacing, 0.5f, 5, "Spacing", 0.1f, false);
 		
 		GUI.Label(new Rect(edge, sliderHeight*9+edge, 300, sliderHeight), "Minimum Building Dimensions");
-		minBuildingSize[0] = IntSlider(new Rect(edge, sliderHeight*10+edge, 200, sliderHeight), minBuildingSize[0], 1, 9, "Width", 1, true);
-		minBuildingSize[1] = IntSlider(new Rect(edge, sliderHeight*11+edge, 200, sliderHeight), minBuildingSize[1], 1, 9, "Height", 1, true);
-		minBuildingSize[2] = IntSlider(new Rect(edge, sliderHeight*12+edge, 200, sliderHeight), minBuildingSize[2], 1, 9, "Depth", 1, true);
+		minBuildingSize[0] = Mathf.Min(maxBuildingSize[0],
+			IntSlider(new Rect(edge, sliderHeight*10+edge, 200, sliderHeight), minBuildingSize[0], 1, 9, "Width", 1, true));
+		minBuildingSize[1] = Mathf.Min(maxBuildingSize[1],
+			IntSlider(new Rect(edge, sliderHeight*11+edge, 200, sliderHeight), minBuildingSize[1], 1, 9, "Height", 1, true));
+		minBuildingSize[2] = Mathf.Min(maxBuildingSize[2],
+			IntSlider(new Rect(edge, sliderHeight*12+edge, 200, sliderHeight), minBuildingSize[2], 1, 9, "Depth", 1, true));
 		
 		GUI.Label(new Rect(edge+200, sliderHeight*9+edge, 200, sliderHeight), "Maximum Building Dimensions");
 		maxBuildingSize[0] = Mathf.Max(minBuildingSize[0],
@@ -177,14 +180,16 @@ public class MenuManager : MonoBehaviour
 			IntSlider(new Rect(edge+200, sliderHeight*11+edge, 200, sliderHeight), maxBuildingSize[1], 1, 9, "Height", 1, true));
 		maxBuildingSize[2] = Mathf.Max(minBuildingSize[2],
 			IntSlider(new Rect(edge+200, sliderHeight*12+edge, 200, sliderHeight), maxBuildingSize[2], 1, 9, "Depth", 1, true));
-		//was x = 100, 200 respectively
+		
 		if (GUI.Button(new Rect(50, sliderHeight*14+edge, 100, sliderHeight), "Earth"))
-		{	
+		{
 			//some simple checks on names
-			if(serverName=="" || serverName =="Server Name"){
+			if (serverName == "" || serverName == "Server Name")
+			{
 				serverName = "Earth - Click Here";
 			}
-			if(playerName==""){
+			if (playerName == "")
+			{
 				playerName = "Player";
 			}
 			levelType = 1;
@@ -198,10 +203,12 @@ public class MenuManager : MonoBehaviour
 		if (GUI.Button(new Rect(150, sliderHeight*14+edge, 100, sliderHeight), "Space"))
 		{
 			//some simple checks on names
-			if(serverName=="" || serverName =="Server Name"){
-				serverName = "Space - Click Here";
+			if (serverName == "" || serverName == "Server Name")
+			{
+				serverName = "Earth - Click Here";
 			}
-			if(playerName==""){
+			if (playerName == "")
+			{
 				playerName = "Player";
 			}
 			levelType = 0;

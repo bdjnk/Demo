@@ -7,8 +7,9 @@ public class PG_Bot : MonoBehaviour
 	private RaycastHit hit;
 	
 	public PG_Gun gun;
+	private Color myColor;
 	
-	private GameObject[] enemies;
+	private GameData gameData;
 	
 	private bool ready = false;
 	
@@ -16,16 +17,15 @@ public class PG_Bot : MonoBehaviour
 	{
 	}
 	
-	public void Setup(string myColor)
+	public void Setup(string color)
 	{
-		GetComponentInChildren<PG_Gun>().shotPrefab = Resources.Load("Prefabs/"+myColor+"Shot") as GameObject;
+		GetComponentInChildren<PG_Gun>().shotPrefab = Resources.Load("Prefabs/"+color+"Shot") as GameObject;
+		
+		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
 		
 		ParticleSystem ps = GetComponentInChildren<ParticleSystem>();
-		Color color = myColor == "Blue" ? Color.blue : Color.red;
-		ps.startColor = color;
-		ps.light.color = color;
-		
-		enemies = GameObject.FindGameObjectsWithTag(myColor == "Blue" ? "Red" : "Blue");
+		myColor = color == "Blue" ? gameData.blue : gameData.red;
+		ps.startColor = ps.light.color = color == "Blue" ? Color.blue : Color.red;
 		
 		ready = true;
 	}
@@ -34,29 +34,34 @@ public class PG_Bot : MonoBehaviour
 	{
 		if (!ready) { return; }
 		
-		int index = 0;
+		Transform target = null;
 		float distance = 999;
 		
-		for (int i = 0; i < enemies.Length; i++)
+		foreach (GameObject player in gameData.players)
 		{
-			float tempd = Vector3.Distance(enemies[i].transform.position, transform.position);
-			
-			if (tempd < distance)
+			if (player.GetComponent<PlayerManager>().myColor != myColor)
 			{
-				distance = tempd;
-				index = i;
+				float tempd = Vector3.Distance(player.transform.position, transform.position);
+				
+				if (tempd < distance)
+				{
+					distance = tempd;
+					target = player.transform;
+				}
 			}
 		}
-		Transform target = enemies[index].transform;
 		
-		if (Mathf.Approximately(Vector3.Angle(target.position - transform.position, transform.forward), 0))
+		if (target != null)
 		{
-			gun.Shoot(); // circumnavigates a strange hit comparison delay bug.
-		}
-		else if (LineOfSight(target))
-		{
-			transform.forward = target.position - transform.position; // causes sudden jumps
-			gun.Shoot();
+			if (Mathf.Approximately(Vector3.Angle(target.position - transform.position, transform.forward), 0))
+			{
+				gun.Shoot(); // circumnavigates a strange hit comparison delay bug.
+			}
+			else if (LineOfSight(target))
+			{
+				transform.forward = target.position - transform.position; // causes sudden jumps
+				gun.Shoot();
+			}
 		}
 	}
 	

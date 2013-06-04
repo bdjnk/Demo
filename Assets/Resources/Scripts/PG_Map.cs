@@ -57,16 +57,19 @@ public class PG_Map : MonoBehaviour
 				}
 			}
 		}
-		for (int w = 0; w < width; w++) { farCorner.x += offset.x; }
+		for (int w = 0; w < width ; w++) { farCorner.x += offset.x; }
 		for (int h = 0; h < height; h++) { farCorner.y += offset.y; }
-		for (int d = 0; d < depth; d++) { farCorner.z += offset.z; }
+		for (int d = 0; d < depth ; d++) { farCorner.z += offset.z; }
 		
-		Vector3 mapCenter = new Vector3((farCorner.x-spacing)/2, (farCorner.y-spacing)/2, (farCorner.z-spacing)/2);
+		farCorner -= new Vector3(spacing+1.5f, spacing+1.5f, spacing+1.5f);
+		Vector3 mapCenter = new Vector3(farCorner.x/2, farCorner.y/2, farCorner.z/2);
+		
+		GetComponent<GameData>().networkView.RPC("SetMapCenter", RPCMode.AllBuffered, mapCenter);
 		
 		//----------------------------------------------- bots
 		if (System.Convert.ToBoolean(PlayerPrefs.GetInt("hasBots", 1)))
 		{
-			farCorner += new Vector3(5-spacing, 5-spacing, 5-spacing);
+			farCorner += new Vector3(5, 5, 5);
 			
 			GameObject bot; //TODO bots should start facing the center of the city
 			
@@ -104,8 +107,6 @@ public class PG_Map : MonoBehaviour
 			
 		}
 		//----------------------------------------------- bots
-		
-		GetComponent<GameData>().networkView.RPC("SetMapCenter", RPCMode.AllBuffered, mapCenter);
 		
 		if (floor)
 		{
@@ -157,7 +158,7 @@ public class PG_Map : MonoBehaviour
 		networkView.RPC("AddLight", RPCMode.AllBuffered, light.networkView.viewID, center, count);
 		light.isStatic = true;
 		
-		return (new Vector3(width*1.5f, height*1.5f, depth*1.5f) * spacing);
+		return (new Vector3(width*1.5f+spacing, height*1.5f+spacing, depth*1.5f+spacing));// * spacing);
 	}
 	
 	[RPC] private void AddLight(NetworkViewID id, Vector3 center, int count)

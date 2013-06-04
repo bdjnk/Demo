@@ -163,7 +163,7 @@ public class MenuManager : MonoBehaviour
 		bots = GUI.Toggle(new Rect(edge+300, sliderHeight*6+edge, 100, sliderHeight), bots, " Bots"); // bots are disabled for now
 		listed = GUI.Toggle(new Rect(edge+200, sliderHeight*6+edge, 100, sliderHeight), true, " List"); // all games are listed for now
 		
-		spacing = FloatSlider(new Rect(edge+200, sliderHeight*7+edge, 80, sliderHeight), spacing, 0.5f, 5, "Spacing", 0.1f, false);
+		spacing = FloatSlider(new Rect(edge+200, sliderHeight*7+edge, 85, sliderHeight), spacing, 0, 9, "Spacing", 0.2f, false);
 		
 		
 		GUI.Label(new Rect(edge, sliderHeight*9+edge, 300, sliderHeight), "Minimum Building Dimensions");
@@ -184,41 +184,13 @@ public class MenuManager : MonoBehaviour
 		
 		if (GUI.Button(new Rect(50, sliderHeight*14+edge, 100, sliderHeight), "Earth"))
 		{
-			//some simple checks on names
-			if (serverName == "" || serverName == "Server Name")
-			{
-				serverName = "Earth - Click Here";
-			}
-			if (playerName == "")
-			{
-				playerName = "Player";
-			}
 			levelType = 1;
-			
-			state = State.play;
-			
-			savePreferences();
-			
-			CreateServer();
+			StartPrebuilt("Earth");
 		}
 		if (GUI.Button(new Rect(150, sliderHeight*14+edge, 100, sliderHeight), "Space"))
 		{
-			//some simple checks on names
-			if (serverName == "" || serverName == "Server Name")
-			{
-				serverName = "Earth - Click Here";
-			}
-			if (playerName == "")
-			{
-				playerName = "Player";
-			}
 			levelType = 0;
-			
-			state = State.play;
-			
-			savePreferences();
-			
-			CreateServer();
+			StartPrebuilt("Space");
 		}
 		if (GUI.Button(new Rect(250, sliderHeight*14+edge, 100, sliderHeight), "Cancel"))
 		{
@@ -227,6 +199,23 @@ public class MenuManager : MonoBehaviour
 		}
 		
 		GUI.EndGroup();
+	}
+	
+	private void StartPrebuilt(string type)
+	{
+		//some simple checks on names
+		if (serverName == "" || serverName == "Server Name")
+		{
+			serverName = type+" - Click Here";
+		}
+		if (playerName == "")
+		{
+			playerName = "Player";
+		}
+		savePreferences();
+		
+		state = State.play;
+		CreateServer();
 	}
 	
 	private void ListServers() // LIST OF SERVERS, THIS IS THE INITIAL MENU PAGE

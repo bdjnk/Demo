@@ -148,7 +148,7 @@ public class PG_Cube : MonoBehaviour
 		renderer.material.color = gameData.red;
 		gameData.redScore++;
 		building.red++;
-		StartCoroutine("HitVisuals","Red");
+		StartCoroutine("HitVisuals", "Red");
 	}
 	
 	[RPC] private void SetBlue()
@@ -163,7 +163,7 @@ public class PG_Cube : MonoBehaviour
 		renderer.material.color = gameData.blue;
 		gameData.blueScore++;
 		building.blue++;
-		StartCoroutine("HitVisuals","Blue");
+		StartCoroutine("HitVisuals", "Blue");
 	}
 	
 	IEnumerator HitVisuals(string hitColor)

@@ -64,7 +64,7 @@ public class PG_Map : MonoBehaviour
 		farCorner -= new Vector3(spacing+1.5f, spacing+1.5f, spacing+1.5f);
 		Vector3 mapCenter = new Vector3(farCorner.x/2, farCorner.y/2, farCorner.z/2);
 		
-		GetComponent<GameData>().networkView.RPC("SetMapCenter", RPCMode.AllBuffered, mapCenter);
+		GetComponent<GameData>().networkView.RPC("SetMapExtents", RPCMode.AllBuffered, mapCenter, farCorner);
 		
 		//----------------------------------------------- bots
 		if (System.Convert.ToBoolean(PlayerPrefs.GetInt("hasBots", 1)))

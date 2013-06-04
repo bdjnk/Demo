@@ -5,6 +5,7 @@ public class PG_Bot : MonoBehaviour
 {
 	public float fov = 60.0f;
 	private RaycastHit hit;
+	private int speed = 3;
 	
 	public PG_Gun gun;
 	private Color myColor;
@@ -53,15 +54,33 @@ public class PG_Bot : MonoBehaviour
 		
 		if (target != null)
 		{
-			if (Mathf.Approximately(Vector3.Angle(target.position - transform.position, transform.forward), 0))
+			float angle = Vector3.Angle(target.position - transform.position, transform.forward);
+			if (angle > -2 && angle < 2)
 			{
 				gun.Shoot(); // circumnavigates a strange hit comparison delay bug.
 			}
-			else if (LineOfSight(target))
+			if (LineOfSight(target))
 			{
-				transform.forward = target.position - transform.position; // causes sudden jumps
-				gun.Shoot();
+				transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(target.position - transform.position), speed);
 			}
+			else { transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(gameData.mapCenter - transform.position), speed); }
+		}
+		
+		if (transform.position.x <= -5 && transform.position.z <= gameData.extent.z+5) //(0,f,0->f)
+		{
+			transform.Translate(new Vector3(0, 0, 1) * Time.deltaTime * speed, Space.World);
+		}
+		if (transform.position.x <= gameData.extent.x+5 && transform.position.z >= gameData.extent.z+5) //(0->f,f,f)
+		{
+			transform.Translate(new Vector3(1, 0, 0) * Time.deltaTime * speed, Space.World);
+		}
+		if (transform.position.x >= gameData.extent.x+5 && transform.position.z >= -5) //(f,f,f->0)
+		{
+			transform.Translate(new Vector3(0, 0, -1) * Time.deltaTime * speed, Space.World);
+		}
+		if (transform.position.x >= -5 && transform.position.z <= -5) //(f->0,f,0)
+		{
+			transform.Translate(new Vector3(-1, 0, 0) * Time.deltaTime * speed, Space.World);
 		}
 	}
 	

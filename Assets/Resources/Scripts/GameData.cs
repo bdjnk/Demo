@@ -32,7 +32,12 @@ public class GameData : MonoBehaviour
 	[RPC] public void SetCubeCount(int cubeCount) { totalCubes = cubeCount; }
 	
 	public Vector3 mapCenter;
-	[RPC] public void SetMapCenter(Vector3 center) { mapCenter = center; }
+	public Vector3 extent;
+	[RPC] public void SetMapExtents(Vector3 center, Vector3 far)
+	{
+		mapCenter = center;
+		extent = far;
+	}
 	
 	public List<GameObject> players;
 	public List<NetworkPlayer> netPlayers;

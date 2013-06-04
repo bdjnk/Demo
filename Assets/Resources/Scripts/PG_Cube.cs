@@ -47,6 +47,15 @@ public class PG_Cube : MonoBehaviour
 	{
 		latest = shot;
 		
+		Texture upgrade = renderer.material.GetTexture("_DecalTex");
+		
+		if (upgrade != null)
+		{
+			shot.gun.networkView.RPC("Upgrade", RPCMode.AllBuffered, upgrade.name);
+			networkView.RPC("SetDecal", RPCMode.AllBuffered, "");
+			Network.Instantiate(upgradeClaim, transform.position, Quaternion.identity, 210);
+		}
+		
 		if (building.owned) { return; } // nothing to be done <-- COMMENT TO UNDO BUILDING LOCKING
 	
 		foreach (Transform child in transform.parent) // foreach cube in building, do splash effect
@@ -62,16 +71,6 @@ public class PG_Cube : MonoBehaviour
 					cubeScript.Effects(shot, distance);
 				}
 			}
-		}
-		
-		Texture upgrade = renderer.material.GetTexture("_DecalTex");
-		
-		if (upgrade != null)
-		{
-			//shot.gun.Upgrade(upgrade);
-			shot.gun.networkView.RPC("Upgrade", RPCMode.AllBuffered, upgrade.name);
-			networkView.RPC("SetDecal", RPCMode.AllBuffered, "");
-			Network.Instantiate(upgradeClaim, transform.position, Quaternion.identity, 210);
 		}
 	}
 	

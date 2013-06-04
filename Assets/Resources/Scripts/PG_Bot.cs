@@ -16,13 +16,12 @@ public class PG_Bot : MonoBehaviour
 	
 	private void Start()
 	{
+		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
 	}
 	
-	public void Setup(string color)
+	public void SetColor(string color)
 	{
 		GetComponentInChildren<PG_Gun>().shotPrefab = Resources.Load("Prefabs/"+color+"Shot") as GameObject;
-		
-		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
 		
 		ParticleSystem ps = GetComponentInChildren<ParticleSystem>();
 		myColor = color == "Blue" ? gameData.blue : gameData.red;
@@ -55,15 +54,19 @@ public class PG_Bot : MonoBehaviour
 		if (target != null)
 		{
 			float angle = Vector3.Angle(target.position - transform.position, transform.forward);
+			
 			if (angle > -2 && angle < 2)
 			{
-				gun.Shoot(); // circumnavigates a strange hit comparison delay bug.
+				gun.Shoot();
 			}
 			if (LineOfSight(target))
 			{
 				transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(target.position - transform.position), speed);
 			}
-			else { transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(gameData.mapCenter - transform.position), speed); }
+			else
+			{
+				transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(gameData.mapCenter - transform.position), speed);
+			}
 		}
 		
 		if (transform.position.x <= -5 && transform.position.z <= gameData.extent.z+5) //(0,f,0->f)

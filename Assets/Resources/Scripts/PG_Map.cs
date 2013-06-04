@@ -71,37 +71,23 @@ public class PG_Map : MonoBehaviour
 		{
 			farCorner += new Vector3(5, 5, 5);
 			
-			GameObject bot; //TODO bots should start facing the center of the city
+			GameObject bot;
+			Vector3 position;
+			Quaternion facing;
 			
-			Vector3 position = new Vector3(-5, 1, -5);
-			Quaternion facing = Quaternion.LookRotation(mapCenter - position);
-			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
-			
-			position = new Vector3(-5, 1, farCorner.z);
+			position = new Vector3(-5, mapCenter.y, -5);
 			facing = Quaternion.LookRotation(mapCenter - position);
 			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
 			
-			position = new Vector3(-5, farCorner.y, -5);
+			position = new Vector3(-5, mapCenter.y, farCorner.z);
 			facing = Quaternion.LookRotation(mapCenter - position);
 			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
 			
-			position = new Vector3(farCorner.x, 1, -5);
+			position = new Vector3(farCorner.x, mapCenter.y, -5);
 			facing = Quaternion.LookRotation(mapCenter - position);
 			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
 			
-			position = new Vector3(-5, farCorner.y, farCorner.z);
-			facing = Quaternion.LookRotation(mapCenter - position);
-			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
-			
-			position = new Vector3(farCorner.x, 1, farCorner.z);
-			facing = Quaternion.LookRotation(mapCenter - position);
-			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
-			
-			position = new Vector3(farCorner.x, farCorner.y, -5);
-			facing = Quaternion.LookRotation(mapCenter - position);
-			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
-			
-			position = new Vector3(farCorner.x, farCorner.y, farCorner.z);
+			position = new Vector3(farCorner.x, mapCenter.y, farCorner.z);
 			facing = Quaternion.LookRotation(mapCenter - position);
 			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
 			

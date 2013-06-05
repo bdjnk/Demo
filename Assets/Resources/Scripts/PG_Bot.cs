@@ -72,9 +72,11 @@ public class PG_Bot : MonoBehaviour
 			}
 		}
 		
+		float angle;
+		
 		if (target != null && target.GetComponentInChildren<PG_Gun>().eb == null)
 		{
-			float angle = Vector3.Angle(target.position - transform.position, transform.forward);
+			angle = Vector3.Angle(target.position - transform.position, transform.forward);
 			
 			if (angle > -2 && angle < 2 && gameData.state == GameData.State.inGame)
 			{
@@ -86,14 +88,12 @@ public class PG_Bot : MonoBehaviour
 			}
 			else
 			{
-				transform.Rotate(Random.value, Random.value, Random.value);
-				//transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(gameData.mapCenter - transform.position), speed);
+				LazyMode();
 			}
 		}
 		else
 		{
-			transform.Rotate(Random.value, Random.value, Random.value);
-			//transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(gameData.mapCenter - transform.position), speed);
+			LazyMode();
 		}
 		
 		if (transform.position.x <= -farOut && transform.position.z <= gameData.extent.z+farOut) //(0,f,0->f)
@@ -123,5 +123,16 @@ public class PG_Bot : MonoBehaviour
 			return true;
 		}
 		return false;
+	}
+	
+	private void LazyMode()
+	{
+		transform.Rotate(Random.value, Random.value, Random.value); // rotate randomly rather that looking to the center of the map
+		//transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(gameData.mapCenter - transform.position), speed);
+		
+		if (Physics.Raycast(new Ray(transform.position, transform.forward), out hit, 45) && hit.transform.tag == "Cube")
+		{
+			gun.Shoot();
+		}
 	}
 }

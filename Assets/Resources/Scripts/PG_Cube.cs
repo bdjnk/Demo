@@ -101,7 +101,7 @@ public class PG_Cube : MonoBehaviour
 		{
 			networkView.RPC("SetBlue", RPCMode.AllBuffered);
 			
-			if (shot != null && shot.gun != null)
+			if (shot != null && shot.gun != null && shot.gun.tag != "Bot")
 			{
 				networkView.RPC("InformCaptor", RPCMode.AllBuffered, shot.gun.transform.parent.networkView.viewID);
 			}

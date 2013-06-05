@@ -133,6 +133,11 @@ public class PlayerManager : MonoBehaviour
 			GUI.Box(new Rect(Screen.width-buttonW-edge, Screen.height-buttonH*0.6f-edge, buttonW, buttonH*0.6f), "Countdown:\n"+Mathf.CeilToInt(gameData.gameEndTime-(float)Network.time));
 		}
 		
+		if (gun.freezeTimeout > Network.time)
+		{
+			GUI.Box(new Rect(edge, 0.6f+edge, buttonW, buttonH*0.6f), "Gun Disabled:\n"+(gun.freezeTimeout-(float)Network.time+0.1f).ToString("#0.0"));
+		}
+		
 		if (!showHUD) { return; } // else show HUD
 		
 		if (gameData.state == GameData.State.inGame)

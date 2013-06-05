@@ -43,6 +43,7 @@ public class PG_Gun : MonoBehaviour
 			networkView.RPC("SetAggressive", RPCMode.AllBuffered, PlayerPrefs.GetInt("aggressive", 1));
 		}
 		Screen.showCursor = false;
+		bs = eb = fs = qm = rf = null;
 	}
 	
 	[RPC] private void SetAggressive(int state) { aggressive = System.Convert.ToBoolean(state); }

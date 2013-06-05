@@ -101,7 +101,7 @@ public class PG_Cube : MonoBehaviour
 		{
 			networkView.RPC("SetBlue", RPCMode.AllBuffered);
 			
-			if (shot != null)
+			if (shot != null && shot.gun != null)
 			{
 				networkView.RPC("InformCaptor", RPCMode.AllBuffered, shot.gun.transform.parent.networkView.viewID);
 			}
@@ -110,7 +110,7 @@ public class PG_Cube : MonoBehaviour
 		{
 			networkView.RPC("SetRed", RPCMode.AllBuffered);
 			
-			if (shot != null)
+			if (shot != null && shot.gun != null)
 			{
 				networkView.RPC("InformCaptor", RPCMode.AllBuffered, shot.gun.transform.parent.networkView.viewID);
 			}
@@ -119,7 +119,10 @@ public class PG_Cube : MonoBehaviour
 	
 	[RPC] private void InformCaptor(NetworkViewID id) //TODO only send to the actual captor(s).
 	{
-		GameObject captor = NetworkView.Find(id).gameObject;
+		NetworkView netView = NetworkView.Find(id);
+		if (netView == null) { return; }
+		
+		GameObject captor = netView.gameObject;
 		
 		if (this.captorID != NetworkViewID.unassigned && captorID.isMine)
 		{

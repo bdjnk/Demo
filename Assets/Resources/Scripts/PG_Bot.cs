@@ -12,8 +12,6 @@ public class PG_Bot : MonoBehaviour
 	
 	private GameData gameData;
 	
-	private bool ready = false;
-	
 	private void Start()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
@@ -27,14 +25,10 @@ public class PG_Bot : MonoBehaviour
 		ParticleSystem ps = GetComponentInChildren<ParticleSystem>();
 		myColor = color == "Blue" ? gameData.blue : gameData.red;
 		ps.startColor = ps.light.color = color == "Blue" ? Color.blue : Color.red;
-		
-		ready = true;
 	}
 	
 	private void Update()
 	{
-		if (!ready) { return; }
-		
 		if (gameData.blueScore > gameData.redScore)
 		{
 			if (myColor != gameData.red)
@@ -55,7 +49,7 @@ public class PG_Bot : MonoBehaviour
 		
 		foreach (GameObject player in gameData.players)
 		{
-			if (player.GetComponent<PlayerManager>().myColor != myColor)
+			if (player != null && player.GetComponent<PlayerManager>().myColor != myColor)
 			{
 				float closest = Vector3.Distance(player.transform.position, transform.position);
 				

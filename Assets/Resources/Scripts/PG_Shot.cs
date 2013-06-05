@@ -50,7 +50,7 @@ public class PG_Shot : MonoBehaviour
 				}
 				else // peaceful
 				{
-					gun.freezeTimeout = (float)Network.time + 2f;
+					gun.freezeTimeout = (float)Network.time + 2;
 					Instantiate(stunSound, this.transform.position, Quaternion.identity); //play sound
 				}
 			}
@@ -66,7 +66,7 @@ public class PG_Shot : MonoBehaviour
 		{
 			if (gun.tag != "Bot") // shot was fired by a player
 			{
-				//TODO maybe switch the bot's team affiliations
+				gun.freezeTimeout = (float)Network.time + 1;
 			}
 		}
 		Destroy(gameObject);

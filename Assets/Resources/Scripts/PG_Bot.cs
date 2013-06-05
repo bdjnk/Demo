@@ -17,11 +17,12 @@ public class PG_Bot : MonoBehaviour
 	private void Start()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
+		SetColor("Red");
 	}
 	
 	public void SetColor(string color)
 	{
-		GetComponentInChildren<PG_Gun>().shotPrefab = Resources.Load("Prefabs/"+color+"Shot") as GameObject;
+		gun.shotPrefab = Resources.Load("Prefabs/"+color+"Shot") as GameObject;
 		
 		ParticleSystem ps = GetComponentInChildren<ParticleSystem>();
 		myColor = color == "Blue" ? gameData.blue : gameData.red;
@@ -33,6 +34,21 @@ public class PG_Bot : MonoBehaviour
 	private void Update()
 	{
 		if (!ready) { return; }
+		
+		if (gameData.blueScore > gameData.redScore)
+		{
+			if (myColor != gameData.red)
+			{
+				SetColor("Red");
+			}
+		}
+		else if (gameData.redScore > gameData.blueScore)
+		{
+			if (myColor != gameData.blue)
+			{
+				SetColor("Blue");
+			}
+		}
 		
 		Transform target = null;
 		float distance = 999;
@@ -55,7 +71,7 @@ public class PG_Bot : MonoBehaviour
 		{
 			float angle = Vector3.Angle(target.position - transform.position, transform.forward);
 			
-			if (angle > -2 && angle < 2)
+			if (angle > -2 && angle < 2 && gameData.state == GameData.State.inGame)
 			{
 				gun.Shoot();
 			}

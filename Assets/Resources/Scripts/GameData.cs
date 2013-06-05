@@ -42,6 +42,8 @@ public class GameData : MonoBehaviour
 	public List<GameObject> players;
 	public List<NetworkPlayer> netPlayers;
 	
+	public GameObject[] bots;
+	
 	private GameObject winSound;
 	private GameObject ground;
 	
@@ -116,7 +118,7 @@ public class GameData : MonoBehaviour
 		//player.GetComponentInChildren<CharacterMotor>().movement.maxFallSpeed = 20f;
 	}
 	
-	bool finished = false;
+	bool countChanged = false;
 	
 	private void Update()
 	{
@@ -126,9 +128,9 @@ public class GameData : MonoBehaviour
 		bluePercent = (int)(100.0f * blueScore/totalCubes);
 		
 		// -- code for rebalancing as necessary ---------------------------------------------------
-		if (networkView.isMine && finished)
+		if (networkView.isMine && countChanged)
 		{
-			finished = false;
+			countChanged = false;
 			
 			PlayerManager best;
 			PlayerManager worst;
@@ -219,8 +221,6 @@ public class GameData : MonoBehaviour
 			}
 			else if (state == State.betweenGames && Network.time > gameEndTime)
 			{
-				state = State.inGame;
-				
 				Network.RemoveRPCs(networkView.owner);
 				foreach(NetworkPlayer netPlayer in netPlayers)
 				{
@@ -236,7 +236,6 @@ public class GameData : MonoBehaviour
 	
 	private void OnEnable()
 	{
-
 		if (Network.isServer)
 		{
 			levelType = (LevelType) PlayerPrefs.GetInt("serverType", (int) LevelType.sky);
@@ -244,6 +243,9 @@ public class GameData : MonoBehaviour
 			int intLevelType = (int) levelType;
 			networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)State.inGame, intLevelType);
 		}
+		bots = GameObject.FindGameObjectsWithTag("Bot");
+		
+		state = State.inGame;
 	}
 	
 	private void Awake()
@@ -292,17 +294,16 @@ public class GameData : MonoBehaviour
 		netPlayers.Add(player.networkView.owner);
 	}
 	
-	[RPC] private void JoinRed() { redCount++; }
-	[RPC] private void JoinBlue() { blueCount++; }
+	[RPC] private void JoinRed() { redCount++; countChanged = true; }
+	[RPC] private void JoinBlue() { blueCount++; countChanged = true; }
 	
-	[RPC] public void LeaveRed() { redCount--; }
-	[RPC] public void LeaveBlue() { blueCount--; }
+	[RPC] public void LeaveRed() { redCount--; countChanged = true; }
+	[RPC] public void LeaveBlue() { blueCount--; countChanged = true; }
 	
 	[RPC] public void RemovePlayer(NetworkPlayer netPlayer)
 	{
 		players.RemoveAll(item => item == null);
 		netPlayers.Remove(netPlayer);
-		finished = true;
 	}
 	
 	[RPC] public void ClearData(bool all)

@@ -11,9 +11,12 @@ public class PlayerManager : MonoBehaviour
 	private int myPercent = 0;
 	public Color myColor;
 	
+	public PG_Gun gun;
+	
 	private void Awake()
 	{
 		gameData = GameObject.FindGameObjectWithTag("Master").GetComponent<GameData>();
+		gun = GetComponentInChildren<PG_Gun>();
 	}
 	
 	public bool ready = false;
@@ -32,7 +35,7 @@ public class PlayerManager : MonoBehaviour
 		GetComponent<FPSInputController>().enabled = state;
 		
 		GetComponentInChildren<Camera>().enabled = state;
-		GetComponentInChildren<PG_Gun>().enabled = state;
+		gun.enabled = state;
 		
 		GetComponentInChildren<AudioListener>().enabled = state;
 		
@@ -109,11 +112,11 @@ public class PlayerManager : MonoBehaviour
 		
 		if (gameData.state == GameData.State.inGame)
 		{
-			GetComponentInChildren<PG_Gun>().enabled = true;
+			gun.enabled = true;
 		}
 		else //if (gameData.state == GameData.State.betweenGames)
 		{
-			GetComponentInChildren<PG_Gun>().enabled = false;
+			gun.enabled = false;
 		}
 	}
 	

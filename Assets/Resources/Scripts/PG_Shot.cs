@@ -5,7 +5,7 @@ public class PG_Shot : MonoBehaviour
 {
 	public PG_Gun gun;
 	
-	public float persist = 6f;
+	public float persist = 4f;
 	private float timeAtStart;
 	private GameObject stunSound;
 	
@@ -66,7 +66,7 @@ public class PG_Shot : MonoBehaviour
 		{
 			if (gun.tag != "Bot") // shot was fired by a player
 			{
-				gun.freezeTimeout = (float)Network.time + 1;
+				other.GetComponent<PG_Gun>().freezeTimeout = (float)Network.time + 2;
 			}
 		}
 		Destroy(gameObject);

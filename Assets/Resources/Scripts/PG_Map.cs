@@ -69,25 +69,65 @@ public class PG_Map : MonoBehaviour
 		//----------------------------------------------- bots
 		if (System.Convert.ToBoolean(PlayerPrefs.GetInt("hasBots", 1)))
 		{
-			farCorner += new Vector3(5, 5, 5);
-			
 			GameObject bot;
 			Vector3 position;
 			Quaternion facing;
 			
-			position = new Vector3(-5, mapCenter.y, -5);
+			int farOut = 20;
+			int bottom = floor ? 0 : -farOut;
+			
+			Vector3 farthest = farCorner + new Vector3(farOut, farOut, farOut);
+			
+			position = new Vector3(-farOut, farthest.y, -farOut);
 			facing = Quaternion.LookRotation(mapCenter - position);
 			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
 			
-			position = new Vector3(-5, mapCenter.y, farCorner.z);
+			position = new Vector3(-farOut, farthest.y, farthest.z);
 			facing = Quaternion.LookRotation(mapCenter - position);
 			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
 			
-			position = new Vector3(farCorner.x, mapCenter.y, -5);
+			position = new Vector3(farthest.x, farthest.y, -farOut);
 			facing = Quaternion.LookRotation(mapCenter - position);
 			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
 			
-			position = new Vector3(farCorner.x, mapCenter.y, farCorner.z);
+			position = new Vector3(farthest.x, farthest.y, farthest.z);
+			facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
+			position = new Vector3(-farOut, bottom, -farOut);
+			facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
+			position = new Vector3(-farOut, bottom, farthest.z);
+			facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
+			position = new Vector3(farthest.x, bottom, -farOut);
+			facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
+			position = new Vector3(farthest.x, bottom, farthest.z);
+			facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
+			farOut = 40;
+			farthest = farCorner + new Vector3(farOut, farOut, farOut);
+			
+			float middle = floor ? farCorner.y : mapCenter.y;
+			
+			position = new Vector3(-farOut, middle, -farOut);
+			facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
+			position = new Vector3(-farOut, middle, farthest.z);
+			facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
+			position = new Vector3(farthest.x, middle, -farOut);
+			facing = Quaternion.LookRotation(mapCenter - position);
+			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
+			
+			position = new Vector3(farthest.x, middle, farthest.z);
 			facing = Quaternion.LookRotation(mapCenter - position);
 			bot = Network.Instantiate(botPrefab, position, facing, 2) as GameObject;
 			

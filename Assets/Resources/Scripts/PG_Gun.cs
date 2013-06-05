@@ -54,8 +54,6 @@ public class PG_Gun : MonoBehaviour
 	{
 		Downgrade();
 		
-		if (freezeTimeout > Network.time) { return; }
-		
 		if (tag != "Bot") // human player
 		{
 			if (Input.GetButton("Fire1"))
@@ -69,7 +67,7 @@ public class PG_Gun : MonoBehaviour
 	
 	public void Shoot()
 	{
-		if (Network.time > delay && networkView.isMine)
+		if (Network.time > delay && Network.time > freezeTimeout && networkView.isMine)
 		{
 			delay = (float)Network.time + rate;
 			Vector3 pos = transform.position + transform.forward * transform.localScale.z * 1f;

@@ -185,12 +185,17 @@ public class MenuManager : MonoBehaviour
 		if (GUI.Button(new Rect(50, sliderHeight*14+edge, 100, sliderHeight), "Earth"))
 		{
 			levelType = 1;
-			StartPrebuilt("Earth");
+			SavePreferences();
+			state = State.play;
+			CreateServer();
 		}
 		if (GUI.Button(new Rect(150, sliderHeight*14+edge, 100, sliderHeight), "Space"))
 		{
 			levelType = 0;
-			StartPrebuilt("Space");
+			SavePreferences();
+			PlayerPrefs.SetInt("hasFloor", 0);
+			state = State.play;
+			CreateServer();
 		}
 		if (GUI.Button(new Rect(250, sliderHeight*14+edge, 100, sliderHeight), "Cancel"))
 		{
@@ -199,23 +204,6 @@ public class MenuManager : MonoBehaviour
 		}
 		
 		GUI.EndGroup();
-	}
-	
-	private void StartPrebuilt(string type)
-	{
-		//some simple checks on names
-		if (serverName == "" || serverName == "Server Name")
-		{
-			serverName = type+" - Click Here";
-		}
-		if (playerName == "")
-		{
-			playerName = "Player";
-		}
-		savePreferences();
-		
-		state = State.play;
-		CreateServer();
 	}
 	
 	private void ListServers() // LIST OF SERVERS, THIS IS THE INITIAL MENU PAGE
@@ -229,7 +217,7 @@ public class MenuManager : MonoBehaviour
 		if (GUI.Button(new Rect(0, 0, 90, 25), "Kelvin Mode"))
 		{
 			setKelvinSession();
-			savePreferences();
+			SavePreferences();
 			state = State.play;
 			CreateServer();
 		}
@@ -237,14 +225,14 @@ public class MenuManager : MonoBehaviour
 		if (GUI.Button(new Rect(100, 0, 90, 25), "Earth Server"))
 		{
 			setEarthSession();
-			savePreferences();
+			SavePreferences();
 			state = State.play;
 			CreateServer();
 		}
 		if (GUI.Button(new Rect(200, 0, 100, 25), "Space Server"))
 		{
 			setSpaceSession();
-			savePreferences();
+			SavePreferences();
 			state = State.play;
 			CreateServer();
 		}
@@ -456,7 +444,7 @@ public class MenuManager : MonoBehaviour
 		maxBuildingSize[0] = 3;
 		maxBuildingSize[1] = 3;
 		maxBuildingSize[2] = 3;
-		levelType = 1;//1 is levelType.sky
+		levelType = 1; // 1 is levelType.sky
 	}
 	
 	private void setEarthSession()
@@ -480,7 +468,7 @@ public class MenuManager : MonoBehaviour
 		maxBuildingSize[0] = 5;
 		maxBuildingSize[1] = 4;
 		maxBuildingSize[2] = 3;
-		levelType = 1; //1 is levelType.sky
+		levelType = 1; // 1 is levelType.sky
 	}
 	
 	private void setSpaceSession()
@@ -504,10 +492,10 @@ public class MenuManager : MonoBehaviour
 		maxBuildingSize[0] = 5;
 		maxBuildingSize[1] = 4;
 		maxBuildingSize[2] = 3;
-		levelType = 0; //0 is levelType.space
+		levelType = 0; // 0 is levelType.space
 	}
 	
-	private void savePreferences()
+	private void SavePreferences()
 	{
 		PlayerPrefs.SetString("serverName", serverName);
 			

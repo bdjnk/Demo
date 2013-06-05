@@ -29,7 +29,7 @@ public class UpgradeManager : MonoBehaviour
 	
 	private void Update()
 	{
-		if (hasUpgrades && Network.time > delay)//Input.GetKeyUp(KeyCode.E))
+		if (hasUpgrades && Network.time > delay)
 		{
 			Texture upgrade = upgrades[Random.Range(0, upgrades.Length)]; // random upgrade texture
 			GameObject cube = cubes[Random.Range(0, cubes.Length)]; // grab a random cube from the map

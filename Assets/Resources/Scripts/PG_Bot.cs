@@ -6,6 +6,7 @@ public class PG_Bot : MonoBehaviour
 	public float fov = 90.0f;
 	private RaycastHit hit;
 	private int speed = 3;
+	private int maxDistance = 45;
 	
 	public PG_Gun gun;
 	public Color myColor;
@@ -93,7 +94,7 @@ public class PG_Bot : MonoBehaviour
 			{
 				gun.Shoot();
 			}
-			if (LineOfSight(target) || distance < 45/3)
+			if (LineOfSight(target) || distance < maxDistance/3)
 			{
 				transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(target.position - transform.position), speed);
 			}
@@ -128,7 +129,7 @@ public class PG_Bot : MonoBehaviour
 	private bool LineOfSight(Transform target)
 	{
 		if (Vector3.Angle(target.position - transform.position, transform.forward) <= fov
-			&& Physics.Raycast(new Ray(transform.position, (target.position - transform.position).normalized), out hit, 45)
+			&& Physics.Raycast(new Ray(transform.position, (target.position - transform.position).normalized), out hit, maxDistance)
 			&& hit.transform == target)
 		{
 			return true;
@@ -142,7 +143,7 @@ public class PG_Bot : MonoBehaviour
 		//transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(gameData.mapCenter - transform.position), speed);
 		
 		if (gameData.state == GameData.State.inGame
-			&& Physics.Raycast(new Ray(transform.position, transform.forward), out hit, 45)
+			&& Physics.Raycast(new Ray(transform.position, transform.forward), out hit, maxDistance)
 			&& hit.transform.tag == "Cube")
 		{
 			gun.Shoot();

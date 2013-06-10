@@ -32,6 +32,9 @@ public class PlayerSetup : MonoBehaviour
 					cubeScript = cube.GetComponent<PG_Cube>(); // RPC them amountRed and amountBlue, the rest can be calculated
 					networkView.RPC("SetCube", networkView.owner, cube.networkView.viewID, cubeScript.amountRed, cubeScript.amountBlue);
 				}
+				//bens test to send scores
+				networkView.RPC ("GetCurrentScores",networkView.owner,gameData.blueScore,gameData.blueOwned,gameData.redScore,gameData.redOwned);
+				
 			}
 			else if (networkView.isMine)
 			{
@@ -41,6 +44,13 @@ public class PlayerSetup : MonoBehaviour
 			done = true;
 		}
 	}
+	//BEN ADD: update client scoring when starting
+	[RPC] private void GetCurrentScores(int blueScore,int blueOwned,int redScore,int redOwned){
+		gameData.blueScore = blueScore;
+		gameData.blueOwned = blueOwned;
+		gameData.redScore = redScore;
+		gameData.redOwned = redOwned;
+	}	
 	
 	[RPC] private void SetCube(NetworkViewID id, float amountRed, float amountBlue)
 	{

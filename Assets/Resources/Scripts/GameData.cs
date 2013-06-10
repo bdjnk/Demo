@@ -76,8 +76,9 @@ public class GameData : MonoBehaviour
 		
 		if (state == State.inGame) // starting a new round
 		{
-			ClearData(false);
-			
+			//BEN CHANGED TO FIX RESET ISSUES
+			//ClearData(false);//already reset elsewhere
+
 			if (levelType == LevelType.space)
 			{
 				LoadSpace();
@@ -126,6 +127,23 @@ public class GameData : MonoBehaviour
 		
 		redPercent = (int)(100.0f * redScore/totalCubes);
 		bluePercent = (int)(100.0f * blueScore/totalCubes);
+		//BEN TEST FORCE RESET TO 0 - probably dont need this
+		//but it is good insurance
+		if(redCount<0)
+			redCount=0;
+		if(blueCount<0)
+			blueCount=0;
+		if(redScore<0)
+			redCount=0;
+		if(blueScore<0)
+			blueCount=0;
+		if(blueOwned<0)
+			blueOwned=0;
+		if(redOwned<0)
+			redOwned=0;
+		if(gameEndTime<0f)
+			gameEndTime=(float) Network.time+8f;		
+		
 		
 		// -- code for rebalancing as necessary ---------------------------------------------------
 		if (networkView.isMine && countChanged)
@@ -206,29 +224,34 @@ public class GameData : MonoBehaviour
 			}
 		}
 		
+		
 		// -- code for ending and restarting rounds -----------------------------------------------
 		if (Network.isServer)
 		{
+			//Debug.Log ("I am a server");
 			if (state == State.inGame)
 			{
 				if ((redPercent >= percentToWin || bluePercent >= percentToWin)
 					|| (gameLength != 0 && gameEndTime > 0 && Network.time > gameEndTime)
 					|| (redOwned > totalCubes/2 || blueOwned > totalCubes/2))
 				{
+					//Debug.LogError ("The server says game over" + redOwned + " " + blueOwned);
 					state = State.betweenGames;
 					networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + 8, (int)state, (int)levelType);
-				}
+					}
 			}
 			else if (state == State.betweenGames && Network.time > gameEndTime)
-			{
-				Network.RemoveRPCs(networkView.owner);
+			{	//BEN REMOVED THIS ALSO
+				//Network.RemoveRPCs(networkView.owner);
 				foreach(NetworkPlayer netPlayer in netPlayers)
 				{
-					GetComponent<MenuManager>().ClearServer(netPlayer);
-					GetComponent<MenuManager>().networkView.RPC("ClearClient", RPCMode.All);
+					//BEN CHANGED - DONT NEED THIS
+					//GetComponent<MenuManager>().ClearServer(netPlayer);
+					//BEN CHANGED TO FIX RESET ISSUES
+					GetComponent<MenuManager>().networkView.RPC("ClearClient", RPCMode.All);///test as buffered BEN
 				}
-				
-				GetComponent<PG_Map>().CreateMap();
+				while(!GetComponent<MenuManager>().createMap()){};//do this to allow wait for clear
+				//GetComponent<PG_Map>().CreateMap();
 				networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)state, (int)levelType);
 			}
 		}
@@ -290,8 +313,10 @@ public class GameData : MonoBehaviour
 	[RPC] private void AddPlayer(NetworkViewID id)
 	{
 		GameObject player = NetworkView.Find(id).gameObject;
-		players.Add(player);
-		netPlayers.Add(player.networkView.owner);
+		if(player!=null){
+			players.Add(player);
+			netPlayers.Add(player.networkView.owner);
+		}
 	}
 	
 	[RPC] private void JoinRed() { redCount++; countChanged = true; }

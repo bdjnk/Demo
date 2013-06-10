@@ -38,6 +38,8 @@ public class MenuManager : MonoBehaviour
 	
 	private int levelType; //0 is space,1 is sky (earth)
 	
+	public bool cleared = false;
+	
 	// State Variables
 	private int firstRun = 0;
 	
@@ -365,13 +367,15 @@ public class MenuManager : MonoBehaviour
 		ClearServer(netPlayer);
 		
 		Network.DestroyPlayerObjects(netPlayer);
+		
 		GetComponent<GameData>().networkView.RPC("RemovePlayer", RPCMode.AllBuffered, netPlayer);
 	}
 	public void ClearServer(NetworkPlayer netPlayer)
 	{
-		//TODO these numbers should really be constants in a seprate static class
-		Network.RemoveRPCs(netPlayer, 4); // player
-		Network.RemoveRPCs(netPlayer, 3); // shots
+		//TODO these numbers should really be constants in a seperate static class
+		//ben commented this add to try to correctly reset
+		//Network.RemoveRPCs(netPlayer, 4); // player
+		//Network.RemoveRPCs(netPlayer, 3); // shots
 		
 		GameData gameData = GetComponent<GameData>();
 		
@@ -387,7 +391,7 @@ public class MenuManager : MonoBehaviour
 				{
 					gameData.networkView.RPC("LeaveBlue", RPCMode.AllBuffered);
 				}
-				Network.RemoveRPCs(player.networkView.viewID);
+				//Network.RemoveRPCs(player.networkView.viewID);
 			}
 		}
 	}
@@ -405,18 +409,34 @@ public class MenuManager : MonoBehaviour
 	}
 	[RPC] public void ClearClient()
 	{
-		GetComponent<GameData>().ClearData(true);
+
 		GetComponent<UpgradeManager>().enabled = false;
 			
 		foreach (GameObject go in FindObjectsOfType(typeof(GameObject)))
 		{
 			if (go.tag != "Master")
 			{
+				if(Network.isServer && go.networkView !=null){//BEN ADDED TO FIX RESET ISSUES
+					Network.RemoveRPCs(go.networkView.viewID);
+				}
 				Destroy(go);
+			} else if(Network.isServer && go.networkView != null){//BEN CHANGED TO FIX RESET ISSUES
+				
+				Network.RemoveRPCs(go.networkView.viewID);
+				
 			}
 		}
+		GetComponent<GameData>().ClearData(true);//MOVED HERE TO CLEAR AFTER RPC CLEAN
+		cleared = true;
 	}
 	
+	public bool createMap(){
+		if (!cleared) {return false;}
+		GetComponent<PG_Map>().CreateMap();
+		cleared = false;
+		return true;
+	
+	}
 	// Called on clients or servers when reporting events from the MasterServer.
 	private void OnMasterServerEvent(MasterServerEvent mse)
 	{

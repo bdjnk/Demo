@@ -129,7 +129,7 @@ public class PlayerManager : MonoBehaviour
 		float buttonH = 70f;
 		
 		if (gameData.state == GameData.State.inGame && gameData.gameLength > 0)
-		{
+		{	
 			GUI.Box(new Rect(Screen.width-buttonW-edge, Screen.height-buttonH*0.6f-edge, buttonW, buttonH*0.6f), "Countdown:\n"+Mathf.CeilToInt(gameData.gameEndTime-(float)Network.time));
 		}
 		
@@ -152,15 +152,40 @@ public class PlayerManager : MonoBehaviour
 		
 		if (gameData.state == GameData.State.betweenGames)
 		{
+			int timeToDisplay = (int) (gameData.gameEndTime-(float)Network.time);
+			string timeInString = "" + timeToDisplay;
+			if(timeToDisplay<0){
+				timeInString = "Connecting";
+			}
 			if (gameData.redScore > gameData.blueScore) // display the appropriate list
-			{
-				GUI.Box(new Rect(-9, -9, Screen.width+9, Screen.height+9), "\nRed Team Wins!\n"+gameData.redCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%"
-					+"\n\n\nBlue Team \n"+gameData.blueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%"+"\n\n\nRestart in: \n"+Mathf.CeilToInt(gameData.gameEndTime-(float)Network.time));
+			{	
+				string addToWinMsg="";
+				if(gameData.redPercent < gameData.percentToWin)
+				{
+					if(gameData.redOwned >= gameData.totalCubes/2)
+					{
+						addToWinMsg = "Buildings Owned > 50% \n"; 
+					} else {
+						addToWinMsg = "Time Up \n"; 
+					}
+				}
+				GUI.Box(new Rect(-9, -9, Screen.width+9, Screen.height+9), "\nRed Team Wins!\n"+addToWinMsg+gameData.redCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"% of Cubes"
+					+"\n\n\nBlue Team \n"+gameData.blueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"% of Cubes"+"\n\nTotal Cubes: "+gameData.totalCubes+"\n\nRestart in: \n"+timeInString);
 			}
 			else 
-			{
-				GUI.Box(new Rect(-9, -9, Screen.width+9, Screen.height+9), "\nBlue Team Wins!\n"+gameData.blueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"%"
-					+"\n\n\nRed Team \n"+gameData.redCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"%"+"\n\n\nRestart in: \n"+Mathf.CeilToInt(gameData.gameEndTime-(float)Network.time));
+			{	
+				string addToWinMsg="";
+				if(gameData.bluePercent < gameData.percentToWin)
+				{
+					if(gameData.blueOwned >= gameData.totalCubes/2)
+					{
+						addToWinMsg = "Buildings Owned > 50% \n";
+					} else {
+						addToWinMsg = "Time Up \n";
+					}
+				}
+				GUI.Box(new Rect(-9, -9, Screen.width+9, Screen.height+9), "\nBlue Team Wins!\n"+addToWinMsg+gameData.blueCount+" players\n"+gameData.blueScore+" cubes\n"+gameData.bluePercent+"% of Cubes"
+					+"\n\n\nRed Team \n"+gameData.redCount+" players\n"+gameData.redScore+" cubes\n"+gameData.redPercent+"% of Cubes"+"\n\nTotal Cubes: "+gameData.totalCubes+"\n\nRestart in: \n"+timeInString);
 			}
 		}
 		else if (gameData.redPercent > gameData.percentToWin-5 || gameData.bluePercent > gameData.percentToWin-5)

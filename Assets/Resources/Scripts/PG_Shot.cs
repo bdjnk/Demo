@@ -47,6 +47,7 @@ public class PG_Shot : MonoBehaviour
 				if (gun.aggressive)
 				{
 					other.GetComponentInChildren<PG_Gun>().freezeTimeout = (float)Network.time + 2f;
+					Instantiate(stunSound, this.transform.position, Quaternion.identity); //play sound
 				}
 				else // peaceful
 				{
@@ -59,6 +60,7 @@ public class PG_Shot : MonoBehaviour
 				if (gun.GetComponent<PG_Bot>().myColor != other.GetComponent<PlayerManager>().myColor)
 				{
 					other.GetComponentInChildren<PG_Gun>().freezeTimeout = (float)Network.time + 1;
+					//Instantiate(stunSound, this.transform.position, Quaternion.identity); //play sound
 				}
 			}
 		}

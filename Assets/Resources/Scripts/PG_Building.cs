@@ -24,7 +24,7 @@ public class PG_Building : MonoBehaviour
 	
 	private void Update()
 	{
-		if (!owned)
+		if (!owned && Network.isServer)//revised only call from server
 		{
 			if (red == totalCubes)
 			{

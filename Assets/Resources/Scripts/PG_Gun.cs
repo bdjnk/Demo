@@ -33,9 +33,7 @@ public class PG_Gun : MonoBehaviour
 				GUI.Box(new Rect(160, Screen.height-50, 40, 40), qm);
 			if (eb != null)
 				GUI.Box(new Rect(210, Screen.height-50, 40, 40), eb);
-			/*if (Network.time < freezeTimeout){
-				GUI.Box(new Rect(5, 5, 110, 23), "Gun Disabled");
-			}*///in playermanager
+
 		}
 	}
 	

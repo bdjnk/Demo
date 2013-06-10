@@ -105,7 +105,8 @@ public class PG_Cube : MonoBehaviour
 	{
 		if (amountBlue > resistence && renderer.material.color != gameData.blue)
 		{
-			networkView.RPC("SetBlue", RPCMode.AllBuffered,(float)Network.time);
+			//networkView.RPC("SetBlue", RPCMode.All);
+			SetBlue ();
 			
 			if (shot != null && shot.gun != null && shot.gun.tag != "Bot")
 			{
@@ -114,7 +115,8 @@ public class PG_Cube : MonoBehaviour
 		}
 		else if (amountRed > resistence && renderer.material.color != gameData.red)
 		{
-			networkView.RPC("SetRed", RPCMode.AllBuffered,(float)Network.time);
+			//networkView.RPC("SetRed", RPCMode.All);
+			SetRed ();
 			
 			if (shot != null && shot.gun != null && shot.gun.tag != "Bot")
 			{
@@ -142,14 +144,14 @@ public class PG_Cube : MonoBehaviour
 		}
 	}
 	
-	[RPC] private void SetRed(float timeShot)
+	[RPC] private void SetRed()
 	{
 		// putting the sound here (and not right before the call) makes it play for everyone,
 		// but maybe it should just play for the person who shot...
 		GetComponent<AudioSource>().PlayOneShot(standardClaim);
 		
 		//BEN ADD: force to only allow update in real-time (if a client joins in middle does not update)
-		if((float)Network.time - timeShot < 1.0f){
+		//if((float)gameData.time - timeShot < 1.0f){
 			if (renderer.material.color == gameData.blue)
 			{
 				gameData.blueScore--;
@@ -158,16 +160,25 @@ public class PG_Cube : MonoBehaviour
 			//renderer.material.color = gameData.red;
 			gameData.redScore++;
 			building.red++;
-		}
+		//}
 		renderer.material.color = gameData.red;
-		
+		networkView.RPC ("SetTextureRed",RPCMode.OthersBuffered);
+		networkView.RPC ("clientHitVisualsRed",RPCMode.Others);
+		StartCoroutine("HitVisuals", "Red");
+	}
+	[RPC] private void clientHitVisualsRed(){
+		GetComponent<AudioSource>().PlayOneShot(standardClaim);
 		StartCoroutine("HitVisuals", "Red");
 	}
 	
-	[RPC] private void SetBlue(float timeShot)
+	[RPC] private void SetTextureRed(){
+		renderer.material.color = gameData.red;
+	}
+	
+	[RPC] private void SetBlue()
 	{
 		GetComponent<AudioSource>().PlayOneShot(standardClaim);
-		if((float) Network.time - timeShot < 1.0f){
+		//if((float) gameData.time - timeShot < 1.0f){
 			if (renderer.material.color == gameData.red)
 				{
 					gameData.redScore--;
@@ -176,11 +187,20 @@ public class PG_Cube : MonoBehaviour
 			//renderer.material.color = gameData.blue;
 			gameData.blueScore++;
 			building.blue++;
-		}
+		//}
 		renderer.material.color = gameData.blue;
-		
+		networkView.RPC ("SetTextureBlue",RPCMode.OthersBuffered);	
+		networkView.RPC ("clientHitVisualsBlue",RPCMode.Others);	
 		StartCoroutine("HitVisuals", "Blue");
 	}
+	[RPC] private void SetTextureBlue(){
+		renderer.material.color = gameData.blue;
+	}
+	[RPC] private void clientHitVisualsBlue(){
+		GetComponent<AudioSource>().PlayOneShot(standardClaim);
+		StartCoroutine("HitVisuals", "Blue");
+	}
+	
 	
 	IEnumerator HitVisuals(string hitColor)
 	{

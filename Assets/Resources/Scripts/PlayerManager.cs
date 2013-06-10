@@ -130,7 +130,7 @@ public class PlayerManager : MonoBehaviour
 		
 		if (gameData.state == GameData.State.inGame && gameData.gameLength > 0)
 		{	
-			GUI.Box(new Rect(Screen.width-buttonW-edge, Screen.height-buttonH*0.6f-edge, buttonW, buttonH*0.6f), "Countdown:\n"+Mathf.CeilToInt(gameData.gameEndTime-(float)Network.time));
+			GUI.Box(new Rect(Screen.width-buttonW-edge, Screen.height-buttonH*0.6f-edge, buttonW, buttonH*0.6f), "Countdown:\n"+Mathf.CeilToInt(gameData.gameEndTime-(float)gameData.time));
 		}
 		
 		if (gun.freezeTimeout > Network.time)
@@ -157,7 +157,7 @@ public class PlayerManager : MonoBehaviour
 		
 		if (gameData.state == GameData.State.betweenGames)
 		{
-			int timeToDisplay = (int) (gameData.gameEndTime-(float)Network.time);
+			int timeToDisplay = (int) (gameData.gameEndTime-(float)gameData.time);
 			string timeInString = "" + timeToDisplay;
 			if(timeToDisplay<0){
 				timeInString = "Connecting";

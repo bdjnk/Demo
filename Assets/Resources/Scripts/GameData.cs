@@ -29,6 +29,10 @@ public class GameData : MonoBehaviour
 	public int percentToWin = 75;
 	
 	public int totalCubes = 0;
+	
+	public double time;
+	public float deltaTime;
+	
 	[RPC] public void SetCubeCount(int cubeCount) { totalCubes = cubeCount; }
 	
 	public Vector3 mapCenter;
@@ -68,7 +72,7 @@ public class GameData : MonoBehaviour
 	[RPC] private void SetEndTime(float endTime, int newState, int levelState)
 	{
 		gameEndTime = endTime;
-
+		
 		state = (State)newState;
 		levelType = (LevelType)levelState;
 		
@@ -76,7 +80,6 @@ public class GameData : MonoBehaviour
 		
 		if (state == State.inGame) // starting a new round
 		{
-			//BEN CHANGED TO FIX RESET ISSUES
 			//ClearData(false);//already reset elsewhere
 
 			if (levelType == LevelType.space)
@@ -123,12 +126,22 @@ public class GameData : MonoBehaviour
 	
 	private void Update()
 	{
+		if(Network.isServer)
+		{
+			time = Network.time;
+			networkView.RPC ("UpdateClientScores",RPCMode.Others,blueScore,blueOwned,redScore,redOwned);
+		} else 
+		{ 
+			time = Network.time + deltaTime;
+		}
+		
 		if (!ready) { return; }
+
 		
 		redPercent = (int)(100.0f * redScore/totalCubes);
 		bluePercent = (int)(100.0f * blueScore/totalCubes);
-		//BEN TEST FORCE RESET TO 0 - probably dont need this
-		//but it is good insurance
+		
+		//force not less than zero for insurance 
 		if(redCount<0)
 			redCount=0;
 		if(blueCount<0)
@@ -142,7 +155,7 @@ public class GameData : MonoBehaviour
 		if(redOwned<0)
 			redOwned=0;
 		if(gameEndTime<0f)
-			gameEndTime=(float) Network.time+8f;		
+			gameEndTime=(float) time+4f;		
 		
 		
 		// -- code for rebalancing as necessary ---------------------------------------------------
@@ -232,27 +245,25 @@ public class GameData : MonoBehaviour
 			if (state == State.inGame)
 			{
 				if ((redPercent >= percentToWin || bluePercent >= percentToWin)
-					|| (gameLength != 0 && gameEndTime > 0 && Network.time > gameEndTime)
+					|| (gameLength != 0 && gameEndTime > 0 && time > gameEndTime)
 					|| (redOwned > totalCubes/2 || blueOwned > totalCubes/2))
 				{
 					//Debug.LogError ("The server says game over" + redOwned + " " + blueOwned);
 					state = State.betweenGames;
-					networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + 8, (int)state, (int)levelType);
+					networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)time + 8f, (int)state, (int)levelType);
 					}
 			}
-			else if (state == State.betweenGames && Network.time > gameEndTime)
-			{	//BEN REMOVED THIS ALSO
+			else if (state == State.betweenGames && time > gameEndTime)
+			{	
 				//Network.RemoveRPCs(networkView.owner);
 				foreach(NetworkPlayer netPlayer in netPlayers)
 				{
-					//BEN CHANGED - DONT NEED THIS
 					//GetComponent<MenuManager>().ClearServer(netPlayer);
-					//BEN CHANGED TO FIX RESET ISSUES
-					GetComponent<MenuManager>().networkView.RPC("ClearClient", RPCMode.All);///test as buffered BEN
+					GetComponent<MenuManager>().networkView.RPC("ClearClient", RPCMode.All);
 				}
 				while(!GetComponent<MenuManager>().createMap()){};//do this to allow wait for clear
 				//GetComponent<PG_Map>().CreateMap();
-				networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)state, (int)levelType);
+				networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)time + gameLength, (int)state, (int)levelType);
 			}
 		}
 	}
@@ -260,12 +271,17 @@ public class GameData : MonoBehaviour
 	private void OnEnable()
 	{
 		if (Network.isServer)
-		{
+		{	
+			time = Network.time;
 			levelType = (LevelType) PlayerPrefs.GetInt("serverType", (int) LevelType.sky);
-			Debug.Log("level: " + levelType.ToString() + "  " + (int) levelType);
+			//Debug.Log("level: " + levelType.ToString() + "  " + (int) levelType);
 			int intLevelType = (int) levelType;
-			networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)Network.time + gameLength, (int)State.inGame, intLevelType);
+			networkView.RPC("SetEndTime", RPCMode.AllBuffered, (float)time + gameLength, (int)State.inGame, intLevelType);
+		} else //synchronize time with server
+		{
+			networkView.RPC ("SyncDeltaTime",RPCMode.Server);
 		}
+		
 		bots = GameObject.FindGameObjectsWithTag("Bot");
 		
 		state = State.inGame;
@@ -277,11 +293,26 @@ public class GameData : MonoBehaviour
 		blue = new Color(0.4f, 0.6f, 1);
 		gray = new Color(0.8f, 0.8f, 0.8f);
 		
+	
 		ClearData(true);
 		
 		winSound = Resources.Load("Prefabs/Winner") as GameObject;
 		
 	}
+	//thanks to Unity community for this
+	[RPC]
+	public void SyncDeltaTime(NetworkMessageInfo info){
+		float testTime = (float) Network.time;
+		networkView.RPC ("SetDeltaSync",info.sender,testTime);
+	}
+	
+	
+	[RPC]
+	public void SetDeltaSync(float newTime,NetworkMessageInfo info){
+		deltaTime = (newTime - (float) info.timestamp);
+		Debug.Log ("Delta Time: " + deltaTime + ", " + time);
+	}
+	
 	
 	public Vector3 GetTeam(GameObject newPlayer, bool switching)
 	{
@@ -309,6 +340,13 @@ public class GameData : MonoBehaviour
 			return new Vector3(blue.r, blue.g, blue.b);
 		}
 	}
+	
+	[RPC] private void UpdateClientScores(int blueScore,int blueOwned,int redScore,int redOwned){
+		this.blueScore = blueScore;
+		this.blueOwned = blueOwned;
+		this.redScore = redScore;
+		this.redOwned = redOwned;
+	}	
 	
 	[RPC] private void AddPlayer(NetworkViewID id)
 	{

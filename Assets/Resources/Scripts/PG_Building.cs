@@ -27,13 +27,14 @@ public class PG_Building : MonoBehaviour
 		if (!owned && Network.isServer)//revised only call from server
 		{
 			if (red == totalCubes)
-			{
-				gameData.networkView.RPC("AddRedOwned", RPCMode.AllBuffered, totalCubes);
+			{	gameData.AddRedOwned(totalCubes);
+				//gameData.networkView.RPC("AddRedOwned", RPCMode.Server, totalCubes);
 				owned = true;
 			}
 			else if (blue == totalCubes)
 			{
-				gameData.networkView.RPC("AddBlueOwned", RPCMode.AllBuffered, totalCubes);
+				gameData.AddBlueOwned(totalCubes);
+				//gameData.networkView.RPC("AddBlueOwned", RPCMode.Server, totalCubes);
 				owned = true;
 			}
 		}

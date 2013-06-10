@@ -373,7 +373,7 @@ public class MenuManager : MonoBehaviour
 	public void ClearServer(NetworkPlayer netPlayer)
 	{
 		//TODO these numbers should really be constants in a seperate static class
-		//ben commented this add to try to correctly reset
+		//remove to allow correct reset
 		//Network.RemoveRPCs(netPlayer, 4); // player
 		//Network.RemoveRPCs(netPlayer, 3); // shots
 		
@@ -416,11 +416,11 @@ public class MenuManager : MonoBehaviour
 		{
 			if (go.tag != "Master")
 			{
-				if(Network.isServer && go.networkView !=null){//BEN ADDED TO FIX RESET ISSUES
+				if(Network.isServer && go.networkView !=null){//ADDED TO FIX RESET ISSUES
 					Network.RemoveRPCs(go.networkView.viewID);
 				}
 				Destroy(go);
-			} else if(Network.isServer && go.networkView != null){//BEN CHANGED TO FIX RESET ISSUES
+			} else if(Network.isServer && go.networkView != null){//CHANGED TO FIX RESET ISSUES
 				
 				Network.RemoveRPCs(go.networkView.viewID);
 				

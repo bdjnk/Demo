@@ -5,7 +5,7 @@ public class PG_Shot : MonoBehaviour
 {
 	public PG_Gun gun;
 	
-	public float persist = 4f;
+	public float persist = 3f;
 	private float timeAtStart;
 	private GameObject stunSound;
 	
